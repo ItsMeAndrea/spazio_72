@@ -3,6 +3,9 @@ import { View, Image, Text } from 'react-native';
 import { Form, Input, Item, Button } from 'native-base';
 
 export default class SignUp extends Component {
+  static navigationOptions = {
+    header: null
+  };
   render() {
     const {
       container,

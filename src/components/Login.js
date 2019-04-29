@@ -3,6 +3,10 @@ import { View, Image, Text } from 'react-native';
 import { Form, Item, Input, Button } from 'native-base';
 
 export default class App extends Component {
+  static navigationOptions = {
+    header: null
+  };
+
   render() {
     const {
       container,
