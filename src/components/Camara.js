@@ -5,7 +5,7 @@ export default class Camara extends Component {
   render() {
     return (
       <View>
-        <Text>TEXTO</Text>
+        <Text>HELLO</Text>
       </View>
     );
   }
