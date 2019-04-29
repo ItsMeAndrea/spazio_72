@@ -9,11 +9,6 @@ import SignUp from '../components/SignUp';
 import ForgotPassword from '../components/ForgotPassword';
 import Camara from '../components/Camara';
 
-
-static navigationOptions = {
-  header: null
-};
-
 const AppStack = createStackNavigator({ Home: Camara });
 const AuthStack = createStackNavigator({
   Login: Login,
@@ -22,8 +17,6 @@ const AuthStack = createStackNavigator({
 });
 
 export default createAppContainer(
- 
-
   createSwitchNavigator(
     {
       App: AppStack,
