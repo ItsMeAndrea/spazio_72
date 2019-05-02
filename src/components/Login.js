@@ -49,6 +49,10 @@ export default class App extends Component {
               placeholder="Contraseña"
               placeholderTextColor="white"
             />
+            <Image
+              style={imageStyle}
+              source={require('../images/eye_black.png')}
+            />
           </Item>
         </Form>
 
@@ -103,7 +107,8 @@ const styles = {
   imageStyle: {
     height: 30,
     width: 30,
-    marginLeft: 10
+    marginLeft: 10,
+    marginRight: 10
   },
   inputStyle: {
     color: 'white'

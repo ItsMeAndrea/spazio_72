@@ -14,40 +14,59 @@ export default class App extends Component {
       inputStyle,
       btnStyle,
       textStyle,
-      paragraphStyle
+      paragraphStyle,
+      backButtonPosition,
+      backButton,
+      backBtnStyle,
+      formPosition
     } = styles;
     return (
       <View style={container}>
-        <View style={paragraphStyle}>
-          <Text style={textStyle}>
-            Ingrese su Correo Electronico y le enviaremos los pasos a seguir
-            para recuperar su Contraseña.
-          </Text>
+        <View style={formPosition}>
+          <View style={paragraphStyle}>
+            <Text style={textStyle}>
+              Ingrese su Correo Electronico y le enviaremos los pasos a seguir
+              para recuperar su Contraseña.
+            </Text>
+          </View>
+
+          <Form>
+            <Item rounded style={itemStyle}>
+              <Image
+                style={imageStyle}
+                source={require('../images/username.png')}
+              />
+              <Input
+                autoCorrect={false}
+                style={inputStyle}
+                placeholder="Ingrese Correo Electronico"
+                placeholderTextColor="white"
+              />
+            </Item>
+          </Form>
+
+          <View>
+            <Button block rounded style={btnStyle}>
+              <Text style={textStyle}>ENVIAR</Text>
+            </Button>
+          </View>
         </View>
 
-        <Form>
-          <Item rounded style={itemStyle}>
+        <View style={backButtonPosition}>
+          <Button rounded style={backButton} onPress={this._Login}>
             <Image
-              style={imageStyle}
-              source={require('../images/username.png')}
+              style={backBtnStyle}
+              source={require('../images/left-arrow.png')}
             />
-            <Input
-              autoCorrect={false}
-              style={inputStyle}
-              placeholder="Ingrese Correo Electronico"
-              placeholderTextColor="white"
-            />
-          </Item>
-        </Form>
-
-        <View>
-          <Button block rounded style={btnStyle}>
-            <Text style={textStyle}>ENVIAR</Text>
           </Button>
         </View>
       </View>
     );
   }
+
+  _Login = () => {
+    this.props.navigation.navigate('Login');
+  };
 }
 
 const styles = {
@@ -89,5 +108,25 @@ const styles = {
   textStyle: {
     fontSize: 20,
     color: 'white'
+  },
+  backButtonPosition: {
+    justifyContent: 'flex-end',
+    flex: 1,
+    marginLeft: 30,
+    marginBottom: 30
+  },
+  backButton: {
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    backgroundColor: '#D5C046'
+  },
+  backBtnStyle: {
+    height: 20,
+    width: 20
+  },
+  formPosition: {
+    justifyContent: 'center',
+    flex: 8
   }
 };
