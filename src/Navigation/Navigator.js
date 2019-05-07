@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import {
   createStackNavigator,
   createSwitchNavigator,
@@ -8,18 +9,28 @@ import Login from '../components/Login';
 import SignUp from '../components/SignUp';
 import ForgotPassword from '../components/ForgotPassword';
 import Camara from '../components/Camara';
+import Reservation from '../components/Reservation';
 
-const AppStack = createStackNavigator({ Home: Camara });
+const AppStack = createStackNavigator({
+  Home: {
+    screen: Camara
+  },
+  Reservation: {
+    screen: Reservation,
+    path: 'reservation/:id'
+  }
+});
+
 const AuthStack = createStackNavigator({
   Login: Login,
   SignUp: SignUp,
   ForgotPassword: ForgotPassword
 });
 
-export default createAppContainer(
+const AppContainer = createAppContainer(
   createSwitchNavigator(
     {
-      App: AppStack,
+      App: { screen: AppStack, path: '' },
       Auth: AuthStack
     },
     {
@@ -27,3 +38,9 @@ export default createAppContainer(
     }
   )
 );
+
+const prefix = 'spazio72://';
+
+const MainApp = () => <AppContainer uriPrefix={prefix} />;
+
+export default MainApp;
