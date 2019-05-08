@@ -12,12 +12,12 @@ import Camara from '../components/Camara';
 import Reservation from '../components/Reservation';
 
 const AppStack = createStackNavigator({
-  Home: {
-    screen: Camara
-  },
   Reservation: {
     screen: Reservation,
     path: 'reservation/:id'
+  },
+  Home: {
+    screen: Camara
   }
 });
 
