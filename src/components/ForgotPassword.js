@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Image, Text } from 'react-native';
+import { View, Image, Text, StyleSheet } from 'react-native';
 import { Form, Item, Input, Button } from 'native-base';
 
 export default class App extends Component {
@@ -69,7 +69,7 @@ export default class App extends Component {
   };
 }
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
     backgroundColor: '#282828',
     flex: 1,
@@ -129,4 +129,4 @@ const styles = {
     justifyContent: 'center',
     flex: 8
   }
-};
+});
