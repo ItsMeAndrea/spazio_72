@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#D5C046',
     color: 'white',
     marginHorizontal: 30,
-    marginBottom: 30
+    marginBottom: 40
   },
   textStyle: {
     fontSize: 20,
