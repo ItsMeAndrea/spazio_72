@@ -62,7 +62,7 @@ export default class Reservation extends Component {
 
         <View style={{ flex: 1 }}>
           <Calendar />
-          <View style={{ height: 60, marginBottom: 45 }}>
+          <View style={{ height: 60, marginBottom: 35 }}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <Button
                 rounded
