@@ -5,20 +5,17 @@ import {
   createAppContainer
 } from 'react-navigation';
 
-import Login from '../components/Login';
-import SignUp from '../components/SignUp';
-import ForgotPassword from '../components/ForgotPassword';
-import Camara from '../components/Camara';
-import Reservation from '../components/Reservation';
+import Login from '../screens/Login';
+import SignUp from '../screens/SignUp';
+import ForgotPassword from '../screens/ForgotPassword';
+import Camara from '../screens/Camara';
+import Reservation from '../screens/Reservation';
+import Home from '../screens/Home';
 
 const AppStack = createStackNavigator({
-  Reservation: {
-    screen: Reservation,
-    path: 'reservation/:id'
-  },
-  Home: {
-    screen: Camara
-  }
+  Home: Home,
+  Reservation: Reservation,
+  Camara: Camara
 });
 
 const AuthStack = createStackNavigator({
@@ -30,7 +27,7 @@ const AuthStack = createStackNavigator({
 const AppContainer = createAppContainer(
   createSwitchNavigator(
     {
-      App: { screen: AppStack, path: '' },
+      App: AppStack,
       Auth: AuthStack
     },
     {
