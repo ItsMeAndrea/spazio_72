@@ -18,6 +18,7 @@
     "react-native-qrcode-scanner": "^1.1.2",
     "react-native-reanimated": "^1.0.1",
     "react-native-slick": "^1.0.2",
+    "react-native-swipeable": "^0.6.0",
     "react-navigation": "^3.8.1"
   },
   "devDependencies": {
