@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { Button } from 'native-base';
 import Swipeable from 'react-native-swipeable';
 
@@ -9,19 +9,19 @@ const rightButtons = [
       width: 400,
       height: 100,
       backgroundColor: '#279e29',
-      padding: 25
+      padding: 35
     }}
   >
     <Image
-      style={{ width: 50, height: 50 }}
+      style={{ width: 30, height: 30 }}
       source={require('../images/edit.png')}
     />
   </Button>,
   <Button
-    style={{ width: 400, height: 100, backgroundColor: '#bc2121', padding: 25 }}
+    style={{ width: 400, height: 100, backgroundColor: '#bc2121', padding: 35 }}
   >
     <Image
-      style={{ width: 50, height: 50 }}
+      style={{ width: 30, height: 30 }}
       source={require('../images/cancel.png')}
     />
   </Button>
@@ -49,8 +49,7 @@ export default class Home extends Component {
           rightButtons={rightButtons}
           style={{
             height: 100,
-            backgroundColor: 'gray',
-            
+            backgroundColor: 'gray'
           }}
         >
           <Text
@@ -103,7 +102,7 @@ export default class Home extends Component {
               paddingTop: 10
             }}
           >
-            Yolimar
+            Yolimar Lugo
           </Text>
           <Text
             style={{
@@ -119,14 +118,34 @@ export default class Home extends Component {
               color: 'white',
               fontSize: 18,
               paddingLeft: 20,
-
               paddingBottom: 10
             }}
           >
             8:00 AM
           </Text>
         </Swipeable>
+        <Button block rounded style={styles.btnStyle} onPress={this._camara}>
+          <Text style={styles.textStyle}>INGRESAR</Text>
+        </Button>
       </View>
     );
   }
+
+  _camara = () => {
+    this.props.navigation.navigate('Reservation');
+  };
 }
+
+const styles = StyleSheet.create({
+  btnStyle: {
+    backgroundColor: '#D5C046',
+    color: 'white',
+    marginTop: 20,
+    marginLeft: 30,
+    marginRight: 30
+  },
+  textStyle: {
+    fontSize: 20,
+    color: 'white'
+  }
+});
