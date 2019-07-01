@@ -29,7 +29,6 @@ export default class App extends Component {
               para recuperar su Contraseña.
             </Text>
           </View>
-
           <Form>
             <Item rounded style={itemStyle}>
               <Image
@@ -44,14 +43,12 @@ export default class App extends Component {
               />
             </Item>
           </Form>
-
           <View>
             <Button block rounded style={btnStyle}>
               <Text style={textStyle}>ENVIAR</Text>
             </Button>
           </View>
         </View>
-
         <View style={backButtonPosition}>
           <Button rounded style={backButton} onPress={this._Login}>
             <Image

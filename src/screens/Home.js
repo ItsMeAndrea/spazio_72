@@ -124,9 +124,15 @@ export default class Home extends Component {
             8:00 AM
           </Text>
         </Swipeable>
-        <Button block rounded style={styles.btnStyle} onPress={this._camara}>
-          <Text style={styles.textStyle}>INGRESAR</Text>
-        </Button>
+
+        <View style={styles.backButtonPosition}>
+          <Button rounded style={styles.backButton} onPress={this._camara}>
+            <Image
+              style={styles.backBtnStyle}
+              source={require('../images/left-arrow.png')}
+            />
+          </Button>
+        </View>
       </View>
     );
   }
@@ -147,5 +153,21 @@ const styles = StyleSheet.create({
   textStyle: {
     fontSize: 20,
     color: 'white'
+  },
+  backButtonPosition: {
+    justifyContent: 'flex-end',
+    flex: 1,
+    alignSelf: 'center',
+    marginBottom: -15
+  },
+  backButton: {
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    backgroundColor: '#D5C046'
+  },
+  backBtnStyle: {
+    height: 20,
+    width: 20
   }
 });
