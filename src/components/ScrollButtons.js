@@ -13,16 +13,16 @@ export default class ScrollButtons extends Component {
             <Text style={textStyle}>8:00 AM</Text>
           </Button>
           <Button rounded style={btnStyle}>
-            <Text style={textStyle}>8:00 AM</Text>
+            <Text style={textStyle}>9:00 AM</Text>
           </Button>
           <Button rounded style={btnStyle}>
-            <Text style={textStyle}>8:00 AM</Text>
+            <Text style={textStyle}>10:00 AM</Text>
           </Button>
           <Button rounded style={btnStyle}>
-            <Text style={textStyle}>8:00 AM</Text>
+            <Text style={textStyle}>11:00 AM</Text>
           </Button>
           <Button rounded style={btnStyle}>
-            <Text style={textStyle}>8:00 AM</Text>
+            <Text style={textStyle}>12:00 AM</Text>
           </Button>
         </ScrollView>
       </View>

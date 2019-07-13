@@ -129,7 +129,7 @@ export default class Home extends Component {
           <Button rounded style={styles.backButton} onPress={this._camara}>
             <Image
               style={styles.backBtnStyle}
-              source={require('../images/left-arrow.png')}
+              source={require('../images/camera.png')}
             />
           </Button>
         </View>
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#D5C046'
   },
   backBtnStyle: {
-    height: 20,
-    width: 20
+    height: 40,
+    width: 40
   }
 });

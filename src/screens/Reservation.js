@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text, Modal, Alert } from 'react-native';
 import { Button } from 'native-base';
 
-import Calendar from '../components/Calendar';
-import Carousel from '../components/Carousel';
+import Calendario from '../components/Calendario';
 import ScrollButtons from '../components/ScrollButtons';
 
 export default class Reservation extends Component {
   static navigationOptions = {
-    title: 'Tu reservacion es con:',
+    title: 'Reservación',
     headerStyle: {
       backgroundColor: '#282828'
     },
@@ -29,22 +28,19 @@ export default class Reservation extends Component {
     const { textStyle, btnStyle, container } = styles;
     return (
       <View style={container}>
-        <Carousel />
+        <Calendario />
 
-        <View style={{ flex: 1 }}>
-          <Calendar />
-          <ScrollButtons />
-          <Button
-            block
-            rounded
-            style={btnStyle}
-            onPress={() => {
-              this.setModalVisible(true);
-            }}
-          >
-            <Text style={textStyle}>ACEPTAR</Text>
-          </Button>
-        </View>
+        <ScrollButtons />
+        <Button
+          block
+          rounded
+          style={btnStyle}
+          onPress={() => {
+            this.setModalVisible(true);
+          }}
+        >
+          <Text style={textStyle}>ACEPTAR</Text>
+        </Button>
 
         {/* MODAL */}
         <Modal

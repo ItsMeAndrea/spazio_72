@@ -19,6 +19,7 @@ const AppStack = createStackNavigator({
 });
 
 const AuthStack = createStackNavigator({
+  Reservation: Reservation,
   Login: Login,
   SignUp: SignUp,
   ForgotPassword: ForgotPassword
