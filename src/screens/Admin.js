@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { View, Text } from 'react-native';
 
-export default class Camara extends Component {
+export default class Admin extends Component {
   render() {
     return (
       <View>
-        <Text>TEXTO</Text>
+        <Text>Hello Admin!</Text>
       </View>
     );
   }
