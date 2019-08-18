@@ -72,7 +72,7 @@ export default class Reservation extends Component {
               <Text
                 style={{
                   color: 'white',
-                  fontSize: 20,
+                  fontSize: 15,
                   textAlign: 'center'
                 }}
               >
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     marginBottom: 40
   },
   textStyle: {
-    fontSize: 20,
+    fontSize: 15,
     color: 'white'
   }
 });

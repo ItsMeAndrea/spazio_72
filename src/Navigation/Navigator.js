@@ -5,6 +5,7 @@ import {
   createAppContainer
 } from 'react-navigation';
 
+import Loading from '../screens/Loading';
 import Login from '../screens/Login';
 import SignUp from '../screens/SignUp';
 import ForgotPassword from '../screens/ForgotPassword';
@@ -19,7 +20,6 @@ const AppStack = createStackNavigator({
 });
 
 const AuthStack = createStackNavigator({
-  Reservation: Reservation,
   Login: Login,
   SignUp: SignUp,
   ForgotPassword: ForgotPassword
@@ -28,11 +28,12 @@ const AuthStack = createStackNavigator({
 const AppContainer = createAppContainer(
   createSwitchNavigator(
     {
+      Load: Loading,
       App: AppStack,
       Auth: AuthStack
     },
     {
-      initialRouteName: 'Auth'
+      initialRouteName: 'Load'
     }
   )
 );

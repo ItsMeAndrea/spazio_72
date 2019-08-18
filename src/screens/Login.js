@@ -1,11 +1,60 @@
 import React, { Component } from 'react';
+import app from '../firebaseConfig';
 import { View, Image, Text, StyleSheet } from 'react-native';
 import { Form, Item, Input, Button } from 'native-base';
+import Spinner from '../components/Spinner';
 
 export default class App extends Component {
   static navigationOptions = {
     header: null
   };
+
+  state = { email: '', password: '', error: '', loading: false };
+
+  _login = () => {
+    const { email, password } = this.state;
+
+    this.setState({ error: '', loading: true });
+
+    app
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(this.onLoginSuccess.bind(this))
+      .catch(this.onLoginFailed.bind(this));
+  };
+  _signUp = () => {
+    this.props.navigation.navigate('SignUp');
+  };
+  _forgotPassword = () => {
+    this.props.navigation.navigate('ForgotPassword');
+  };
+
+  onLoginFailed() {
+    this.setState({ error: 'Auth Failed', loading: false });
+  }
+
+  onLoginSuccess() {
+    this.setState({
+      email: '',
+      password: '',
+      loading: false,
+      error: ''
+    });
+    this.props.navigation.navigate('App');
+  }
+
+  rendeButton() {
+    const { btnStyle, textStyle } = styles;
+    if (this.state.loading) {
+      return <Spinner size="small" />;
+    }
+
+    return (
+      <Button block rounded style={btnStyle} onPress={this._login}>
+        <Text style={textStyle}>INGRESAR</Text>
+      </Button>
+    );
+  }
 
   render() {
     const {
@@ -14,8 +63,6 @@ export default class App extends Component {
       itemStyle,
       imageStyle,
       inputStyle,
-      btnStyle,
-      textStyle,
       signupStyle
     } = styles;
     return (
@@ -35,6 +82,8 @@ export default class App extends Component {
               style={inputStyle}
               placeholder="Correo"
               placeholderTextColor="white"
+              value={this.state.email}
+              onChangeText={email => this.setState({ email })}
             />
           </Item>
           <Item rounded style={itemStyle}>
@@ -48,6 +97,8 @@ export default class App extends Component {
               style={inputStyle}
               placeholder="Contraseña"
               placeholderTextColor="white"
+              value={this.state.password}
+              onChangeText={password => this.setState({ password })}
             />
             <Image
               style={imageStyle}
@@ -58,35 +109,23 @@ export default class App extends Component {
 
         <View style={signupStyle}>
           <Button transparent onPress={this._signUp}>
-            <Text style={{ color: 'white' }}>Registrarse</Text>
+            <Text style={{ color: 'white', fontSize: 10 }}>Registrarse</Text>
           </Button>
-          <Button
-            style={{ paddingTop: 0 }}
-            transparent
-            onPress={this._forgotPassword}
-          >
-            <Text style={{ color: 'white' }}>Recuperar Contraseña</Text>
+          <Button transparent onPress={this._forgotPassword}>
+            <Text style={{ color: 'white', fontSize: 10 }}>
+              Recuperar Contraseña
+            </Text>
           </Button>
         </View>
 
-        <View>
-          <Button block rounded style={btnStyle} onPress={this._login}>
-            <Text style={textStyle}>INGRESAR</Text>
-          </Button>
-        </View>
+        <View style={{ marginTop: 20 }}>{this.rendeButton()}</View>
+
+        <View />
+
+        <Text style={styles.errorText}>{this.state.error}</Text>
       </View>
     );
   }
-
-  _login = () => {
-    this.props.navigation.navigate('App');
-  };
-  _signUp = () => {
-    this.props.navigation.navigate('SignUp');
-  };
-  _forgotPassword = () => {
-    this.props.navigation.navigate('ForgotPassword');
-  };
 }
 
 const styles = StyleSheet.create({
@@ -111,14 +150,13 @@ const styles = StyleSheet.create({
     marginRight: 10
   },
   inputStyle: {
-    color: 'white'
+    color: 'white',
+    fontSize: 10
   },
   btnStyle: {
     backgroundColor: '#D5C046',
     color: 'white',
-    marginTop: 20,
-    marginLeft: 30,
-    marginRight: 30
+    marginHorizontal: 30
   },
   textStyle: {
     fontSize: 20,
@@ -134,5 +172,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginLeft: 40,
     marginRight: 40
+  },
+  errorText: {
+    fontSize: 20,
+    alignSelf: 'center',
+    color: 'red'
   }
 });

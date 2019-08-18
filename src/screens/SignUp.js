@@ -1,11 +1,63 @@
 import React, { Component } from 'react';
+import app from '../firebaseConfig';
 import { View, Image, Text, StyleSheet } from 'react-native';
 import { Form, Input, Item, Button } from 'native-base';
+import Spinner from '../components/Spinner';
 
 export default class SignUp extends Component {
   static navigationOptions = {
     header: null
   };
+
+  state = { email: '', password: '', error: '', loading: false };
+
+  _Login = () => {
+    this.props.navigation.navigate('Login');
+  };
+
+  _Register = () => {
+    const { email, password } = this.state;
+
+    this.setState({ error: '', loading: true });
+
+    app
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(this.onSignUpSuccess.bind(this))
+      .catch(this.onSignUpFailed.bind(this));
+  };
+
+  onSignUpFailed() {
+    this.setState({ error: 'Auth Failed', loading: false });
+  }
+
+  onSignUpSuccess() {
+    this.setState({
+      email: '',
+      password: '',
+      loading: false,
+      error: ''
+    });
+    this.props.navigation.navigate('App');
+  }
+
+  rendeButton() {
+    const { btnStyle, textStyle } = styles;
+    if (this.state.loading) {
+      return <Spinner size="small" />;
+    }
+
+    return (
+      <Button
+        block
+        rounded
+        style={btnStyle}
+        onPress={this._Register.bind(this)}
+      >
+        <Text style={textStyle}>REGRISTRAR</Text>
+      </Button>
+    );
+  }
   render() {
     const {
       container,
@@ -33,6 +85,8 @@ export default class SignUp extends Component {
                 style={styles.inputStyle}
                 placeholder="Ingrese Correo Electronico"
                 placeholderTextColor="white"
+                value={this.state.email}
+                onChangeText={email => this.setState({ email })}
               />
             </Item>
 
@@ -47,10 +101,12 @@ export default class SignUp extends Component {
                 style={inputStyle}
                 placeholder="Contraseña"
                 placeholderTextColor="white"
+                value={this.state.password}
+                onChangeText={password => this.setState({ password })}
               />
             </Item>
 
-            <Item rounded style={itemStyle}>
+            {/*           <Item rounded style={itemStyle}>
               <Image
                 style={imageStyle}
                 source={require('../images/password.png')}
@@ -62,15 +118,13 @@ export default class SignUp extends Component {
                 placeholder="Confirmar Contraseña"
                 placeholderTextColor="white"
               />
-            </Item>
+            </Item> */}
           </Form>
 
-          <View>
-            <Button block rounded style={btnStyle}>
-              <Text style={textStyle}>REGRISTRAR</Text>
-            </Button>
-          </View>
+          <View style={{ marginTop: 20 }}>{this.rendeButton()}</View>
         </View>
+
+        <Text style={styles.errorText}>{this.state.error}</Text>
 
         <View style={backButtonPosition}>
           <Button rounded style={backButton} onPress={this._Login}>
@@ -83,10 +137,6 @@ export default class SignUp extends Component {
       </View>
     );
   }
-
-  _Login = () => {
-    this.props.navigation.navigate('Login');
-  };
 }
 
 const styles = StyleSheet.create({
@@ -109,14 +159,13 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
   inputStyle: {
-    color: 'white'
+    color: 'white',
+    fontSize: 10
   },
   btnStyle: {
     backgroundColor: '#D5C046',
     color: 'white',
-    marginTop: 20,
-    marginLeft: 30,
-    marginRight: 30
+    marginHorizontal: 30
   },
   textStyle: {
     fontSize: 20,
@@ -141,5 +190,10 @@ const styles = StyleSheet.create({
     height: 60,
     justifyContent: 'center',
     backgroundColor: '#D5C046'
+  },
+  errorText: {
+    fontSize: 20,
+    alignSelf: 'center',
+    color: 'red'
   }
 });

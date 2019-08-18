@@ -77,7 +77,7 @@ export default class Calendario extends Component {
             dayTextColor: 'white',
             textDisabledColor: '#2d4150'
           }}
-          style={{ marginBottom: 50 }}
+          style={{ marginBottom: 30 }}
         />
       </View>
     );
