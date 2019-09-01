@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import app from '../firebaseConfig';
+import app from '../firebase/firebaseConfig';
 import { View, Image, Text, StyleSheet } from 'react-native';
 import { Form, Input, Item, Button } from 'native-base';
 import Spinner from '../components/Spinner';
@@ -9,7 +9,14 @@ export default class SignUp extends Component {
     header: null
   };
 
-  state = { email: '', password: '', error: '', loading: false };
+  state = {
+    nombre: '',
+    apellido: '',
+    email: '',
+    password: '',
+    error: '',
+    loading: false
+  };
 
   _Login = () => {
     this.props.navigation.navigate('Login');
@@ -32,16 +39,25 @@ export default class SignUp extends Component {
   }
 
   onSignUpSuccess() {
+    const { email, nombre, apellido } = this.state;
+    const isAdmin = false;
+    const { currentUser } = app.auth();
     this.setState({
+      nombre: '',
+      apellido: '',
       email: '',
       password: '',
       loading: false,
       error: ''
     });
+    app
+      .database()
+      .ref(`/usuarios/${currentUser.uid}`)
+      .push({ email, nombre, apellido, isAdmin });
     this.props.navigation.navigate('App');
   }
 
-  rendeButton() {
+  renderButton() {
     const { btnStyle, textStyle } = styles;
     if (this.state.loading) {
       return <Spinner size="small" />;
@@ -54,7 +70,7 @@ export default class SignUp extends Component {
         style={btnStyle}
         onPress={this._Register.bind(this)}
       >
-        <Text style={textStyle}>REGRISTRAR</Text>
+        <Text style={textStyle}>REGISTRAR</Text>
       </Button>
     );
   }
@@ -64,8 +80,6 @@ export default class SignUp extends Component {
       itemStyle,
       inputStyle,
       imageStyle,
-      btnStyle,
-      textStyle,
       backBtnStyle,
       formPosition,
       backButtonPosition,
@@ -75,6 +89,34 @@ export default class SignUp extends Component {
       <View style={container}>
         <View style={formPosition}>
           <Form>
+            <Item rounded style={itemStyle}>
+              <Image
+                style={imageStyle}
+                source={require('../images/username.png')}
+              />
+              <Input
+                autoCorrect={false}
+                style={styles.inputStyle}
+                placeholder="Nombre"
+                placeholderTextColor="white"
+                value={this.state.nombre}
+                onChangeText={nombre => this.setState({ nombre })}
+              />
+            </Item>
+            <Item rounded style={itemStyle}>
+              <Image
+                style={imageStyle}
+                source={require('../images/username.png')}
+              />
+              <Input
+                autoCorrect={false}
+                style={styles.inputStyle}
+                placeholder="Apellido"
+                placeholderTextColor="white"
+                value={this.state.apellido}
+                onChangeText={apellido => this.setState({ apellido })}
+              />
+            </Item>
             <Item rounded style={itemStyle}>
               <Image
                 style={imageStyle}
@@ -121,7 +163,7 @@ export default class SignUp extends Component {
             </Item> */}
           </Form>
 
-          <View style={{ marginTop: 20 }}>{this.rendeButton()}</View>
+          <View style={{ marginTop: 20 }}>{this.renderButton()}</View>
         </View>
 
         <Text style={styles.errorText}>{this.state.error}</Text>
@@ -168,7 +210,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30
   },
   textStyle: {
-    fontSize: 20,
+    fontSize: 18,
     color: 'white'
   },
   backBtnStyle: {

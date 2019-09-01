@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import app from '../firebaseConfig';
+import app from '../firebase/firebaseConfig';
 import { View, Image, Text, StyleSheet } from 'react-native';
 import { Form, Item, Input, Button } from 'native-base';
 import Spinner from '../components/Spinner';
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30
   },
   textStyle: {
-    fontSize: 20,
+    fontSize: 18,
     color: 'white'
   },
   logoStyle: {

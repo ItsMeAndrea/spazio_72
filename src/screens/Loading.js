@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import app from '../firebaseConfig';
+import app from '../firebase/firebaseConfig';
 import { View, Image, ActivityIndicator, StyleSheet } from 'react-native';
 
 class Loading extends Component {

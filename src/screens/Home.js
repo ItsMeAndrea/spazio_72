@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import app from '../firebaseConfig';
+import app from '../firebase/firebaseConfig';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Button } from 'native-base';
 import Swipeable from 'react-native-swipeable';
