@@ -1,65 +1,50 @@
 import React, { Component } from 'react';
-import app from '../firebase/firebaseConfig';
+import { connect } from 'react-redux';
+import {
+  nameChanged,
+  apellidoChanged,
+  emailChanged,
+  passwordChanged,
+  signUpUser
+} from '../actions';
 import { View, Image, Text, StyleSheet } from 'react-native';
 import { Form, Input, Item, Button } from 'native-base';
 import Spinner from '../components/Spinner';
 
-export default class SignUp extends Component {
+class SignUp extends Component {
   static navigationOptions = {
     header: null
   };
 
-  state = {
-    nombre: '',
-    apellido: '',
-    email: '',
-    password: '',
-    error: '',
-    loading: false
-  };
+  onNameChange(text) {
+    this.props.nameChanged(text);
+  }
+
+  onApellidoChange(text) {
+    this.props.apellidoChanged(text);
+  }
+
+  onEmailChange(text) {
+    this.props.emailChanged(text);
+  }
+
+  onPasswordChange(text) {
+    this.props.passwordChanged(text);
+  }
 
   _Login = () => {
     this.props.navigation.navigate('Login');
   };
 
   _Register = () => {
-    const { email, password } = this.state;
-
-    this.setState({ error: '', loading: true });
-
-    app
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(this.onSignUpSuccess.bind(this))
-      .catch(this.onSignUpFailed.bind(this));
+    const { email, password, nombre, apellido, isAdmin } = this.props;
+    this.props.signUpUser({ email, password, nombre, apellido, isAdmin });
+    this.props.navigation.navigate('Login');
   };
-
-  onSignUpFailed() {
-    this.setState({ error: 'Auth Failed', loading: false });
-  }
-
-  onSignUpSuccess() {
-    const { email, nombre, apellido } = this.state;
-    const isAdmin = false;
-    const { currentUser } = app.auth();
-    this.setState({
-      nombre: '',
-      apellido: '',
-      email: '',
-      password: '',
-      loading: false,
-      error: ''
-    });
-    app
-      .database()
-      .ref(`/usuarios/${currentUser.uid}`)
-      .push({ email, nombre, apellido, isAdmin });
-    this.props.navigation.navigate('App');
-  }
 
   renderButton() {
     const { btnStyle, textStyle } = styles;
-    if (this.state.loading) {
+    if (this.props.loading) {
       return <Spinner size="small" />;
     }
 
@@ -74,6 +59,7 @@ export default class SignUp extends Component {
       </Button>
     );
   }
+
   render() {
     const {
       container,
@@ -99,8 +85,8 @@ export default class SignUp extends Component {
                 style={styles.inputStyle}
                 placeholder="Nombre"
                 placeholderTextColor="white"
-                value={this.state.nombre}
-                onChangeText={nombre => this.setState({ nombre })}
+                value={this.props.nombre}
+                onChangeText={this.onNameChange.bind(this)}
               />
             </Item>
             <Item rounded style={itemStyle}>
@@ -113,8 +99,8 @@ export default class SignUp extends Component {
                 style={styles.inputStyle}
                 placeholder="Apellido"
                 placeholderTextColor="white"
-                value={this.state.apellido}
-                onChangeText={apellido => this.setState({ apellido })}
+                value={this.props.apellido}
+                onChangeText={this.onApellidoChange.bind(this)}
               />
             </Item>
             <Item rounded style={itemStyle}>
@@ -127,10 +113,11 @@ export default class SignUp extends Component {
                 style={styles.inputStyle}
                 placeholder="Ingrese Correo Electronico"
                 placeholderTextColor="white"
-                value={this.state.email}
-                onChangeText={email => this.setState({ email })}
+                value={this.props.email}
+                onChangeText={this.onEmailChange.bind(this)}
               />
             </Item>
+            {console.log(this.props.email)}
 
             <Item rounded style={itemStyle}>
               <Image
@@ -143,8 +130,8 @@ export default class SignUp extends Component {
                 style={inputStyle}
                 placeholder="Contraseña"
                 placeholderTextColor="white"
-                value={this.state.password}
-                onChangeText={password => this.setState({ password })}
+                value={this.props.password}
+                onChangeText={this.onPasswordChange.bind(this)}
               />
             </Item>
 
@@ -166,7 +153,7 @@ export default class SignUp extends Component {
           <View style={{ marginTop: 20 }}>{this.renderButton()}</View>
         </View>
 
-        <Text style={styles.errorText}>{this.state.error}</Text>
+        <Text style={styles.errorText}>{this.props.error}</Text>
 
         <View style={backButtonPosition}>
           <Button rounded style={backButton} onPress={this._Login}>
@@ -190,14 +177,15 @@ const styles = StyleSheet.create({
   itemStyle: {
     backgroundColor: 'gray',
     opacity: 0.8,
-    marginLeft: 30,
     marginRight: 30,
+    marginLeft: 30,
+    height: 30,
     marginBottom: 10,
     color: 'white'
   },
   imageStyle: {
-    height: 30,
-    width: 30,
+    height: 20,
+    width: 20,
     marginLeft: 10
   },
   inputStyle: {
@@ -234,8 +222,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#D5C046'
   },
   errorText: {
-    fontSize: 20,
+    fontSize: 8,
     alignSelf: 'center',
     color: 'red'
   }
 });
+
+const mapStateToProps = state => {
+  const {
+    nombre,
+    apellido,
+    email,
+    password,
+    error,
+    loading,
+    isAdmin
+  } = state.auth;
+  return {
+    nombre: nombre,
+    apellido: apellido,
+    email: email,
+    password: password,
+    error: error,
+    loading: loading,
+    isAdmin: isAdmin
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  { nameChanged, apellidoChanged, emailChanged, passwordChanged, signUpUser }
+)(SignUp);
