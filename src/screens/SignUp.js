@@ -1,19 +1,73 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import {
+  nameChanged,
+  apellidoChanged,
+  emailChanged,
+  passwordChanged,
+  signUpUser
+} from '../actions';
 import { View, Image, Text, StyleSheet } from 'react-native';
 import { Form, Input, Item, Button } from 'native-base';
+import Spinner from '../components/Spinner';
 
-export default class SignUp extends Component {
+class SignUp extends Component {
   static navigationOptions = {
     header: null
   };
+
+  onNameChange(text) {
+    this.props.nameChanged(text);
+  }
+
+  onApellidoChange(text) {
+    this.props.apellidoChanged(text);
+  }
+
+  onEmailChange(text) {
+    this.props.emailChanged(text);
+  }
+
+  onPasswordChange(text) {
+    this.props.passwordChanged(text);
+  }
+
+  _Login = () => {
+    this.props.navigation.navigate('Login');
+  };
+
+  _Register = () => {
+    const { email, password, nombre, apellido, isAdmin } = this.props;
+    this.props.signUpUser(
+      { email, password, nombre, apellido, isAdmin },
+      this.props.navigation
+    );
+  };
+
+  renderButton() {
+    const { btnStyle, textStyle } = styles;
+    if (this.props.loading) {
+      return <Spinner size="small" />;
+    }
+
+    return (
+      <Button
+        block
+        rounded
+        style={btnStyle}
+        onPress={this._Register.bind(this)}
+      >
+        <Text style={textStyle}>REGISTRAR</Text>
+      </Button>
+    );
+  }
+
   render() {
     const {
       container,
       itemStyle,
       inputStyle,
       imageStyle,
-      btnStyle,
-      textStyle,
       backBtnStyle,
       formPosition,
       backButtonPosition,
@@ -31,10 +85,41 @@ export default class SignUp extends Component {
               <Input
                 autoCorrect={false}
                 style={styles.inputStyle}
-                placeholder="Ingrese Correo Electronico"
+                placeholder="Nombre"
                 placeholderTextColor="white"
+                value={this.props.nombre}
+                onChangeText={this.onNameChange.bind(this)}
               />
             </Item>
+            <Item rounded style={itemStyle}>
+              <Image
+                style={imageStyle}
+                source={require('../images/username.png')}
+              />
+              <Input
+                autoCorrect={false}
+                style={styles.inputStyle}
+                placeholder="Apellido"
+                placeholderTextColor="white"
+                value={this.props.apellido}
+                onChangeText={this.onApellidoChange.bind(this)}
+              />
+            </Item>
+            <Item rounded style={itemStyle}>
+              <Image
+                style={imageStyle}
+                source={require('../images/username.png')}
+              />
+              <Input
+                autoCorrect={false}
+                style={styles.inputStyle}
+                placeholder="Ingrese Correo Electronico"
+                placeholderTextColor="white"
+                value={this.props.email}
+                onChangeText={this.onEmailChange.bind(this)}
+              />
+            </Item>
+            {console.log(this.props.email)}
 
             <Item rounded style={itemStyle}>
               <Image
@@ -47,10 +132,12 @@ export default class SignUp extends Component {
                 style={inputStyle}
                 placeholder="Contraseña"
                 placeholderTextColor="white"
+                value={this.props.password}
+                onChangeText={this.onPasswordChange.bind(this)}
               />
             </Item>
 
-            <Item rounded style={itemStyle}>
+            {/*           <Item rounded style={itemStyle}>
               <Image
                 style={imageStyle}
                 source={require('../images/password.png')}
@@ -62,15 +149,13 @@ export default class SignUp extends Component {
                 placeholder="Confirmar Contraseña"
                 placeholderTextColor="white"
               />
-            </Item>
+            </Item> */}
           </Form>
 
-          <View>
-            <Button block rounded style={btnStyle}>
-              <Text style={textStyle}>REGRISTRAR</Text>
-            </Button>
-          </View>
+          <View style={{ marginTop: 20 }}>{this.renderButton()}</View>
         </View>
+
+        <Text style={styles.errorText}>{this.props.error}</Text>
 
         <View style={backButtonPosition}>
           <Button rounded style={backButton} onPress={this._Login}>
@@ -83,10 +168,6 @@ export default class SignUp extends Component {
       </View>
     );
   }
-
-  _Login = () => {
-    this.props.navigation.navigate('Login');
-  };
 }
 
 const styles = StyleSheet.create({
@@ -98,28 +179,28 @@ const styles = StyleSheet.create({
   itemStyle: {
     backgroundColor: 'gray',
     opacity: 0.8,
-    marginLeft: 30,
     marginRight: 30,
+    marginLeft: 30,
+    height: 30,
     marginBottom: 10,
     color: 'white'
   },
   imageStyle: {
-    height: 30,
-    width: 30,
+    height: 20,
+    width: 20,
     marginLeft: 10
   },
   inputStyle: {
-    color: 'white'
+    color: 'white',
+    fontSize: 10
   },
   btnStyle: {
     backgroundColor: '#D5C046',
     color: 'white',
-    marginTop: 20,
-    marginLeft: 30,
-    marginRight: 30
+    marginHorizontal: 30
   },
   textStyle: {
-    fontSize: 20,
+    fontSize: 18,
     color: 'white'
   },
   backBtnStyle: {
@@ -141,5 +222,36 @@ const styles = StyleSheet.create({
     height: 60,
     justifyContent: 'center',
     backgroundColor: '#D5C046'
+  },
+  errorText: {
+    fontSize: 8,
+    alignSelf: 'center',
+    color: 'red'
   }
 });
+
+const mapStateToProps = state => {
+  const {
+    nombre,
+    apellido,
+    email,
+    password,
+    error,
+    loading,
+    isAdmin
+  } = state.auth;
+  return {
+    nombre: nombre,
+    apellido: apellido,
+    email: email,
+    password: password,
+    error: error,
+    loading: loading,
+    isAdmin: isAdmin
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  { nameChanged, apellidoChanged, emailChanged, passwordChanged, signUpUser }
+)(SignUp);

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import app from '../firebase/firebaseConfig';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { Button } from 'native-base';
 import Swipeable from 'react-native-swipeable';
@@ -7,21 +8,21 @@ const rightButtons = [
   <Button
     style={{
       width: 400,
-      height: 100,
+      height: 80,
       backgroundColor: '#279e29',
-      padding: 35
+      padding: 30
     }}
   >
     <Image
-      style={{ width: 30, height: 30 }}
+      style={{ width: 20, height: 20 }}
       source={require('../images/edit.png')}
     />
   </Button>,
   <Button
-    style={{ width: 400, height: 100, backgroundColor: '#bc2121', padding: 35 }}
+    style={{ width: 400, height: 80, backgroundColor: '#bc2121', padding: 30 }}
   >
     <Image
-      style={{ width: 30, height: 30 }}
+      style={{ width: 20, height: 20 }}
       source={require('../images/cancel.png')}
     />
   </Button>
@@ -37,26 +38,42 @@ export default class Home extends Component {
       color: 'white',
       textAlign: 'center',
       flex: 1
-    }
+    },
+    headerLeft: (
+      <Button
+        style={{ marginLeft: 10, marginTop: 5 }}
+        transparent
+        onPress={() => app.auth().signOut()}
+      >
+        <Image source={require('../images/logout.png')} />
+      </Button>
+    ),
+    headerRight: (
+      <Button style={{ marginRight: 10, marginTop: 5 }} transparent>
+        <Image source={require('../images/more.png')} />
+      </Button>
+    )
   };
 
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: '#282828' }}>
         <Swipeable
-          leftButtonWidth={100}
-          rightButtonWidth={100}
+          leftButtonWidth={80}
+          rightButtonWidth={80}
           rightButtons={rightButtons}
           style={{
-            height: 100,
-            backgroundColor: 'gray'
+            height: 80,
+            backgroundColor: 'gray',
+            borderBottomWidth: 1,
+            borderBottomColor: 'black'
           }}
         >
           <Text
             style={{
               color: 'white',
               fontWeight: 'bold',
-              fontSize: 20,
+              fontSize: 15,
               paddingLeft: 20,
               paddingTop: 10
             }}
@@ -66,7 +83,7 @@ export default class Home extends Component {
           <Text
             style={{
               color: 'white',
-              fontSize: 18,
+              fontSize: 12,
               paddingLeft: 20
             }}
           >
@@ -75,7 +92,7 @@ export default class Home extends Component {
           <Text
             style={{
               color: 'white',
-              fontSize: 18,
+              fontSize: 12,
               paddingLeft: 20,
 
               paddingBottom: 10
@@ -85,11 +102,11 @@ export default class Home extends Component {
           </Text>
         </Swipeable>
         <Swipeable
-          leftButtonWidth={100}
-          rightButtonWidth={100}
+          leftButtonWidth={80}
+          rightButtonWidth={80}
           rightButtons={rightButtons}
           style={{
-            height: 100,
+            height: 80,
             backgroundColor: 'gray'
           }}
         >
@@ -97,7 +114,7 @@ export default class Home extends Component {
             style={{
               color: 'white',
               fontWeight: 'bold',
-              fontSize: 20,
+              fontSize: 15,
               paddingLeft: 20,
               paddingTop: 10
             }}
@@ -107,7 +124,7 @@ export default class Home extends Component {
           <Text
             style={{
               color: 'white',
-              fontSize: 18,
+              fontSize: 12,
               paddingLeft: 20
             }}
           >
@@ -116,7 +133,7 @@ export default class Home extends Component {
           <Text
             style={{
               color: 'white',
-              fontSize: 18,
+              fontSize: 12,
               paddingLeft: 20,
               paddingBottom: 10
             }}

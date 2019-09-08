@@ -33,7 +33,7 @@ export default class ScrollButtons extends Component {
 const styles = StyleSheet.create({
   container: {
     height: 60,
-    marginBottom: 35
+    marginBottom: 20
   },
   btnStyle: {
     backgroundColor: '#D5C046',

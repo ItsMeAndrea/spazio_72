@@ -1,11 +1,47 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { emailChanged, passwordChanged, loginUser } from '../actions';
 import { View, Image, Text, StyleSheet } from 'react-native';
 import { Form, Item, Input, Button } from 'native-base';
+import Spinner from '../components/Spinner';
 
-export default class App extends Component {
+class App extends Component {
   static navigationOptions = {
     header: null
   };
+
+  onEmailChange(text) {
+    this.props.emailChanged(text);
+  }
+
+  onPasswordChange(text) {
+    this.props.passwordChanged(text);
+  }
+
+  _login = () => {
+    const { email, password } = this.props;
+    this.props.loginUser({ email, password }, this.props.navigation);
+  };
+
+  _signUp = () => {
+    this.props.navigation.navigate('SignUp');
+  };
+  _forgotPassword = () => {
+    this.props.navigation.navigate('ForgotPassword');
+  };
+
+  renderButton() {
+    const { btnStyle, textStyle } = styles;
+    if (this.props.loading) {
+      return <Spinner size="small" />;
+    }
+
+    return (
+      <Button block rounded style={btnStyle} onPress={this._login.bind(this)}>
+        <Text style={textStyle}>INGRESAR</Text>
+      </Button>
+    );
+  }
 
   render() {
     const {
@@ -14,8 +50,6 @@ export default class App extends Component {
       itemStyle,
       imageStyle,
       inputStyle,
-      btnStyle,
-      textStyle,
       signupStyle
     } = styles;
     return (
@@ -35,6 +69,8 @@ export default class App extends Component {
               style={inputStyle}
               placeholder="Correo"
               placeholderTextColor="white"
+              value={this.props.email}
+              onChangeText={this.onEmailChange.bind(this)}
             />
           </Item>
           <Item rounded style={itemStyle}>
@@ -48,6 +84,8 @@ export default class App extends Component {
               style={inputStyle}
               placeholder="Contraseña"
               placeholderTextColor="white"
+              value={this.props.password}
+              onChangeText={this.onPasswordChange.bind(this)}
             />
             <Image
               style={imageStyle}
@@ -58,35 +96,23 @@ export default class App extends Component {
 
         <View style={signupStyle}>
           <Button transparent onPress={this._signUp}>
-            <Text style={{ color: 'white' }}>Registrarse</Text>
+            <Text style={{ color: 'white', fontSize: 10 }}>Registrarse</Text>
           </Button>
-          <Button
-            style={{ paddingTop: 0 }}
-            transparent
-            onPress={this._forgotPassword}
-          >
-            <Text style={{ color: 'white' }}>Recuperar Contraseña</Text>
+          <Button transparent onPress={this._forgotPassword}>
+            <Text style={{ color: 'white', fontSize: 10 }}>
+              Recuperar Contraseña
+            </Text>
           </Button>
         </View>
 
-        <View>
-          <Button block rounded style={btnStyle} onPress={this._login}>
-            <Text style={textStyle}>INGRESAR</Text>
-          </Button>
-        </View>
+        <View style={{ marginTop: 20 }}>{this.renderButton()}</View>
+
+        <View />
+
+        <Text style={styles.errorText}>{this.props.error}</Text>
       </View>
     );
   }
-
-  _login = () => {
-    this.props.navigation.navigate('App');
-  };
-  _signUp = () => {
-    this.props.navigation.navigate('SignUp');
-  };
-  _forgotPassword = () => {
-    this.props.navigation.navigate('ForgotPassword');
-  };
 }
 
 const styles = StyleSheet.create({
@@ -111,17 +137,16 @@ const styles = StyleSheet.create({
     marginRight: 10
   },
   inputStyle: {
-    color: 'white'
+    color: 'white',
+    fontSize: 10
   },
   btnStyle: {
     backgroundColor: '#D5C046',
     color: 'white',
-    marginTop: 20,
-    marginLeft: 30,
-    marginRight: 30
+    marginHorizontal: 30
   },
   textStyle: {
-    fontSize: 20,
+    fontSize: 18,
     color: 'white'
   },
   logoStyle: {
@@ -134,5 +159,25 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginLeft: 40,
     marginRight: 40
+  },
+  errorText: {
+    fontSize: 8,
+    alignSelf: 'center',
+    color: 'red'
   }
 });
+
+const mapStateToProps = state => {
+  const { email, password, error, loading } = state.auth;
+  return {
+    email: email,
+    password: password,
+    error: error,
+    loading: loading
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  { emailChanged, passwordChanged, loginUser }
+)(App);
