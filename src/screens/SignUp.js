@@ -38,8 +38,10 @@ class SignUp extends Component {
 
   _Register = () => {
     const { email, password, nombre, apellido, isAdmin } = this.props;
-    this.props.signUpUser({ email, password, nombre, apellido, isAdmin });
-    this.props.navigation.navigate('Login');
+    this.props.signUpUser(
+      { email, password, nombre, apellido, isAdmin },
+      this.props.navigation
+    );
   };
 
   renderButton() {

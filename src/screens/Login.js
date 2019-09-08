@@ -20,7 +20,7 @@ class App extends Component {
 
   _login = () => {
     const { email, password } = this.props;
-    this.props.loginUser({ email, password });
+    this.props.loginUser({ email, password }, this.props.navigation);
   };
 
   _signUp = () => {
