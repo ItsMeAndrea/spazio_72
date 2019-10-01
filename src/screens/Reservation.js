@@ -1,23 +1,53 @@
-import React, { Component } from 'react';
-import { View, StyleSheet, Text, Modal, Alert } from 'react-native';
-import { Button } from 'native-base';
+import React, { Component } from "react";
+import { View, StyleSheet, Text, Modal, Alert } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import { Calendar } from "react-native-calendars";
+import { LocaleConfig } from "react-native-calendars";
+import { Button } from "native-base";
 
-import Calendario from '../components/Calendario';
-import ScrollButtons from '../components/ScrollButtons';
-
+import app from "../firebase/firebaseConfig";
 export default class Reservation extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      modalVisible: false,
+      slots: slots
+    };
+    this.onDayPress = this.onDayPress.bind(this);
+    this.onScrollPress = this.onScrollPress.bind(this);
+    this.hacerReservacion = this.hacerReservacion.bind(this);
+  }
+
+  onDayPress(date) {
+    this.setState({
+      selected: date.dateString,
+      dia: date.day,
+      mes: date.month
+    });
+  }
+
+  onScrollPress(slot) {
+    this.setState({ hora: slot });
+  }
+
+  hacerReservacion() {
+    const { dia, mes, hora } = this.state;
+    const { currentUser } = app.auth();
+    this.props.navigation.navigate("Home");
+    app
+      .database()
+      .ref(`/usuarios/${currentUser.uid}/reservas`)
+      .push({ dia, mes, hora });
+  }
+
   static navigationOptions = {
-    title: 'Reservación',
+    title: "Reservación",
     headerStyle: {
-      backgroundColor: '#282828'
+      backgroundColor: "#282828"
     },
     headerTitleStyle: {
-      color: 'white'
+      color: "white"
     }
-  };
-
-  state = {
-    modalVisible: false
   };
 
   setModalVisible(visible) {
@@ -25,12 +55,60 @@ export default class Reservation extends Component {
   }
 
   render() {
-    const { textStyle, btnStyle, container } = styles;
+    const {
+      textStyle,
+      btnStyle,
+      container,
+      scrollBtnStyle,
+      scrollContainer,
+      scrollTextStyle
+    } = styles;
     return (
       <View style={container}>
-        <Calendario />
+        <View>
+          <Calendar
+            monthFormat={"MMM d, yyyy"}
+            minDate={Date()}
+            onDayPress={this.onDayPress}
+            markedDates={{ [this.state.selected]: { selected: true } }}
+            theme={{
+              backgroundColor: "#282828",
+              calendarBackground: "#282828",
+              selectedDayBackgroundColor: "#D5C046",
+              selectedDayTextColor: "#ffffff",
+              todayTextColor: "#D5C046",
+              monthTextColor: "white",
+              indicatorColor: "white",
+              arrowColor: "#D5C046",
+              dayTextColor: "white",
+              textDisabledColor: "#2d4150"
+            }}
+            style={{ marginBottom: 30 }}
+          />
+        </View>
 
-        <ScrollButtons />
+        <View style={scrollContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {this.state.slots.map(items => {
+              return (
+                <Button
+                  key={items.slot}
+                  rounded
+                  style={scrollBtnStyle}
+                  onPress={() => this.onScrollPress(items.slot)}
+                >
+                  <Text style={scrollTextStyle}>{items.slot}</Text>
+                </Button>
+              );
+            })}
+          </ScrollView>
+        </View>
+        <Text>
+          {this.state.hora}
+          {this.state.mes}
+          {this.state.dia}
+        </Text>
+
         <Button
           block
           rounded
@@ -48,55 +126,56 @@ export default class Reservation extends Component {
           transparent={true}
           visible={this.state.modalVisible}
           onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
+            Alert.alert("Modal has been closed.");
           }}
         >
           <View
             style={{
-              backgroundColor: '#00000070',
+              backgroundColor: "#00000070",
               flex: 1,
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center'
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center"
             }}
           >
             <View
               style={{
                 width: 350,
                 height: 220,
-                backgroundColor: '#282828',
+                backgroundColor: "#282828",
                 padding: 30,
                 borderRadius: 20
               }}
             >
               <Text
                 style={{
-                  color: 'white',
+                  color: "white",
                   fontSize: 15,
-                  textAlign: 'center'
+                  textAlign: "center"
                 }}
               >
-                ¿Confirma que desea realizar su reservacion a las 8:00 AM con
+                ¿Confirma que desea realizar su reservacion el dia{" "}
+                {this.state.dia}/{this.state.mes} a las {this.state.hora} con
                 Mariella Duran?
               </Text>
 
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-around',
+                  flexDirection: "row",
+                  justifyContent: "space-around",
                   marginTop: 40
                 }}
               >
                 <Button
                   rounded
                   style={{
-                    backgroundColor: '#D5C046',
-                    color: 'white',
+                    backgroundColor: "#D5C046",
+                    color: "white",
                     padding: 20,
                     width: 120,
-                    justifyContent: 'center'
+                    justifyContent: "center"
                   }}
-                  onPress={() => this.props.navigation.navigate('Home')}
+                  onPress={() => this.hacerReservacion()}
                 >
                   <Text style={textStyle}>Aceptar</Text>
                 </Button>
@@ -104,11 +183,11 @@ export default class Reservation extends Component {
                 <Button
                   rounded
                   style={{
-                    backgroundColor: '#D5C046',
-                    color: 'white',
+                    backgroundColor: "#D5C046",
+                    color: "white",
                     padding: 20,
                     width: 120,
-                    justifyContent: 'center'
+                    justifyContent: "center"
                   }}
                   onPress={() => {
                     this.setModalVisible(!this.state.modalVisible);
@@ -128,16 +207,85 @@ export default class Reservation extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#282828'
+    backgroundColor: "#282828"
   },
   btnStyle: {
-    backgroundColor: '#D5C046',
-    color: 'white',
+    backgroundColor: "#D5C046",
+    color: "white",
     marginHorizontal: 30,
     marginBottom: 40
   },
   textStyle: {
     fontSize: 15,
-    color: 'white'
+    color: "white"
+  },
+  scrollContainer: {
+    height: 60,
+    marginBottom: 20
+  },
+  scrollBtnStyle: {
+    backgroundColor: "#D5C046",
+    paddingHorizontal: 30,
+    marginHorizontal: 5,
+    height: 40
+  },
+  scrollTextStyle: {
+    color: "white",
+    fontSize: 16
   }
 });
+
+LocaleConfig.locales["sp"] = {
+  monthNames: [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre"
+  ],
+  monthNamesShort: [
+    "Ene.",
+    "Feb.",
+    "Mar.",
+    "Abr.",
+    "May.",
+    "Jun.",
+    "Jul.",
+    "Ago.",
+    "Sep.",
+    "Oct.",
+    "Nov.",
+    "Dic."
+  ],
+  dayNames: [
+    "Domingo",
+    "Lunes",
+    "Martes",
+    "Miercoles",
+    "Jueves",
+    "Viernes",
+    "Sabado"
+  ],
+  dayNamesShort: ["Dom.", "Lun.", "Mar.", "Mie.", "Jue.", "Vie.", "Sab."],
+  today: "Hoy"
+};
+LocaleConfig.defaultLocale = "sp";
+
+const slots = [
+  { slot: "8:00 AM", isAvailable: true },
+  { slot: "9:00 AM", isAvailable: true },
+  { slot: "10:00 AM", isAvailable: true },
+  { slot: "11:00 AM", isAvailable: true },
+  { slot: "12:00 PM", isAvailable: true },
+  { slot: "1:00 PM", isAvailable: true },
+  { slot: "2:00 PM", isAvailable: true },
+  { slot: "3:00 PM", isAvailable: true },
+  { slot: "4:00 PM", isAvailable: true }
+];

@@ -1,52 +1,63 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import {
-  nameChanged,
-  apellidoChanged,
-  emailChanged,
-  passwordChanged,
-  signUpUser
-} from '../actions';
-import { View, Image, Text, StyleSheet } from 'react-native';
-import { Form, Input, Item, Button } from 'native-base';
-import Spinner from '../components/Spinner';
+import React, { Component } from "react";
+import app from "../firebase/firebaseConfig";
+import { View, Image, Text, StyleSheet } from "react-native";
+import { Form, Input, Item, Button } from "native-base";
+import Spinner from "../components/Spinner";
 
 class SignUp extends Component {
   static navigationOptions = {
     header: null
   };
 
-  onNameChange(text) {
-    this.props.nameChanged(text);
+  state = {
+    nombre: "",
+    apellido: "",
+    email: "",
+    password: "",
+    error: "",
+    loading: false,
+    isAdmin: false
+  };
+
+  onButtonPress() {
+    const { email, password, nombre, apellido, isAdmin } = this.state;
+
+    this.setState({ error: "", loading: true });
+    app
+      .auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(this.onSignUpSuccess.bind(this))
+      .catch(this.onSignUpFail.bind(this));
+
+    app
+      .database()
+      .ref(`/usuarios`)
+      .push({ nombre, apellido, email, isAdmin });
   }
 
-  onApellidoChange(text) {
-    this.props.apellidoChanged(text);
+  onSignUpSuccess() {
+    this.setState({
+      email: "",
+      password: "",
+      loading: false,
+      error: ""
+    });
   }
 
-  onEmailChange(text) {
-    this.props.emailChanged(text);
-  }
-
-  onPasswordChange(text) {
-    this.props.passwordChanged(text);
+  onSignUpFail() {
+    this.setState({
+      error: "Autenticacion fallida",
+      loading: false
+    });
   }
 
   _Login = () => {
-    this.props.navigation.navigate('Login');
-  };
-
-  _Register = () => {
-    const { email, password, nombre, apellido, isAdmin } = this.props;
-    this.props.signUpUser(
-      { email, password, nombre, apellido, isAdmin },
-      this.props.navigation
-    );
+    this.props.navigation.navigate("Login");
   };
 
   renderButton() {
     const { btnStyle, textStyle } = styles;
-    if (this.props.loading) {
+    if (this.state.loading) {
       return <Spinner size="small" />;
     }
 
@@ -55,7 +66,7 @@ class SignUp extends Component {
         block
         rounded
         style={btnStyle}
-        onPress={this._Register.bind(this)}
+        onPress={this.onButtonPress.bind(this)}
       >
         <Text style={textStyle}>REGISTRAR</Text>
       </Button>
@@ -80,51 +91,50 @@ class SignUp extends Component {
             <Item rounded style={itemStyle}>
               <Image
                 style={imageStyle}
-                source={require('../images/username.png')}
+                source={require("../images/username.png")}
               />
               <Input
                 autoCorrect={false}
                 style={styles.inputStyle}
                 placeholder="Nombre"
                 placeholderTextColor="white"
-                value={this.props.nombre}
-                onChangeText={this.onNameChange.bind(this)}
+                value={this.state.nombre}
+                onChangeText={nombre => this.setState({ nombre })}
               />
             </Item>
             <Item rounded style={itemStyle}>
               <Image
                 style={imageStyle}
-                source={require('../images/username.png')}
+                source={require("../images/username.png")}
               />
               <Input
                 autoCorrect={false}
                 style={styles.inputStyle}
                 placeholder="Apellido"
                 placeholderTextColor="white"
-                value={this.props.apellido}
-                onChangeText={this.onApellidoChange.bind(this)}
+                value={this.state.apellido}
+                onChangeText={apellido => this.setState({ apellido })}
               />
             </Item>
             <Item rounded style={itemStyle}>
               <Image
                 style={imageStyle}
-                source={require('../images/username.png')}
+                source={require("../images/username.png")}
               />
               <Input
                 autoCorrect={false}
                 style={styles.inputStyle}
                 placeholder="Ingrese Correo Electronico"
                 placeholderTextColor="white"
-                value={this.props.email}
-                onChangeText={this.onEmailChange.bind(this)}
+                value={this.state.email}
+                onChangeText={email => this.setState({ email })}
               />
             </Item>
-            {console.log(this.props.email)}
 
             <Item rounded style={itemStyle}>
               <Image
                 style={imageStyle}
-                source={require('../images/password.png')}
+                source={require("../images/password.png")}
               />
               <Input
                 autoCorrect={false}
@@ -132,8 +142,8 @@ class SignUp extends Component {
                 style={inputStyle}
                 placeholder="Contraseña"
                 placeholderTextColor="white"
-                value={this.props.password}
-                onChangeText={this.onPasswordChange.bind(this)}
+                value={this.state.password}
+                onChangeText={password => this.setState({ password })}
               />
             </Item>
 
@@ -155,13 +165,13 @@ class SignUp extends Component {
           <View style={{ marginTop: 20 }}>{this.renderButton()}</View>
         </View>
 
-        <Text style={styles.errorText}>{this.props.error}</Text>
+        <Text style={styles.errorText}>{this.state.error}</Text>
 
         <View style={backButtonPosition}>
           <Button rounded style={backButton} onPress={this._Login}>
             <Image
               style={backBtnStyle}
-              source={require('../images/left-arrow.png')}
+              source={require("../images/left-arrow.png")}
             />
           </Button>
         </View>
@@ -172,18 +182,18 @@ class SignUp extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#282828',
+    backgroundColor: "#282828",
     flex: 1,
-    flexDirection: 'column'
+    flexDirection: "column"
   },
   itemStyle: {
-    backgroundColor: 'gray',
+    backgroundColor: "gray",
     opacity: 0.8,
     marginRight: 30,
     marginLeft: 30,
     height: 30,
     marginBottom: 10,
-    color: 'white'
+    color: "white"
   },
   imageStyle: {
     height: 20,
@@ -191,28 +201,28 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
   inputStyle: {
-    color: 'white',
+    color: "white",
     fontSize: 10
   },
   btnStyle: {
-    backgroundColor: '#D5C046',
-    color: 'white',
+    backgroundColor: "#D5C046",
+    color: "white",
     marginHorizontal: 30
   },
   textStyle: {
     fontSize: 18,
-    color: 'white'
+    color: "white"
   },
   backBtnStyle: {
     height: 20,
     width: 20
   },
   formPosition: {
-    justifyContent: 'center',
+    justifyContent: "center",
     flex: 8
   },
   backButtonPosition: {
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     flex: 1,
     marginLeft: 30,
     marginBottom: 30
@@ -220,38 +230,14 @@ const styles = StyleSheet.create({
   backButton: {
     width: 60,
     height: 60,
-    justifyContent: 'center',
-    backgroundColor: '#D5C046'
+    justifyContent: "center",
+    backgroundColor: "#D5C046"
   },
   errorText: {
     fontSize: 8,
-    alignSelf: 'center',
-    color: 'red'
+    alignSelf: "center",
+    color: "red"
   }
 });
 
-const mapStateToProps = state => {
-  const {
-    nombre,
-    apellido,
-    email,
-    password,
-    error,
-    loading,
-    isAdmin
-  } = state.auth;
-  return {
-    nombre: nombre,
-    apellido: apellido,
-    email: email,
-    password: password,
-    error: error,
-    loading: loading,
-    isAdmin: isAdmin
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  { nameChanged, apellidoChanged, emailChanged, passwordChanged, signUpUser }
-)(SignUp);
+export default SignUp;

@@ -1,43 +1,62 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { emailChanged, passwordChanged, loginUser } from '../actions';
-import { View, Image, Text, StyleSheet } from 'react-native';
-import { Form, Item, Input, Button } from 'native-base';
-import Spinner from '../components/Spinner';
+import React, { Component } from "react";
+import app from "../firebase/firebaseConfig";
+import { View, Image, Text, StyleSheet } from "react-native";
+import { Form, Item, Input, Button } from "native-base";
+import Spinner from "../components/Spinner";
 
 class App extends Component {
   static navigationOptions = {
     header: null
   };
 
-  onEmailChange(text) {
-    this.props.emailChanged(text);
+  state = { email: "", password: "", error: "", loading: false };
+
+  onButtonPress() {
+    const { email, password } = this.state;
+    this.setState({ error: "", loading: true });
+    app
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then(this.onLoginSuccess.bind(this))
+      .catch(this.onLoginFail.bind(this));
   }
 
-  onPasswordChange(text) {
-    this.props.passwordChanged(text);
+  onLoginSuccess() {
+    this.setState({
+      email: "",
+      password: "",
+      error: "",
+      loading: false
+    });
   }
 
-  _login = () => {
-    const { email, password } = this.props;
-    this.props.loginUser({ email, password }, this.props.navigation);
-  };
+  onLoginFail() {
+    this.setState({
+      error: "Autenticacion Fallida",
+      loading: false
+    });
+  }
 
   _signUp = () => {
-    this.props.navigation.navigate('SignUp');
+    this.props.navigation.navigate("SignUp");
   };
   _forgotPassword = () => {
-    this.props.navigation.navigate('ForgotPassword');
+    this.props.navigation.navigate("ForgotPassword");
   };
 
   renderButton() {
     const { btnStyle, textStyle } = styles;
-    if (this.props.loading) {
+    if (this.state.loading) {
       return <Spinner size="small" />;
     }
 
     return (
-      <Button block rounded style={btnStyle} onPress={this._login.bind(this)}>
+      <Button
+        block
+        rounded
+        style={btnStyle}
+        onPress={this.onButtonPress.bind(this)}
+      >
         <Text style={textStyle}>INGRESAR</Text>
       </Button>
     );
@@ -54,29 +73,29 @@ class App extends Component {
     } = styles;
     return (
       <View style={container}>
-        <View style={{ alignItems: 'center' }}>
-          <Image style={logoStyle} source={require('../images/logo.png')} />
+        <View style={{ alignItems: "center" }}>
+          <Image style={logoStyle} source={require("../images/logo.png")} />
         </View>
 
         <Form>
           <Item rounded style={itemStyle}>
             <Image
               style={imageStyle}
-              source={require('../images/username.png')}
+              source={require("../images/username.png")}
             />
             <Input
               autoCorrect={false}
               style={inputStyle}
               placeholder="Correo"
               placeholderTextColor="white"
-              value={this.props.email}
-              onChangeText={this.onEmailChange.bind(this)}
+              value={this.state.email}
+              onChangeText={email => this.setState({ email })}
             />
           </Item>
           <Item rounded style={itemStyle}>
             <Image
               style={imageStyle}
-              source={require('../images/password.png')}
+              source={require("../images/password.png")}
             />
             <Input
               autoCorrect={false}
@@ -84,22 +103,22 @@ class App extends Component {
               style={inputStyle}
               placeholder="Contraseña"
               placeholderTextColor="white"
-              value={this.props.password}
-              onChangeText={this.onPasswordChange.bind(this)}
+              value={this.state.password}
+              onChangeText={password => this.setState({ password })}
             />
             <Image
               style={imageStyle}
-              source={require('../images/eye_black.png')}
+              source={require("../images/eye_black.png")}
             />
           </Item>
         </Form>
 
         <View style={signupStyle}>
           <Button transparent onPress={this._signUp}>
-            <Text style={{ color: 'white', fontSize: 10 }}>Registrarse</Text>
+            <Text style={{ color: "white", fontSize: 10 }}>Registrarse</Text>
           </Button>
           <Button transparent onPress={this._forgotPassword}>
-            <Text style={{ color: 'white', fontSize: 10 }}>
+            <Text style={{ color: "white", fontSize: 10 }}>
               Recuperar Contraseña
             </Text>
           </Button>
@@ -109,7 +128,7 @@ class App extends Component {
 
         <View />
 
-        <Text style={styles.errorText}>{this.props.error}</Text>
+        <Text style={styles.errorText}>{this.state.error}</Text>
       </View>
     );
   }
@@ -117,18 +136,18 @@ class App extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#282828',
+    backgroundColor: "#282828",
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center'
+    flexDirection: "column",
+    justifyContent: "center"
   },
   itemStyle: {
-    backgroundColor: 'gray',
+    backgroundColor: "gray",
     opacity: 0.8,
     marginLeft: 30,
     marginRight: 30,
     marginBottom: 10,
-    color: 'white'
+    color: "white"
   },
   imageStyle: {
     height: 30,
@@ -137,17 +156,17 @@ const styles = StyleSheet.create({
     marginRight: 10
   },
   inputStyle: {
-    color: 'white',
+    color: "white",
     fontSize: 10
   },
   btnStyle: {
-    backgroundColor: '#D5C046',
-    color: 'white',
+    backgroundColor: "#D5C046",
+    color: "white",
     marginHorizontal: 30
   },
   textStyle: {
     fontSize: 18,
-    color: 'white'
+    color: "white"
   },
   logoStyle: {
     width: 350,
@@ -155,29 +174,16 @@ const styles = StyleSheet.create({
     marginBottom: 40
   },
   signupStyle: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginLeft: 40,
     marginRight: 40
   },
   errorText: {
     fontSize: 8,
-    alignSelf: 'center',
-    color: 'red'
+    alignSelf: "center",
+    color: "red"
   }
 });
 
-const mapStateToProps = state => {
-  const { email, password, error, loading } = state.auth;
-  return {
-    email: email,
-    password: password,
-    error: error,
-    loading: loading
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  { emailChanged, passwordChanged, loginUser }
-)(App);
+export default App;

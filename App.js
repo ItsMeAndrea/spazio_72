@@ -1,18 +1,13 @@
-import React, { Component } from 'react';
-import Navigator from './src/Navigation/Navigator';
-import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import ReduxThunk from 'redux-thunk';
-import reducers from './src/reducers';
+import React, { Component } from "react";
+import Navigator from "./src/Navigation/Navigator";
+import { YellowBox } from "react-native";
 
 class App extends Component {
+  construct() {
+    YellowBox.ignoreWarnings(["Setting a timer"]);
+  }
   render() {
-    const store = createStore(reducers, {}, applyMiddleware(ReduxThunk));
-    return (
-      <Provider store={store}>
-        <Navigator />
-      </Provider>
-    );
+    return <Navigator />;
   }
 }
 
