@@ -1,22 +1,24 @@
-import React from 'react';
+import React from "react";
 import {
   createStackNavigator,
   createSwitchNavigator,
   createAppContainer
-} from 'react-navigation';
+} from "react-navigation";
 
-import Loading from '../screens/Loading';
-import Login from '../screens/Login';
-import SignUp from '../screens/SignUp';
-import ForgotPassword from '../screens/ForgotPassword';
-import Camara from '../screens/Camara';
-import Reservation from '../screens/Reservation';
-import Home from '../screens/Home';
+import Loading from "../screens/Loading";
+import Login from "../screens/Login";
+import SignUp from "../screens/SignUp";
+import ForgotPassword from "../screens/ForgotPassword";
+import Camara from "../screens/Camara";
+import Reservation from "../screens/Reservation";
+import Home from "../screens/Home";
+import EditReservation from "../screens/EditReservation";
 
 const AppStack = createStackNavigator({
   Home: Home,
   Reservation: Reservation,
-  Camara: Camara
+  Camara: Camara,
+  EditReservation: EditReservation
 });
 
 const AuthStack = createStackNavigator({
@@ -33,12 +35,12 @@ const AppContainer = createAppContainer(
       Auth: AuthStack
     },
     {
-      initialRouteName: 'Load'
+      initialRouteName: "Load"
     }
   )
 );
 
-const prefix = 'spazio72://';
+const prefix = "spazio72://";
 
 const MainApp = () => <AppContainer uriPrefix={prefix} />;
 

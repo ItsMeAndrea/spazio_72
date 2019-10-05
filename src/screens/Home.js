@@ -1,34 +1,21 @@
+import _ from "lodash";
 import React, { Component } from "react";
 import app from "../firebase/firebaseConfig";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, FlatList } from "react-native";
 import { Button } from "native-base";
-import Swipeable from "react-native-swipeable";
-
-const rightButtons = [
-  <Button
-    style={{
-      width: 400,
-      height: 80,
-      backgroundColor: "#279e29",
-      padding: 30
-    }}
-  >
-    <Image
-      style={{ width: 20, height: 20 }}
-      source={require("../images/edit.png")}
-    />
-  </Button>,
-  <Button
-    style={{ width: 400, height: 80, backgroundColor: "#bc2121", padding: 30 }}
-  >
-    <Image
-      style={{ width: 20, height: 20 }}
-      source={require("../images/cancel.png")}
-    />
-  </Button>
-];
+import ListItem from "../components/ListItem";
 
 export default class Home extends Component {
+  constructor(props) {
+    super(props);
+
+    // Assign state itself, and a default value for items
+    this.state = {
+      reservaciones: [{ uid: "", dia: "", mes: "" }],
+      reservacion: true
+    };
+  }
+
   static navigationOptions = {
     title: "Tus Reservaciones",
     headerStyle: {
@@ -61,102 +48,66 @@ export default class Home extends Component {
       .database()
       .ref(`/usuarios/${currentUser.uid}/reservas`)
       .on("value", snapshot => {
-        const reservas = snapshot.val();
+        const reservas = _.map(snapshot.val(), (val, uid) => {
+          return { ...val, uid };
+        });
         this.setState({ reservaciones: reservas });
       });
   }
 
-  state = { reservacion: true };
+  getDayofWeek(index) {
+    const { reservaciones } = this.state;
+    const objeto = reservaciones[index];
+    const fecha = new Date(2019, objeto.mes, objeto.dia);
+    const numeroDia = fecha.getDay();
+    const nombreDias = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+
+    return nombreDias[numeroDia];
+  }
+
+  getMonth(index) {
+    const { reservaciones } = this.state;
+    const objeto = reservaciones[index];
+    const fecha = new Date(2019, objeto.mes, objeto.dia);
+    const numeroMes = fecha.getMonth();
+    const nombreMeses = [
+      "Diciembre",
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre"
+    ];
+
+    return nombreMeses[numeroMes];
+  }
 
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: "#282828" }}>
         {this.state.reservacion ? (
           <>
-            {console.log(this.state.reservaciones)}
-            <Swipeable
-              leftButtonWidth={80}
-              rightButtonWidth={80}
-              rightButtons={rightButtons}
-              style={{
-                height: 80,
-                backgroundColor: "gray",
-                borderBottomWidth: 1,
-                borderBottomColor: "black"
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: 15,
-                  paddingLeft: 20,
-                  paddingTop: 10
-                }}
-              >
-                Mariella Duran
-              </Text>
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 12,
-                  paddingLeft: 20
-                }}
-              >
-                Lun, 8 de Junio.
-              </Text>
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 12,
-                  paddingLeft: 20,
+            <FlatList
+              data={this.state.reservaciones}
+              renderItem={({ item, index }) => (
+                <ListItem
+                  hora={item.hora}
+                  nombreDia={this.getDayofWeek(index)}
+                  dia={item.dia}
+                  mes={this.getMonth(index)}
+                  reservaID={item.uid}
+                  onEdit={this.onEdit}
+                />
+              )}
+              keyExtractor={item => item.uid}
+            ></FlatList>
 
-                  paddingBottom: 10
-                }}
-              >
-                8:00 AM
-              </Text>
-            </Swipeable>
-            <Swipeable
-              leftButtonWidth={80}
-              rightButtonWidth={80}
-              rightButtons={rightButtons}
-              style={{
-                height: 80,
-                backgroundColor: "gray"
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: 15,
-                  paddingLeft: 20,
-                  paddingTop: 10
-                }}
-              >
-                Yolimar Lugo
-              </Text>
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 12,
-                  paddingLeft: 20
-                }}
-              >
-                Lun, 8 de Junio.
-              </Text>
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 12,
-                  paddingLeft: 20,
-                  paddingBottom: 10
-                }}
-              >
-                8:00 AM
-              </Text>
-            </Swipeable>
             <View style={styles.backButtonPosition}>
               <Button rounded style={styles.backButton} onPress={this._camara}>
                 <Image
@@ -175,6 +126,10 @@ export default class Home extends Component {
 
   _camara = () => {
     this.props.navigation.navigate("Reservation");
+  };
+
+  onEdit = () => {
+    this.props.navigation.navigate("EditReservation");
   };
 }
 
