@@ -16,7 +16,7 @@ class SignUp extends Component {
     password: "",
     error: "",
     loading: false,
-    isAdmin: false
+    isAdmin: true
   };
 
   onButtonPress() {
@@ -28,14 +28,15 @@ class SignUp extends Component {
       .createUserWithEmailAndPassword(email, password)
       .then(this.onSignUpSuccess.bind(this))
       .catch(this.onSignUpFail.bind(this));
-
-    app
-      .database()
-      .ref(`/usuarios`)
-      .push({ nombre, apellido, email, isAdmin });
   }
 
   onSignUpSuccess() {
+    const { nombre, apellido, email, isAdmin } = this.state;
+    const { currentUser } = app.auth();
+    app
+      .database()
+      .ref(`/usuarios/${currentUser.uid}`)
+      .set({ datos: { nombre, apellido, email, isAdmin } });
     this.setState({
       email: "",
       password: "",

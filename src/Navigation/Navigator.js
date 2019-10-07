@@ -13,6 +13,7 @@ import Camara from "../screens/Camara";
 import Reservation from "../screens/Reservation";
 import Home from "../screens/Home";
 import EditReservation from "../screens/EditReservation";
+import Admin from "../screens/Admin";
 
 const AppStack = createStackNavigator({
   Home: Home,
@@ -27,12 +28,17 @@ const AuthStack = createStackNavigator({
   ForgotPassword: ForgotPassword
 });
 
+const AdminStack = createStackNavigator({
+  Home: Admin
+});
+
 const AppContainer = createAppContainer(
   createSwitchNavigator(
     {
       Load: Loading,
       App: AppStack,
-      Auth: AuthStack
+      Auth: AuthStack,
+      Admin: AdminStack
     },
     {
       initialRouteName: "Load"

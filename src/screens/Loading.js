@@ -1,19 +1,32 @@
-import React, { Component } from 'react';
-import app from '../firebase/firebaseConfig';
-import { View, Image, ActivityIndicator, StyleSheet } from 'react-native';
+import _ from "lodash";
+import React, { Component } from "react";
+import app from "../firebase/firebaseConfig";
+import { View, Image, ActivityIndicator, StyleSheet } from "react-native";
 
 class Loading extends Component {
   componentDidMount() {
     app.auth().onAuthStateChanged(user => {
-      this.props.navigation.navigate(user ? 'App' : 'Auth');
+      user ? this.authUser() : this.props.navigation.navigate("Auth");
     });
+  }
+
+  authUser() {
+    const { currentUser } = app.auth();
+    app
+      .database()
+      .ref(`usuarios/${currentUser.uid}/datos`)
+      .on("value", snapshot => {
+        const usuario = snapshot.val();
+        console.log(usuario.isAdmin);
+        this.props.navigation.navigate(usuario.isAdmin ? "Admin" : "App");
+      });
   }
   render() {
     return (
       <View style={styles.container}>
         <Image
           style={styles.logoStyle}
-          source={require('../images/logo.png')}
+          source={require("../images/logo.png")}
         />
         <ActivityIndicator size="large" />
       </View>
@@ -23,9 +36,9 @@ class Loading extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#282828'
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#282828"
   },
   logoStyle: {
     width: 350,
