@@ -1,9 +1,10 @@
+import _ from "lodash";
 import React, { Component } from "react";
-import { View, StyleSheet, Text, Modal, Alert } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Calendar } from "react-native-calendars";
 import { LocaleConfig } from "react-native-calendars";
-import { Button, Picker, Item, Icon } from "native-base";
+import { Button, Picker, Icon } from "native-base";
 
 import app from "../firebase/firebaseConfig";
 export default class Reservation extends Component {
@@ -12,33 +13,12 @@ export default class Reservation extends Component {
     this.state = {
       modalVisible: false,
       slots: slots,
-      empleados: undefined
+      empleados: undefined,
+      isAvailable: true
     };
     this.onDayPress = this.onDayPress.bind(this);
     this.onScrollPress = this.onScrollPress.bind(this);
     this.hacerReservacion = this.hacerReservacion.bind(this);
-  }
-
-  onDayPress(date) {
-    this.setState({
-      selected: date.dateString,
-      dia: date.day,
-      mes: date.month
-    });
-  }
-
-  onScrollPress(slot) {
-    this.setState({ hora: slot });
-  }
-
-  hacerReservacion() {
-    const { dia, mes, hora } = this.state;
-    const { currentUser } = app.auth();
-    this.props.navigation.navigate("Home");
-    app
-      .database()
-      .ref(`/usuarios/${currentUser.uid}/reservas`)
-      .push({ dia, mes, hora });
   }
 
   static navigationOptions = {
@@ -51,6 +31,43 @@ export default class Reservation extends Component {
     }
   };
 
+  componentWillMount() {
+    const reserva = this.props.navigation.getParam("item");
+
+    return this.setState({
+      selected: `2019-${reserva.mes}-${reserva.dia}`,
+      dia: reserva.dia,
+      mes: reserva.mes,
+      hora: reserva.hora
+    });
+  }
+
+  onDayPress(date) {
+    this.setState({
+      selected: date.dateString,
+      dia: date.day,
+      mes: date.month
+    });
+  }
+
+  onScrollPress(items) {
+    const available = () => {
+      return items.isAvailable ? false : true;
+    };
+    items.isAvailable = available();
+    this.setState({ hora: items.slot });
+  }
+
+  hacerReservacion() {
+    const { dia, mes, hora } = this.state;
+    const { currentUser } = app.auth();
+    this.props.navigation.navigate("Home");
+    app
+      .database()
+      .ref(`/usuarios/${currentUser.uid}/reservas`)
+      .push({ dia, mes, hora });
+  }
+
   setModalVisible(visible) {
     this.setState({ modalVisible: visible });
   }
@@ -61,6 +78,11 @@ export default class Reservation extends Component {
     });
   }
 
+  onButtonPress() {
+    const { dia, mes, hora } = this.state;
+    console.log(dia, mes, hora);
+  }
+
   render() {
     const {
       textStyle,
@@ -68,29 +90,35 @@ export default class Reservation extends Component {
       container,
       scrollBtnStyle,
       scrollContainer,
-      scrollTextStyle
+      scrollTextStyle,
+      scrollBtnDisable
     } = styles;
+
     return (
       <View style={container}>
         <View>
-          <Item picker>
-            <Picker
-              mode="dropdown"
-              iosIcon={<Icon name="arrow-down" />}
-              style={{ width: undefined }}
-              placeholder="Empleados"
-              placeholderStyle={{ color: "white" }}
-              placeholderIconColor="#007aff"
-              selectedValue={this.state.empleados}
-              onValueChange={this.onValueChange.bind(this)}
-            >
-              <Picker.Item label="Mariella Duran" value="key0" />
-              <Picker.Item label="Yolima Lugo" value="key1" />
-              <Picker.Item label="Omar Tronconi" value="key2" />
-              <Picker.Item label="Enmanuel Prieta" value="key3" />
-              <Picker.Item label="Yuletzi Urbina" value="key4" />
-            </Picker>
-          </Item>
+          <Picker
+            mode="dropdown"
+            placeholder="Select your SIM"
+            iosIcon={<Icon name="arrow-down" />}
+            placeholder="Select your SIM"
+            textStyle={{ color: "#5cb85c" }}
+            itemStyle={{
+              backgroundColor: "blue",
+              marginLeft: 0,
+              paddingLeft: 10
+            }}
+            itemTextStyle={{ color: "#788ad2" }}
+            style={{ width: undefined }}
+            selectedValue={this.state.empleados}
+            onValueChange={this.onValueChange.bind(this)}
+          >
+            <Picker.Item label="Mariella Duran" value="key0" />
+            <Picker.Item label="Yolima Lugo" value="key1" />
+            <Picker.Item label="Omar Tronconis" value="key2" />
+            <Picker.Item label="Yuletzi Urbina" value="key3" />
+            <Picker.Item label="Gerardo Galue" value="key4" />
+          </Picker>
         </View>
         <View>
           <Calendar
@@ -121,8 +149,9 @@ export default class Reservation extends Component {
                 <Button
                   key={items.slot}
                   rounded
-                  style={scrollBtnStyle}
-                  onPress={() => this.onScrollPress(items.slot)}
+                  active={items.isAvailable}
+                  style={items.isAvailable ? scrollBtnStyle : scrollBtnDisable}
+                  onPress={() => this.onScrollPress(items)}
                 >
                   <Text style={scrollTextStyle}>{items.slot}</Text>
                 </Button>
@@ -136,91 +165,11 @@ export default class Reservation extends Component {
           rounded
           style={btnStyle}
           onPress={() => {
-            this.setModalVisible(true);
+            this.onButtonPress();
           }}
         >
-          <Text style={textStyle}>ACEPTAR</Text>
+          <Text style={textStyle}>GUARDAR</Text>
         </Button>
-
-        {/* MODAL */}
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "#00000070",
-              flex: 1,
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            <View
-              style={{
-                width: 350,
-                height: 220,
-                backgroundColor: "#282828",
-                padding: 30,
-                borderRadius: 20
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 15,
-                  textAlign: "center"
-                }}
-              >
-                ¿Confirma que desea realizar su reservacion el dia{" "}
-                {this.state.dia}/{this.state.mes} a las {this.state.hora} con
-                Mariella Duran?
-              </Text>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-around",
-                  marginTop: 40
-                }}
-              >
-                <Button
-                  rounded
-                  style={{
-                    backgroundColor: "#D5C046",
-                    color: "white",
-                    padding: 20,
-                    width: 120,
-                    justifyContent: "center"
-                  }}
-                  onPress={() => this.hacerReservacion()}
-                >
-                  <Text style={textStyle}>Aceptar</Text>
-                </Button>
-
-                <Button
-                  rounded
-                  style={{
-                    backgroundColor: "#D5C046",
-                    color: "white",
-                    padding: 20,
-                    width: 120,
-                    justifyContent: "center"
-                  }}
-                  onPress={() => {
-                    this.setModalVisible(!this.state.modalVisible);
-                  }}
-                >
-                  <Text style={textStyle}>Cancelar</Text>
-                </Button>
-              </View>
-            </View>
-          </View>
-        </Modal>
       </View>
     );
   }
@@ -254,6 +203,12 @@ const styles = StyleSheet.create({
   scrollTextStyle: {
     color: "white",
     fontSize: 16
+  },
+  scrollBtnDisable: {
+    backgroundColor: "gray",
+    paddingHorizontal: 30,
+    marginHorizontal: 5,
+    height: 40
   }
 });
 

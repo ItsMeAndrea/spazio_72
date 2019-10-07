@@ -88,6 +88,10 @@ export default class Home extends Component {
     return nombreMeses[numeroMes];
   }
 
+  onEdit = item => {
+    this.props.navigation.navigate("EditReservation", { item });
+  };
+
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: "#282828" }}>
@@ -103,6 +107,7 @@ export default class Home extends Component {
                   mes={this.getMonth(index)}
                   reservaID={item.uid}
                   onEdit={this.onEdit}
+                  item={item}
                 />
               )}
               keyExtractor={item => item.uid}
@@ -126,10 +131,6 @@ export default class Home extends Component {
 
   _camara = () => {
     this.props.navigation.navigate("Reservation");
-  };
-
-  onEdit = () => {
-    this.props.navigation.navigate("EditReservation");
   };
 }
 

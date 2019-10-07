@@ -12,7 +12,7 @@ const onDelete = reservaID => {
     .remove();
 };
 
-const ListItem = ({ hora, dia, mes, nombreDia, reservaID, onEdit }) => {
+const ListItem = ({ hora, dia, mes, nombreDia, reservaID, onEdit, item }) => {
   const rightButtons = [
     <Button
       style={{
@@ -21,7 +21,7 @@ const ListItem = ({ hora, dia, mes, nombreDia, reservaID, onEdit }) => {
         backgroundColor: "#279e29",
         padding: 30
       }}
-      onPress={() => onEdit()}
+      onPress={() => onEdit(item)}
     >
       <Image
         style={{ width: 20, height: 20 }}
