@@ -14,7 +14,7 @@ export default class Reservation extends Component {
       modalVisible: false,
       slots: slots,
       empleados: undefined,
-      isAvailable: true
+      newReservation: {}
     };
     this.onDayPress = this.onDayPress.bind(this);
     this.onScrollPress = this.onScrollPress.bind(this);
@@ -55,7 +55,9 @@ export default class Reservation extends Component {
       return items.isAvailable ? false : true;
     };
     items.isAvailable = available();
-    this.setState({ hora: items.slot });
+    this.setState({
+      newReservation: { slot: items.slot, isAvailable: items.isAvailable }
+    });
   }
 
   hacerReservacion() {

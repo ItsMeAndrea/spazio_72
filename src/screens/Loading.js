@@ -17,8 +17,7 @@ class Loading extends Component {
       .ref(`usuarios/${currentUser.uid}/datos`)
       .on("value", snapshot => {
         const usuario = snapshot.val();
-        console.log(usuario.isAdmin);
-        this.props.navigation.navigate(usuario.isAdmin ? "Admin" : "App");
+        this.props.navigation.navigate(usuario.isAdmin ? "App" : "App");
       });
   }
   render() {

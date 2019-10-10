@@ -11,7 +11,8 @@ export default class Reservation extends Component {
     super(props);
     this.state = {
       modalVisible: false,
-      slots: slots
+      slots: slots,
+      newReservation: {}
     };
     this.onDayPress = this.onDayPress.bind(this);
     this.onScrollPress = this.onScrollPress.bind(this);
@@ -26,18 +27,31 @@ export default class Reservation extends Component {
     });
   }
 
-  onScrollPress(slot) {
-    this.setState({ hora: slot });
+  onScrollPress(items) {
+    const available = () => {
+      return items.isAvailable ? false : true;
+    };
+    items.isAvailable = available();
+    this.setState({
+      newReservation: { slot: items.slot, isAvailable: items.isAvailable }
+    });
   }
 
   hacerReservacion() {
-    const { dia, mes, hora } = this.state;
+    const { dia, mes, newReservation } = this.state;
     const { currentUser } = app.auth();
     this.props.navigation.navigate("Home");
     app
       .database()
       .ref(`/usuarios/${currentUser.uid}/reservas`)
-      .push({ dia, mes, hora });
+      .push({ dia, mes, newReservation });
+  }
+
+  empleado() {
+    app
+      .database()
+      .ref(`/empleados/`)
+      .push({ nombre: "Gerardo", apellido: "Galue" });
   }
 
   static navigationOptions = {
@@ -61,7 +75,8 @@ export default class Reservation extends Component {
       container,
       scrollBtnStyle,
       scrollContainer,
-      scrollTextStyle
+      scrollTextStyle,
+      scrollBtnDisable
     } = styles;
     return (
       <View style={container}>
@@ -94,8 +109,9 @@ export default class Reservation extends Component {
                 <Button
                   key={items.slot}
                   rounded
-                  style={scrollBtnStyle}
-                  onPress={() => this.onScrollPress(items.slot)}
+                  active={items.isAvailable}
+                  style={items.isAvailable ? scrollBtnStyle : scrollBtnDisable}
+                  onPress={() => this.onScrollPress(items)}
                 >
                   <Text style={scrollTextStyle}>{items.slot}</Text>
                 </Button>
@@ -103,18 +119,13 @@ export default class Reservation extends Component {
             })}
           </ScrollView>
         </View>
-        <Text>
-          {this.state.hora}
-          {this.state.mes}
-          {this.state.dia}
-        </Text>
 
         <Button
           block
           rounded
           style={btnStyle}
           onPress={() => {
-            this.setModalVisible(true);
+            this.setModalVisible(!this.state.modalVisible);
           }}
         >
           <Text style={textStyle}>ACEPTAR</Text>
@@ -232,6 +243,12 @@ const styles = StyleSheet.create({
   scrollTextStyle: {
     color: "white",
     fontSize: 16
+  },
+  scrollBtnDisable: {
+    backgroundColor: "gray",
+    paddingHorizontal: 30,
+    marginHorizontal: 5,
+    height: 40
   }
 });
 

@@ -16,7 +16,7 @@ class SignUp extends Component {
     password: "",
     error: "",
     loading: false,
-    isAdmin: true
+    isAdmin: false
   };
 
   onButtonPress() {

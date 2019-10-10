@@ -52,6 +52,7 @@ export default class Home extends Component {
           return { ...val, uid };
         });
         this.setState({ reservaciones: reservas });
+        console.log(this.state.reservaciones);
       });
   }
 
@@ -92,6 +93,10 @@ export default class Home extends Component {
     this.props.navigation.navigate("EditReservation", { item });
   };
 
+  _camara = () => {
+    this.props.navigation.navigate("Reservation");
+  };
+
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: "#282828" }}>
@@ -111,7 +116,7 @@ export default class Home extends Component {
                 />
               )}
               keyExtractor={item => item.uid}
-            ></FlatList>
+            />
 
             <View style={styles.backButtonPosition}>
               <Button rounded style={styles.backButton} onPress={this._camara}>
@@ -128,10 +133,6 @@ export default class Home extends Component {
       </View>
     );
   }
-
-  _camara = () => {
-    this.props.navigation.navigate("Reservation");
-  };
 }
 
 const styles = StyleSheet.create({
