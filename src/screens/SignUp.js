@@ -20,7 +20,7 @@ class SignUp extends Component {
   };
 
   onButtonPress() {
-    const { email, password, nombre, apellido, isAdmin } = this.state;
+    const { email, password } = this.state;
 
     this.setState({ error: "", loading: true });
     app

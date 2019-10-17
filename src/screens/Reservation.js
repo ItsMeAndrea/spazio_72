@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Text, Modal, Alert } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { View, StyleSheet, Text } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { LocaleConfig } from "react-native-calendars";
 import { Button } from "native-base";
@@ -10,48 +9,77 @@ export default class Reservation extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      modalVisible: false,
-      slots: slots,
-      newReservation: {}
+      empleados: {}
     };
     this.onDayPress = this.onDayPress.bind(this);
-    this.onScrollPress = this.onScrollPress.bind(this);
-    this.hacerReservacion = this.hacerReservacion.bind(this);
+  }
+
+  componentDidMount() {
+    app
+      .database()
+      .ref(`/empleados`)
+      .on("value", snapshot => {
+        const empleados = snapshot.val();
+        this.setState({ empleados: empleados });
+      });
   }
 
   onDayPress(date) {
+    const { id } = this.props.navigation.state.params;
     this.setState({
       selected: date.dateString,
       dia: date.day,
-      mes: date.month
+      mes: date.month,
+      año: date.year
     });
+
+    app
+      .database()
+      .ref(
+        `/empleados/${id}/reservaciones/${date.year}/${date.month}/${date.day}`
+      )
+      .on("value", snapshot => {
+        snapshot.val() === null
+          ? this.setState({ slotsNull: true })
+          : this.setState({ slotsNull: false });
+      });
   }
 
-  onScrollPress(items) {
-    const available = () => {
-      return items.isAvailable ? false : true;
+  continueReservation(id) {
+    const { dia, mes, año, empleados, slotsNull } = this.state;
+    const reservacion = {
+      dia: dia,
+      mes: mes,
+      año: año,
+      id: id,
+      nEmpleado: empleados[id].nombre,
+      aEmpleado: empleados[id].apellido
     };
-    items.isAvailable = available();
-    this.setState({
-      newReservation: { slot: items.slot, isAvailable: items.isAvailable }
-    });
-  }
 
-  hacerReservacion() {
-    const { dia, mes, newReservation } = this.state;
-    const { currentUser } = app.auth();
-    this.props.navigation.navigate("Home");
-    app
-      .database()
-      .ref(`/usuarios/${currentUser.uid}/reservas`)
-      .push({ dia, mes, newReservation });
-  }
-
-  empleado() {
-    app
-      .database()
-      .ref(`/empleados/`)
-      .push({ nombre: "Gerardo", apellido: "Galue" });
+    slotsNull
+      ? app
+          .database()
+          .ref(`/empleados/${id}/reservaciones/${año}/${mes}/${dia}`)
+          .child("slots")
+          .set(
+            {
+              slot0: { slot: "8:00 AM", isAvailable: true },
+              slot1: { slot: "9:00 AM", isAvailable: true },
+              slot2: { slot: "10:00 AM", isAvailable: true },
+              slot3: { slot: "11:00 AM", isAvailable: true },
+              slot4: { slot: "12:00 PM", isAvailable: true },
+              slot5: { slot: "1:00 PM", isAvailable: true },
+              slot6: { slot: "2:00 PM", isAvailable: true },
+              slot7: { slot: "3:00 PM", isAvailable: true },
+              slot8: { slot: "4:00 PM", isAvailable: true }
+            },
+            error => {
+              error
+                ? console.log("error base de datos")
+                : this.props.navigation.navigate("Booking", { reservacion });
+            }
+          )
+      : this.props.navigation.navigate("Booking", { reservacion });
   }
 
   static navigationOptions = {
@@ -64,20 +92,11 @@ export default class Reservation extends Component {
     }
   };
 
-  setModalVisible(visible) {
-    this.setState({ modalVisible: visible });
-  }
-
   render() {
-    const {
-      textStyle,
-      btnStyle,
-      container,
-      scrollBtnStyle,
-      scrollContainer,
-      scrollTextStyle,
-      scrollBtnDisable
-    } = styles;
+    const { id } = this.props.navigation.state.params;
+    const { textStyle, btnStyle, container } = styles;
+    if (!this.state.empleados[id])
+      return <Text>Sorry, no data exists for this user</Text>;
     return (
       <View style={container}>
         <View>
@@ -102,114 +121,16 @@ export default class Reservation extends Component {
           />
         </View>
 
-        <View style={scrollContainer}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {this.state.slots.map(items => {
-              return (
-                <Button
-                  key={items.slot}
-                  rounded
-                  active={items.isAvailable}
-                  style={items.isAvailable ? scrollBtnStyle : scrollBtnDisable}
-                  onPress={() => this.onScrollPress(items)}
-                >
-                  <Text style={scrollTextStyle}>{items.slot}</Text>
-                </Button>
-              );
-            })}
-          </ScrollView>
-        </View>
-
         <Button
           block
           rounded
           style={btnStyle}
           onPress={() => {
-            this.setModalVisible(!this.state.modalVisible);
+            this.continueReservation(id);
           }}
         >
-          <Text style={textStyle}>ACEPTAR</Text>
+          <Text style={textStyle}>SIGUIENTE</Text>
         </Button>
-
-        {/* MODAL */}
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
-          }}
-        >
-          <View
-            style={{
-              backgroundColor: "#00000070",
-              flex: 1,
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            <View
-              style={{
-                width: 350,
-                height: 220,
-                backgroundColor: "#282828",
-                padding: 30,
-                borderRadius: 20
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 15,
-                  textAlign: "center"
-                }}
-              >
-                ¿Confirma que desea realizar su reservacion el dia{" "}
-                {this.state.dia}/{this.state.mes} a las {this.state.hora} con
-                Mariella Duran?
-              </Text>
-
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-around",
-                  marginTop: 40
-                }}
-              >
-                <Button
-                  rounded
-                  style={{
-                    backgroundColor: "#D5C046",
-                    color: "white",
-                    padding: 20,
-                    width: 120,
-                    justifyContent: "center"
-                  }}
-                  onPress={() => this.hacerReservacion()}
-                >
-                  <Text style={textStyle}>Aceptar</Text>
-                </Button>
-
-                <Button
-                  rounded
-                  style={{
-                    backgroundColor: "#D5C046",
-                    color: "white",
-                    padding: 20,
-                    width: 120,
-                    justifyContent: "center"
-                  }}
-                  onPress={() => {
-                    this.setModalVisible(!this.state.modalVisible);
-                  }}
-                >
-                  <Text style={textStyle}>Cancelar</Text>
-                </Button>
-              </View>
-            </View>
-          </View>
-        </Modal>
       </View>
     );
   }
@@ -229,26 +150,6 @@ const styles = StyleSheet.create({
   textStyle: {
     fontSize: 15,
     color: "white"
-  },
-  scrollContainer: {
-    height: 60,
-    marginBottom: 20
-  },
-  scrollBtnStyle: {
-    backgroundColor: "#D5C046",
-    paddingHorizontal: 30,
-    marginHorizontal: 5,
-    height: 40
-  },
-  scrollTextStyle: {
-    color: "white",
-    fontSize: 16
-  },
-  scrollBtnDisable: {
-    backgroundColor: "gray",
-    paddingHorizontal: 30,
-    marginHorizontal: 5,
-    height: 40
   }
 });
 
@@ -294,15 +195,3 @@ LocaleConfig.locales["sp"] = {
   today: "Hoy"
 };
 LocaleConfig.defaultLocale = "sp";
-
-const slots = [
-  { slot: "8:00 AM", isAvailable: true },
-  { slot: "9:00 AM", isAvailable: true },
-  { slot: "10:00 AM", isAvailable: true },
-  { slot: "11:00 AM", isAvailable: true },
-  { slot: "12:00 PM", isAvailable: true },
-  { slot: "1:00 PM", isAvailable: true },
-  { slot: "2:00 PM", isAvailable: true },
-  { slot: "3:00 PM", isAvailable: true },
-  { slot: "4:00 PM", isAvailable: true }
-];

@@ -1,7 +1,15 @@
 import _ from "lodash";
 import React, { Component } from "react";
 import app from "../firebase/firebaseConfig";
-import { View, Text, Image, StyleSheet, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  FlatList,
+  Platform,
+  Linking
+} from "react-native";
 import { Button } from "native-base";
 import ListItem from "../components/ListItem";
 
@@ -11,7 +19,22 @@ export default class Home extends Component {
 
     // Assign state itself, and a default value for items
     this.state = {
-      reservaciones: [{ uid: "", dia: "", mes: "" }],
+      reservaciones: [
+        {
+          uid: "",
+          userReservation: {
+            slotID: "",
+            dia: "",
+            mes: "",
+            año: "",
+            isAvailable: true,
+            slot: "",
+            nEmpleado: "",
+            aEmpleado: "",
+            empleadoID: ""
+          }
+        }
+      ],
       reservacion: true
     };
   }
@@ -42,6 +65,16 @@ export default class Home extends Component {
     )
   };
 
+  componentDidMount() {
+    if (Platform.OS === "android") {
+      Linking.getInitialURL().then(url => {
+        this.navigate(url);
+      });
+    } else {
+      Linking.addEventListener("url", this.handleOpenURL);
+    }
+  }
+
   componentWillMount() {
     const { currentUser } = app.auth();
     app
@@ -52,16 +85,45 @@ export default class Home extends Component {
           return { ...val, uid };
         });
         this.setState({ reservaciones: reservas });
-        console.log(this.state.reservaciones);
       });
+
+    Linking.removeEventListener("url", this.handleOpenURL);
   }
 
+  handleOpenURL = event => {
+    // D
+    this.navigate(event.url);
+  };
+
+  navigate = url => {
+    // E
+    const { navigate } = this.props.navigation;
+    const route = url.replace(/.*?:\/\//g, "");
+    const id = route.match(/\/([^\/]+)\/?$/)[1];
+    const routeName = route.split("/")[0];
+
+    if (routeName === "empleados") {
+      navigate("Reservation", { id });
+    }
+  };
   getDayofWeek(index) {
     const { reservaciones } = this.state;
     const objeto = reservaciones[index];
-    const fecha = new Date(2019, objeto.mes, objeto.dia);
+    const fecha = new Date(
+      objeto.userReservation.año,
+      objeto.userReservation.mes,
+      objeto.userReservation.dia
+    );
     const numeroDia = fecha.getDay();
-    const nombreDias = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+    const nombreDias = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miercoles",
+      "Jueves",
+      "Viernes",
+      "Sabado"
+    ];
 
     return nombreDias[numeroDia];
   }
@@ -69,7 +131,11 @@ export default class Home extends Component {
   getMonth(index) {
     const { reservaciones } = this.state;
     const objeto = reservaciones[index];
-    const fecha = new Date(2019, objeto.mes, objeto.dia);
+    const fecha = new Date(
+      objeto.userReservation.año,
+      objeto.userReservation.mes,
+      objeto.userReservation.dia
+    );
     const numeroMes = fecha.getMonth();
     const nombreMeses = [
       "Diciembre",
@@ -106,13 +172,17 @@ export default class Home extends Component {
               data={this.state.reservaciones}
               renderItem={({ item, index }) => (
                 <ListItem
-                  hora={item.hora}
+                  hora={item.userReservation.slot}
                   nombreDia={this.getDayofWeek(index)}
-                  dia={item.dia}
+                  dia={item.userReservation.dia}
                   mes={this.getMonth(index)}
                   reservaID={item.uid}
                   onEdit={this.onEdit}
                   item={item}
+                  nombreEmpleado={item.userReservation.nEmpleado}
+                  apellidoEmpleado={item.userReservation.aEmpleado}
+                  empleadoID={item.userReservation.empleadoID}
+                  slotID={item.userReservation.slotID}
                 />
               )}
               keyExtractor={item => item.uid}

@@ -14,13 +14,22 @@ import Reservation from "../screens/Reservation";
 import Home from "../screens/Home";
 import EditReservation from "../screens/EditReservation";
 import Admin from "../screens/Admin";
+import BookingSlots from "../screens/BookingSlots";
+import EditBookingSlots from "../screens/EditBookingSlots";
 
-const AppStack = createStackNavigator({
-  Home: Home,
-  Reservation: Reservation,
-  Camara: Camara,
-  EditReservation: EditReservation
-});
+const AppStack = createStackNavigator(
+  {
+    Home: { screen: Home },
+    Reservation: { screen: Reservation },
+    Booking: BookingSlots,
+    Camara: Camara,
+    EditReservation: EditReservation,
+    EditBooking: EditBookingSlots
+  },
+  {
+    initialRouteName: "Home"
+  }
+);
 
 const AuthStack = createStackNavigator({
   Login: Login,
@@ -46,8 +55,6 @@ const AppContainer = createAppContainer(
   )
 );
 
-const prefix = "spazio72://";
-
-const MainApp = () => <AppContainer uriPrefix={prefix} />;
+const MainApp = () => <AppContainer />;
 
 export default MainApp;

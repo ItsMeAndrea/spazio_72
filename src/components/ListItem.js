@@ -4,15 +4,35 @@ import { Text, Image } from "react-native";
 import { Button } from "native-base";
 import Swipeable from "react-native-swipeable";
 
-const onDelete = reservaID => {
+const onDelete = (reservaID, empleadoID, item, slotID) => {
   const { currentUser } = app.auth();
-  return app
+  app
     .database()
     .ref(`usuarios/${currentUser.uid}/reservas/${reservaID}`)
     .remove();
+
+  app
+    .database()
+    .ref(
+      `/empleados/${empleadoID}/reservaciones/${item.userReservation.año}/${item.userReservation.mes}/${item.userReservation.dia}/slots`
+    )
+    .child(`${slotID}`)
+    .update({ isAvailable: true });
 };
 
-const ListItem = ({ hora, dia, mes, nombreDia, reservaID, onEdit, item }) => {
+const ListItem = ({
+  hora,
+  dia,
+  mes,
+  nombreDia,
+  reservaID,
+  onEdit,
+  item,
+  nombreEmpleado,
+  apellidoEmpleado,
+  empleadoID,
+  slotID
+}) => {
   const rightButtons = [
     <Button
       style={{
@@ -35,7 +55,7 @@ const ListItem = ({ hora, dia, mes, nombreDia, reservaID, onEdit, item }) => {
         backgroundColor: "#bc2121",
         padding: 30
       }}
-      onPress={() => onDelete(reservaID)}
+      onPress={() => onDelete(reservaID, empleadoID, item, slotID)}
     >
       <Image
         style={{ width: 20, height: 20 }}
@@ -64,7 +84,7 @@ const ListItem = ({ hora, dia, mes, nombreDia, reservaID, onEdit, item }) => {
           paddingTop: 10
         }}
       >
-        Mariella Duran
+        {nombreEmpleado} {apellidoEmpleado}
       </Text>
       <Text
         style={{

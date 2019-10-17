@@ -5,7 +5,7 @@ import { View, StyleSheet, Text, Modal, Alert } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Button } from "native-base";
 
-class BookingSlots extends Component {
+class EditBookingSlots extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -43,7 +43,7 @@ class BookingSlots extends Component {
   }
 
   static navigationOptions = {
-    title: "Reservación",
+    title: "Edita tu reservación",
     headerStyle: {
       backgroundColor: "#282828"
     },
@@ -75,7 +75,7 @@ class BookingSlots extends Component {
     });
   }
 
-  actualizarReservacion() {
+  hacerReservacion() {
     const reservacion = this.props.navigation.getParam("reservacion");
     const { id } = reservacion;
     const { userReservation } = this.state;
@@ -195,7 +195,7 @@ class BookingSlots extends Component {
                     width: 120,
                     justifyContent: "center"
                   }}
-                  onPress={() => this.actualizarReservacion()}
+                  onPress={() => this.hacerReservacion()}
                 >
                   <Text style={textStyle}>Aceptar</Text>
                 </Button>
@@ -261,4 +261,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default BookingSlots;
+export default EditBookingSlots;

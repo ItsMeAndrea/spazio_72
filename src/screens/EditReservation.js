@@ -1,7 +1,6 @@
 import _ from "lodash";
 import React, { Component } from "react";
 import { View, StyleSheet, Text } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
 import { Calendar } from "react-native-calendars";
 import { LocaleConfig } from "react-native-calendars";
 import { Button, Picker, Icon } from "native-base";
@@ -11,18 +10,112 @@ export default class Reservation extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      modalVisible: false,
-      slots: slots,
-      empleados: undefined,
-      newReservation: {}
+      empleados: [{ nombre: "", apellido: "", uid: "" }],
+      selectEmpleado: "",
+      reservaID: ""
     };
     this.onDayPress = this.onDayPress.bind(this);
-    this.onScrollPress = this.onScrollPress.bind(this);
-    this.hacerReservacion = this.hacerReservacion.bind(this);
+  }
+
+  componentWillMount() {
+    const reserva = this.props.navigation.getParam("item");
+    const { userReservation, uid } = reserva;
+
+    return this.setState({
+      selected: `2019-${userReservation.mes}-${userReservation.dia}`,
+      dia: userReservation.dia,
+      mes: userReservation.mes,
+      año: userReservation.año,
+      selectEmpleado: userReservation.empleadoID,
+      reservaID: uid
+    });
+  }
+
+  componentDidMount() {
+    app
+      .database()
+      .ref(`/empleados`)
+      .on("value", snapshot => {
+        const empleados = _.map(snapshot.val(), (val, uid) => {
+          return { ...val, uid };
+        });
+        this.setState({ empleados: empleados });
+      });
+  }
+
+  onDayPress(date) {
+    const reserva = this.props.navigation.getParam("item");
+    const { id } = reserva;
+    this.setState({
+      selected: date.dateString,
+      dia: date.day,
+      mes: date.month
+    });
+    console.log(id);
+
+    app
+      .database()
+      .ref(
+        `/empleados/${id}/reservaciones/${date.year}/${date.month}/${date.day}`
+      )
+      .on("value", snapshot => {
+        snapshot.val() === null
+          ? this.setState({ slotsNull: true })
+          : this.setState({ slotsNull: false });
+      });
+  }
+
+  onValueChange(value) {
+    this.setState({
+      selectEmpleado: value
+    });
+  }
+
+  continueReservation(empleadoID) {
+    const { dia, mes, año, empleados, slotsNull } = this.state;
+    const nombreEmpleado = empleados.find(value => value.uid === empleadoID)
+      .nombre;
+    const apellidoEmpleado = empleados.find(value => value.uid === empleadoID)
+      .apellido;
+    const reservacion = {
+      dia: dia,
+      mes: mes,
+      año: año,
+      id: empleadoID,
+      nEmpleado: nombreEmpleado,
+      aEmpleado: apellidoEmpleado
+    };
+
+    slotsNull
+      ? app
+          .database()
+          .ref(`/empleados/${empleadoID}/reservaciones/${año}/${mes}/${dia}`)
+          .child("slots")
+          .set(
+            {
+              slot0: { slot: "8:00 AM", isAvailable: true },
+              slot1: { slot: "9:00 AM", isAvailable: true },
+              slot2: { slot: "10:00 AM", isAvailable: true },
+              slot3: { slot: "11:00 AM", isAvailable: true },
+              slot4: { slot: "12:00 PM", isAvailable: true },
+              slot5: { slot: "1:00 PM", isAvailable: true },
+              slot6: { slot: "2:00 PM", isAvailable: true },
+              slot7: { slot: "3:00 PM", isAvailable: true },
+              slot8: { slot: "4:00 PM", isAvailable: true }
+            },
+            error => {
+              error
+                ? console.log("error base de datos")
+                : this.props.navigation.navigate("EditBooking", {
+                    reservacion
+                  });
+            }
+          )
+      : this.props.navigation.navigate("EditBooking", { reservacion });
   }
 
   static navigationOptions = {
-    title: "Edita  tu Reservacion",
+    title: "Edita  tu reservacion",
     headerStyle: {
       backgroundColor: "#282828"
     },
@@ -31,79 +124,18 @@ export default class Reservation extends Component {
     }
   };
 
-  componentWillMount() {
-    const reserva = this.props.navigation.getParam("item");
-
-    return this.setState({
-      selected: `2019-${reserva.mes}-${reserva.dia}`,
-      dia: reserva.dia,
-      mes: reserva.mes,
-      hora: reserva.hora
-    });
-  }
-
-  onDayPress(date) {
-    this.setState({
-      selected: date.dateString,
-      dia: date.day,
-      mes: date.month
-    });
-  }
-
-  onScrollPress(items) {
-    const available = () => {
-      return items.isAvailable ? false : true;
-    };
-    items.isAvailable = available();
-    this.setState({
-      newReservation: { slot: items.slot, isAvailable: items.isAvailable }
-    });
-  }
-
-  hacerReservacion() {
-    const { dia, mes, hora } = this.state;
-    const { currentUser } = app.auth();
-    this.props.navigation.navigate("Home");
-    app
-      .database()
-      .ref(`/usuarios/${currentUser.uid}/reservas`)
-      .push({ dia, mes, hora });
-  }
-
-  setModalVisible(visible) {
-    this.setState({ modalVisible: visible });
-  }
-
-  onValueChange(value) {
-    this.setState({
-      empleados: value
-    });
-  }
-
-  onButtonPress() {
-    const { dia, mes, hora } = this.state;
-    console.log(dia, mes, hora);
-  }
-
   render() {
-    const {
-      textStyle,
-      btnStyle,
-      container,
-      scrollBtnStyle,
-      scrollContainer,
-      scrollTextStyle,
-      scrollBtnDisable
-    } = styles;
+    const reserva = this.props.navigation.getParam("item");
+    const { empleadoID } = reserva.userReservation;
+    const { textStyle, btnStyle, container } = styles;
 
     return (
       <View style={container}>
         <View>
           <Picker
             mode="dropdown"
-            placeholder="Select your SIM"
+            placeholder="Selecciona un empleado"
             iosIcon={<Icon name="arrow-down" />}
-            placeholder="Select your SIM"
             textStyle={{ color: "#5cb85c" }}
             itemStyle={{
               backgroundColor: "blue",
@@ -112,14 +144,18 @@ export default class Reservation extends Component {
             }}
             itemTextStyle={{ color: "#788ad2" }}
             style={{ width: undefined }}
-            selectedValue={this.state.empleados}
+            selectedValue={this.state.selectEmpleado}
             onValueChange={this.onValueChange.bind(this)}
           >
-            <Picker.Item label="Mariella Duran" value="key0" />
-            <Picker.Item label="Yolima Lugo" value="key1" />
-            <Picker.Item label="Omar Tronconis" value="key2" />
-            <Picker.Item label="Yuletzi Urbina" value="key3" />
-            <Picker.Item label="Gerardo Galue" value="key4" />
+            {this.state.empleados.map(empleado => {
+              return (
+                <Picker.Item
+                  label={`${empleado.nombre}` + ` ` + `${empleado.apellido}`}
+                  value={empleado.uid}
+                  key={empleado.uid}
+                />
+              );
+            })}
           </Picker>
         </View>
         <View>
@@ -144,33 +180,15 @@ export default class Reservation extends Component {
           />
         </View>
 
-        <View style={scrollContainer}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {this.state.slots.map(items => {
-              return (
-                <Button
-                  key={items.slot}
-                  rounded
-                  active={items.isAvailable}
-                  style={items.isAvailable ? scrollBtnStyle : scrollBtnDisable}
-                  onPress={() => this.onScrollPress(items)}
-                >
-                  <Text style={scrollTextStyle}>{items.slot}</Text>
-                </Button>
-              );
-            })}
-          </ScrollView>
-        </View>
-
         <Button
           block
           rounded
           style={btnStyle}
           onPress={() => {
-            this.onButtonPress();
+            this.continueReservation(empleadoID);
           }}
         >
-          <Text style={textStyle}>GUARDAR</Text>
+          <Text style={textStyle}>CONTINUAR</Text>
         </Button>
       </View>
     );
@@ -256,15 +274,3 @@ LocaleConfig.locales["sp"] = {
   today: "Hoy"
 };
 LocaleConfig.defaultLocale = "sp";
-
-const slots = [
-  { slot: "8:00 AM", isAvailable: true },
-  { slot: "9:00 AM", isAvailable: true },
-  { slot: "10:00 AM", isAvailable: true },
-  { slot: "11:00 AM", isAvailable: true },
-  { slot: "12:00 PM", isAvailable: true },
-  { slot: "1:00 PM", isAvailable: true },
-  { slot: "2:00 PM", isAvailable: true },
-  { slot: "3:00 PM", isAvailable: true },
-  { slot: "4:00 PM", isAvailable: true }
-];
