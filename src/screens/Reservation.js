@@ -94,12 +94,32 @@ export default class Reservation extends Component {
 
   render() {
     const { id } = this.props.navigation.state.params;
+    const { empleados } = this.state;
     const { textStyle, btnStyle, container } = styles;
-    if (!this.state.empleados[id])
-      return <Text>Sorry, no data exists for this user</Text>;
+    if (!empleados[id]) return <Text>Sorry, no data exists for this user</Text>;
     return (
       <View style={container}>
         <View>
+          <Text
+            style={{
+              color: "white",
+              fontSize: 14,
+              textAlign: "center",
+              marginTop: 10
+            }}
+          >
+            Tu reservacion se hara con:
+          </Text>
+          <Text
+            style={{
+              color: "white",
+              fontSize: 20,
+              textAlign: "center",
+              fontWeight: "bold"
+            }}
+          >
+            {`${empleados[id].nombre}` + ` ` + `${empleados[id].apellido}`}
+          </Text>
           <Calendar
             monthFormat={"MMM d, yyyy"}
             minDate={Date()}

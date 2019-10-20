@@ -1,12 +1,18 @@
 import React, { Component } from "react";
 import app from "../firebase/firebaseConfig";
-import { View, Image, Text, StyleSheet } from "react-native";
+import { View, Image, Text, StyleSheet, ScrollView } from "react-native";
 import { Form, Input, Item, Button } from "native-base";
 import Spinner from "../components/Spinner";
 
 class SignUp extends Component {
   static navigationOptions = {
-    header: null
+    title: "Registarse",
+    headerStyle: {
+      backgroundColor: "#282828"
+    },
+    headerTitleStyle: {
+      color: "white"
+    }
   };
 
   state = {
@@ -80,13 +86,10 @@ class SignUp extends Component {
       itemStyle,
       inputStyle,
       imageStyle,
-      backBtnStyle,
-      formPosition,
-      backButtonPosition,
-      backButton
+      formPosition
     } = styles;
     return (
-      <View style={container}>
+      <ScrollView contentContainerStyle={container}>
         <View style={formPosition}>
           <Form>
             <Item rounded style={itemStyle}>
@@ -148,10 +151,10 @@ class SignUp extends Component {
               />
             </Item>
 
-            {/*           <Item rounded style={itemStyle}>
+            <Item rounded style={itemStyle}>
               <Image
                 style={imageStyle}
-                source={require('../images/password.png')}
+                source={require("../images/password.png")}
               />
               <Input
                 autoCorrect={false}
@@ -160,23 +163,13 @@ class SignUp extends Component {
                 placeholder="Confirmar Contraseña"
                 placeholderTextColor="white"
               />
-            </Item> */}
+            </Item>
           </Form>
 
           <View style={{ marginTop: 20 }}>{this.renderButton()}</View>
+          <Text style={styles.errorText}>{this.state.error}</Text>
         </View>
-
-        <Text style={styles.errorText}>{this.state.error}</Text>
-
-        <View style={backButtonPosition}>
-          <Button rounded style={backButton} onPress={this._Login}>
-            <Image
-              style={backBtnStyle}
-              source={require("../images/left-arrow.png")}
-            />
-          </Button>
-        </View>
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -220,7 +213,7 @@ const styles = StyleSheet.create({
   },
   formPosition: {
     justifyContent: "center",
-    flex: 8
+    marginTop: 60
   },
   backButtonPosition: {
     justifyContent: "flex-end",

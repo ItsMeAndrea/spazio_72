@@ -43,7 +43,7 @@ class BookingSlots extends Component {
   }
 
   static navigationOptions = {
-    title: "Reservación",
+    title: "Seleccione la hora",
     headerStyle: {
       backgroundColor: "#282828"
     },
@@ -75,7 +75,7 @@ class BookingSlots extends Component {
     });
   }
 
-  actualizarReservacion() {
+  hacerReservacion() {
     const reservacion = this.props.navigation.getParam("reservacion");
     const { id } = reservacion;
     const { userReservation } = this.state;
@@ -114,20 +114,22 @@ class BookingSlots extends Component {
     const { dia, mes } = reservacion;
     return (
       <View style={container}>
-        <ScrollView style={scrollContainer}>
-          {this.state.slots.map((items, index) => {
-            return (
-              <Button
-                key={items.slot}
-                rounded
-                active={items.isAvailable}
-                style={items.isAvailable ? scrollBtnStyle : scrollBtnDisable}
-                onPress={() => this.onScrollPress(items, index)}
-              >
-                <Text style={scrollTextStyle}>{items.slot}</Text>
-              </Button>
-            );
-          })}
+        <ScrollView contentContainerStyle={scrollContainer}>
+          <View>
+            {this.state.slots.map((items, index) => {
+              return (
+                <Button
+                  key={items.slot}
+                  rounded
+                  active={items.isAvailable}
+                  style={items.isAvailable ? scrollBtnStyle : scrollBtnDisable}
+                  onPress={() => this.onScrollPress(items, index)}
+                >
+                  <Text style={scrollTextStyle}>{items.slot}</Text>
+                </Button>
+              );
+            })}
+          </View>
         </ScrollView>
         <Button
           block
@@ -173,17 +175,34 @@ class BookingSlots extends Component {
                   textAlign: "center"
                 }}
               >
-                ¿Confirma que desea realizar su reservacion el dia {dia}/{mes} a
-                las {this.state.userReservation.slot} con{" "}
+                Su reservacion se hara con:
+              </Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 15,
+                  textAlign: "center"
+                }}
+              >
                 {this.state.userReservation.nEmpleado}{" "}
-                {this.state.userReservation.aEmpleado}?
+                {this.state.userReservation.aEmpleado} a las{" "}
+                {this.state.userReservation.slot}, el dia {dia}/{mes}.
               </Text>
 
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 15,
+                  textAlign: "center"
+                }}
+              >
+                ¿Desea continuar?
+              </Text>
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-around",
-                  marginTop: 40
+                  marginTop: 20
                 }}
               >
                 <Button
@@ -195,7 +214,7 @@ class BookingSlots extends Component {
                     width: 120,
                     justifyContent: "center"
                   }}
-                  onPress={() => this.actualizarReservacion()}
+                  onPress={() => this.hacerReservacion()}
                 >
                   <Text style={textStyle}>Aceptar</Text>
                 </Button>
@@ -230,14 +249,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#282828"
   },
   scrollContainer: {
-    height: 60,
-    marginBottom: 20
+    flexGrow: 1,
+    marginTop: 10,
+    marginBottom: 10,
+    alignItems: "center"
   },
   scrollBtnStyle: {
     backgroundColor: "#D5C046",
-    paddingHorizontal: 30,
-    marginHorizontal: 5,
-    height: 40
+    marginBottom: 10,
+    height: 40,
+    width: 200,
+    justifyContent: "center"
   },
   scrollTextStyle: {
     color: "white",
@@ -245,15 +267,17 @@ const styles = StyleSheet.create({
   },
   scrollBtnDisable: {
     backgroundColor: "gray",
-    paddingHorizontal: 30,
-    marginHorizontal: 5,
-    height: 40
+    marginBottom: 10,
+    height: 40,
+    width: 200,
+    justifyContent: "center"
   },
   btnStyle: {
     backgroundColor: "#D5C046",
     color: "white",
     marginHorizontal: 30,
-    marginBottom: 40
+    marginBottom: 10,
+    marginTop: 10
   },
   textStyle: {
     fontSize: 15,

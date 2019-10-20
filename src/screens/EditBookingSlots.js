@@ -77,15 +77,15 @@ class EditBookingSlots extends Component {
 
   hacerReservacion() {
     const reservacion = this.props.navigation.getParam("reservacion");
-    const { id } = reservacion;
+    const { id, reservaID } = reservacion;
     const { userReservation } = this.state;
     const { año, mes, dia, slotID, isAvailable } = userReservation;
     const { currentUser } = app.auth();
 
     app
       .database()
-      .ref(`/usuarios/${currentUser.uid}/reservas`)
-      .push({ userReservation });
+      .ref(`/usuarios/${currentUser.uid}/reservas/${reservaID}`)
+      .update({ userReservation });
 
     app
       .database()
@@ -114,20 +114,22 @@ class EditBookingSlots extends Component {
     const { dia, mes } = reservacion;
     return (
       <View style={container}>
-        <ScrollView style={scrollContainer}>
-          {this.state.slots.map((items, index) => {
-            return (
-              <Button
-                key={items.slot}
-                rounded
-                active={items.isAvailable}
-                style={items.isAvailable ? scrollBtnStyle : scrollBtnDisable}
-                onPress={() => this.onScrollPress(items, index)}
-              >
-                <Text style={scrollTextStyle}>{items.slot}</Text>
-              </Button>
-            );
-          })}
+        <ScrollView contentContainerStyle={scrollContainer}>
+          <View>
+            {this.state.slots.map((items, index) => {
+              return (
+                <Button
+                  key={items.slot}
+                  rounded
+                  active={items.isAvailable}
+                  style={items.isAvailable ? scrollBtnStyle : scrollBtnDisable}
+                  onPress={() => this.onScrollPress(items, index)}
+                >
+                  <Text style={scrollTextStyle}>{items.slot}</Text>
+                </Button>
+              );
+            })}
+          </View>
         </ScrollView>
         <Button
           block
@@ -230,14 +232,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#282828"
   },
   scrollContainer: {
-    height: 60,
-    marginBottom: 20
+    flexGrow: 1,
+    marginTop: 10,
+    marginBottom: 10,
+    alignItems: "center"
   },
   scrollBtnStyle: {
     backgroundColor: "#D5C046",
-    paddingHorizontal: 30,
-    marginHorizontal: 5,
-    height: 40
+    marginBottom: 10,
+    height: 40,
+    width: 200,
+    justifyContent: "center"
   },
   scrollTextStyle: {
     color: "white",
@@ -245,15 +250,17 @@ const styles = StyleSheet.create({
   },
   scrollBtnDisable: {
     backgroundColor: "gray",
-    paddingHorizontal: 30,
-    marginHorizontal: 5,
-    height: 40
+    marginBottom: 10,
+    height: 40,
+    width: 200,
+    justifyContent: "center"
   },
   btnStyle: {
     backgroundColor: "#D5C046",
     color: "white",
     marginHorizontal: 30,
-    marginBottom: 40
+    marginBottom: 10,
+    marginTop: 10
   },
   textStyle: {
     fontSize: 15,

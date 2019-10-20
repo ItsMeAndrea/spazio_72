@@ -45,18 +45,17 @@ export default class Reservation extends Component {
 
   onDayPress(date) {
     const reserva = this.props.navigation.getParam("item");
-    const { id } = reserva;
+    const { empleadoID } = reserva.userReservation;
     this.setState({
       selected: date.dateString,
       dia: date.day,
       mes: date.month
     });
-    console.log(id);
 
     app
       .database()
       .ref(
-        `/empleados/${id}/reservaciones/${date.year}/${date.month}/${date.day}`
+        `/empleados/${empleadoID}/reservaciones/${date.year}/${date.month}/${date.day}`
       )
       .on("value", snapshot => {
         snapshot.val() === null
@@ -72,7 +71,7 @@ export default class Reservation extends Component {
   }
 
   continueReservation(empleadoID) {
-    const { dia, mes, año, empleados, slotsNull } = this.state;
+    const { dia, mes, año, empleados, slotsNull, reservaID } = this.state;
     const nombreEmpleado = empleados.find(value => value.uid === empleadoID)
       .nombre;
     const apellidoEmpleado = empleados.find(value => value.uid === empleadoID)
@@ -83,7 +82,8 @@ export default class Reservation extends Component {
       año: año,
       id: empleadoID,
       nEmpleado: nombreEmpleado,
-      aEmpleado: apellidoEmpleado
+      aEmpleado: apellidoEmpleado,
+      reservaID: reservaID
     };
 
     slotsNull

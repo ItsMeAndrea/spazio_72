@@ -160,7 +160,7 @@ export default class Home extends Component {
   };
 
   _camara = () => {
-    this.props.navigation.navigate("Reservation");
+    this.props.navigation.navigate("Camara");
   };
 
   render() {
