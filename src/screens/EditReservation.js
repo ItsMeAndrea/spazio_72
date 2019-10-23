@@ -44,8 +44,9 @@ export default class Reservation extends Component {
   }
 
   onDayPress(date) {
-    const reserva = this.props.navigation.getParam("item");
-    const { empleadoID } = reserva.userReservation;
+    /* const reserva = this.props.navigation.getParam("item");
+    const { empleadoID } = reserva.userReservation; */
+    const { selectEmpleado } = this.state;
     this.setState({
       selected: date.dateString,
       dia: date.day,
@@ -55,7 +56,7 @@ export default class Reservation extends Component {
     app
       .database()
       .ref(
-        `/empleados/${empleadoID}/reservaciones/${date.year}/${date.month}/${date.day}`
+        `/empleados/${selectEmpleado}/reservaciones/${date.year}/${date.month}/${date.day}`
       )
       .on("value", snapshot => {
         snapshot.val() === null
@@ -66,21 +67,23 @@ export default class Reservation extends Component {
 
   onValueChange(value) {
     this.setState({
-      selectEmpleado: value
+      selectEmpleado: value,
+      reserva: {}
     });
   }
 
-  continueReservation(empleadoID) {
+  continueReservation(selectEmpleado) {
     const { dia, mes, año, empleados, slotsNull, reservaID } = this.state;
-    const nombreEmpleado = empleados.find(value => value.uid === empleadoID)
+    const nombreEmpleado = empleados.find(value => value.uid === selectEmpleado)
       .nombre;
-    const apellidoEmpleado = empleados.find(value => value.uid === empleadoID)
-      .apellido;
+    const apellidoEmpleado = empleados.find(
+      value => value.uid === selectEmpleado
+    ).apellido;
     const reservacion = {
       dia: dia,
       mes: mes,
       año: año,
-      id: empleadoID,
+      id: selectEmpleado,
       nEmpleado: nombreEmpleado,
       aEmpleado: apellidoEmpleado,
       reservaID: reservaID
@@ -89,7 +92,9 @@ export default class Reservation extends Component {
     slotsNull
       ? app
           .database()
-          .ref(`/empleados/${empleadoID}/reservaciones/${año}/${mes}/${dia}`)
+          .ref(
+            `/empleados/${selectEmpleado}/reservaciones/${año}/${mes}/${dia}`
+          )
           .child("slots")
           .set(
             {
@@ -125,8 +130,9 @@ export default class Reservation extends Component {
   };
 
   render() {
-    const reserva = this.props.navigation.getParam("item");
-    const { empleadoID } = reserva.userReservation;
+    /* const reserva = this.props.navigation.getParam("item");
+    const { empleadoID } = reserva.userReservation; */
+    const { selectEmpleado } = this.state;
     const { textStyle, btnStyle, container } = styles;
 
     return (
@@ -185,7 +191,7 @@ export default class Reservation extends Component {
           rounded
           style={btnStyle}
           onPress={() => {
-            this.continueReservation(empleadoID);
+            this.continueReservation(selectEmpleado);
           }}
         >
           <Text style={textStyle}>CONTINUAR</Text>

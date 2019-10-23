@@ -77,9 +77,9 @@ class EditBookingSlots extends Component {
 
   hacerReservacion() {
     const reservacion = this.props.navigation.getParam("reservacion");
-    const { id, reservaID } = reservacion;
+    const { reservaID } = reservacion;
     const { userReservation } = this.state;
-    const { año, mes, dia, slotID, isAvailable } = userReservation;
+    const { año, mes, dia, slotID, isAvailable, empleadoID } = userReservation;
     const { currentUser } = app.auth();
 
     app
@@ -90,7 +90,7 @@ class EditBookingSlots extends Component {
     app
       .database()
       .ref(
-        `/empleados/${id}/reservaciones/${año}/${mes}/${dia}/slots/${slotID}`
+        `/empleados/${empleadoID}/reservaciones/${año}/${mes}/${dia}/slots/${slotID}`
       )
       .update({ isAvailable: isAvailable });
     this.props.navigation.navigate("Home");
