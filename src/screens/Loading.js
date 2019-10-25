@@ -12,13 +12,16 @@ class Loading extends Component {
 
   authUser() {
     const { currentUser } = app.auth();
-    app
-      .database()
-      .ref(`usuarios/${currentUser.uid}/datos`)
-      .on("value", snapshot => {
-        const usuario = snapshot.val();
-        this.props.navigation.navigate(usuario.isAdmin ? "Admin" : "App");
-      });
+    const auth = currentUser.emailVerified;
+    auth
+      ? app
+          .database()
+          .ref(`usuarios/${currentUser.uid}/datos`)
+          .on("value", snapshot => {
+            const usuario = snapshot.val();
+            this.props.navigation.navigate(usuario.isAdmin ? "Admin" : "App");
+          })
+      : this.props.navigation.navigate("Auth");
   }
   render() {
     return (

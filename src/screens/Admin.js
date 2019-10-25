@@ -1,9 +1,8 @@
 import _ from "lodash";
 import React, { Component } from "react";
 import app from "../firebase/firebaseConfig";
-import { View, Text, Image, StyleSheet, FlatList } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 import { Button } from "native-base";
-import ListItem from "../components/ListItem";
 
 export default class Admin extends Component {
   constructor(props) {
@@ -41,6 +40,14 @@ export default class Admin extends Component {
     this.props.navigation.navigate("VerReservaciones");
   }
 
+  verUsuarios() {
+    this.props.navigation.navigate("VerUsuarios");
+  }
+
+  verEmpleados() {
+    this.props.navigation.navigate("VerEmpleados");
+  }
+
   render() {
     return (
       <View
@@ -59,10 +66,22 @@ export default class Admin extends Component {
         >
           <Text style={styles.textStyle}>Ver Reservaciones</Text>
         </Button>
-        <Button rounded style={styles.btnStyle}>
+        <Button
+          rounded
+          style={styles.btnStyle}
+          onPress={() => {
+            this.verUsuarios();
+          }}
+        >
           <Text style={styles.textStyle}>Ver Usuarios</Text>
         </Button>
-        <Button rounded style={styles.btnStyle}>
+        <Button
+          rounded
+          style={styles.btnStyle}
+          onPress={() => {
+            this.verEmpleados();
+          }}
+        >
           <Text style={styles.textStyle}>Ver Empleados</Text>
         </Button>
         <Button

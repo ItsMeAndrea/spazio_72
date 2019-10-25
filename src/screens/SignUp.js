@@ -22,33 +22,60 @@ class SignUp extends Component {
     password: "",
     error: "",
     loading: false,
-    isAdmin: false
+    isAdmin: false,
+    confirmarPassword: "",
+    validarContraseña: false
   };
 
   onButtonPress() {
-    const { email, password } = this.state;
+    const {
+      email,
+      password,
+      confirmarPassword,
+      validarContraseña
+    } = this.state;
+
+    this.verificarContraseña(password, confirmarPassword);
 
     this.setState({ error: "", loading: true });
-    app
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(this.onSignUpSuccess.bind(this))
-      .catch(this.onSignUpFail.bind(this));
+    validarContraseña
+      ? app
+          .auth()
+          .createUserWithEmailAndPassword(email, password)
+          .then(this.onSignUpSuccess.bind(this))
+          .catch(this.onSignUpFail.bind(this))
+      : this.setState({
+          error: "Las contraseñas deben ser iguales",
+          loading: false
+        });
   }
 
   onSignUpSuccess() {
     const { nombre, apellido, email, isAdmin } = this.state;
     const { currentUser } = app.auth();
+
     app
       .database()
       .ref(`/usuarios/${currentUser.uid}`)
-      .set({ datos: { nombre, apellido, email, isAdmin } });
+      .set({ datos: { nombre, apellido, email, isAdmin } }, error => {
+        error
+          ? this.setState({
+              error:
+                "Hubo un error al registrar el usuario. Vuelva a intentarlo."
+            })
+          : this.sendEmail();
+      });
     this.setState({
       email: "",
       password: "",
       loading: false,
       error: ""
     });
+  }
+
+  sendEmail() {
+    const user = app.auth().currentUser;
+    user.sendEmailVerification().catch(console.log("error"));
   }
 
   onSignUpFail() {
@@ -63,6 +90,7 @@ class SignUp extends Component {
   };
 
   renderButton() {
+    const { btnDisable } = this.state;
     const { btnStyle, textStyle } = styles;
     if (this.state.loading) {
       return <Spinner size="small" />;
@@ -70,6 +98,7 @@ class SignUp extends Component {
 
     return (
       <Button
+        disabled={btnDisable}
         block
         rounded
         style={btnStyle}
@@ -78,6 +107,16 @@ class SignUp extends Component {
         <Text style={textStyle}>REGISTRAR</Text>
       </Button>
     );
+  }
+
+  verificarContraseña(password, confirmarPassword) {
+    password === confirmarPassword
+      ? this.setState({
+          validarContraseña: true
+        })
+      : this.setState({
+          validarContraseña: false
+        });
   }
 
   render() {
@@ -162,6 +201,10 @@ class SignUp extends Component {
                 style={inputStyle}
                 placeholder="Confirmar Contraseña"
                 placeholderTextColor="white"
+                value={this.state.confirmarPassword}
+                onChangeText={confirmarPassword =>
+                  this.setState({ confirmarPassword })
+                }
               />
             </Item>
           </Form>

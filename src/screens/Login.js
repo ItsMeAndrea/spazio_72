@@ -9,7 +9,13 @@ class App extends Component {
     header: null
   };
 
-  state = { email: "", password: "", error: "", loading: false };
+  state = {
+    email: "",
+    password: "",
+    error: "",
+    loading: false,
+    showPasword: true
+  };
 
   onButtonPress() {
     const { email, password } = this.state;
@@ -62,6 +68,11 @@ class App extends Component {
     );
   }
 
+  mostrarContraseña() {
+    const { showPasword } = this.state;
+    this.setState({ showPasword: !showPasword });
+  }
+
   render() {
     const {
       container,
@@ -99,17 +110,24 @@ class App extends Component {
             />
             <Input
               autoCorrect={false}
-              secureTextEntry
+              secureTextEntry={this.state.showPasword}
               style={inputStyle}
               placeholder="Contraseña"
               placeholderTextColor="white"
               value={this.state.password}
               onChangeText={password => this.setState({ password })}
             />
-            <Image
-              style={imageStyle}
-              source={require("../images/eye_black.png")}
-            />
+            <Button
+              transparent
+              onPress={() => {
+                this.mostrarContraseña();
+              }}
+            >
+              <Image
+                style={imageStyle}
+                source={require("../images/eye_black.png")}
+              />
+            </Button>
           </Item>
         </Form>
 

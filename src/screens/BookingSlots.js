@@ -20,7 +20,8 @@ class BookingSlots extends Component {
         año: "",
         nEmpleado: "",
         aEmpleado: "",
-        empleadoID: ""
+        empleadoID: "",
+        userInfo: ""
       }
     };
 
@@ -29,6 +30,7 @@ class BookingSlots extends Component {
   }
 
   componentWillMount() {
+    const { currentUser } = app.auth();
     const reservacion = this.props.navigation.getParam("reservacion");
     const { dia, mes, año, id } = reservacion;
     app
@@ -39,6 +41,14 @@ class BookingSlots extends Component {
           return { ...val };
         });
         this.setState({ slots: slots });
+      });
+
+    app
+      .database()
+      .ref(`usuarios/${currentUser.uid}/datos`)
+      .on("value", snapshot => {
+        const userInfo = snapshot.val();
+        this.setState({ userInfo: userInfo });
       });
   }
 
@@ -55,11 +65,13 @@ class BookingSlots extends Component {
   onScrollPress(items, index) {
     const reservacion = this.props.navigation.getParam("reservacion");
     const { dia, mes, año, nEmpleado, aEmpleado, id } = reservacion;
+    const { nombre, apellido, email } = this.state.userInfo;
     const available = () => {
       return items.isAvailable ? false : true;
     };
     items.isAvailable = available();
     const slotID = `slot${index}`;
+
     this.setState({
       userReservation: {
         slotID: slotID,
@@ -70,7 +82,10 @@ class BookingSlots extends Component {
         año: año,
         nEmpleado: nEmpleado,
         aEmpleado: aEmpleado,
-        empleadoID: id
+        empleadoID: id,
+        nUsario: nombre,
+        aUsuario: apellido,
+        eUsuario: email
       }
     });
   }
@@ -82,10 +97,24 @@ class BookingSlots extends Component {
     const { año, mes, dia, slotID, isAvailable } = userReservation;
     const { currentUser } = app.auth();
 
-    app
+    const reservaRef = app
       .database()
       .ref(`/usuarios/${currentUser.uid}/reservas`)
       .push({ userReservation });
+
+    const reservaID = reservaRef.key;
+
+    app
+      .database()
+      .ref(`/usuarios/${currentUser.uid}/reservas/${reservaID}`)
+      .update({
+        userReservation: { ...userReservation, reservaID: reservaID }
+      });
+
+    app
+      .database()
+      .ref("reservas/")
+      .push({ userReservation: { ...userReservation, reservaID: reservaID } });
 
     app
       .database()
