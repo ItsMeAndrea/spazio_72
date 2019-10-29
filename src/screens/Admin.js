@@ -48,6 +48,14 @@ export default class Admin extends Component {
     this.props.navigation.navigate("VerEmpleados");
   }
 
+  agregarServicio() {
+    this.props.navigation.navigate("NuevoServicio");
+  }
+
+  verServicios() {
+    this.props.navigation.navigate("VerServicios");
+  }
+
   render() {
     return (
       <View
@@ -90,6 +98,20 @@ export default class Admin extends Component {
           onPress={() => this.agregarEmpleado()}
         >
           <Text style={styles.textStyle}>Nuevo Empleado</Text>
+        </Button>
+        <Button
+          rounded
+          style={styles.btnStyle}
+          onPress={() => this.verServicios()}
+        >
+          <Text style={styles.textStyle}>Ver Servicios</Text>
+        </Button>
+        <Button
+          rounded
+          style={styles.btnStyle}
+          onPress={() => this.agregarServicio()}
+        >
+          <Text style={styles.textStyle}>Nuevo Servicio</Text>
         </Button>
       </View>
     );

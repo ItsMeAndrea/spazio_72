@@ -67,9 +67,11 @@ export default class Home extends Component {
 
   componentDidMount() {
     if (Platform.OS === "android") {
-      Linking.getInitialURL().then(url => {
-        this.navigate(url);
-      });
+      Linking.getInitialURL()
+        .then(url => {
+          url ? this.navigate(url) : this.props.navigation.navigate("Home");
+        })
+        .catch(console.log("url === null"));
     } else {
       Linking.addEventListener("url", this.handleOpenURL);
     }
@@ -93,6 +95,7 @@ export default class Home extends Component {
   handleOpenURL = event => {
     // D
     this.navigate(event.url);
+    console.log(event.url);
   };
 
   navigate = url => {
@@ -106,6 +109,7 @@ export default class Home extends Component {
       navigate("Reservation", { id });
     }
   };
+
   getDayofWeek(index) {
     const { reservaciones } = this.state;
     const objeto = reservaciones[index];

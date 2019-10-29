@@ -21,7 +21,10 @@ class BookingSlots extends Component {
         nEmpleado: "",
         aEmpleado: "",
         empleadoID: "",
-        userInfo: ""
+        aUsuario: "",
+        nUsuario: "",
+        eUsuario: "",
+        usuarioID: ""
       }
     };
 
@@ -63,6 +66,7 @@ class BookingSlots extends Component {
   };
 
   onScrollPress(items, index) {
+    const usuarioID = app.auth().currentUser.uid;
     const reservacion = this.props.navigation.getParam("reservacion");
     const { dia, mes, año, nEmpleado, aEmpleado, id } = reservacion;
     const { nombre, apellido, email } = this.state.userInfo;
@@ -83,9 +87,10 @@ class BookingSlots extends Component {
         nEmpleado: nEmpleado,
         aEmpleado: aEmpleado,
         empleadoID: id,
-        nUsario: nombre,
+        nUsuario: nombre,
         aUsuario: apellido,
-        eUsuario: email
+        eUsuario: email,
+        usuarioID: usuarioID
       }
     });
   }

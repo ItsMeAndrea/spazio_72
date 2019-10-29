@@ -21,6 +21,8 @@ import NuevoEmpleado from "../screens/NuevoEmpleado";
 import VerReservaciones from "../screens/VerReservaciones";
 import VerUsuarios from "../screens/VerUsuarios";
 import VerEmpleados from "../screens/VerEmpleados";
+import NuevoServicio from "../screens/NuevoServicio";
+import VerServicios from "../screens/VerServicios";
 
 const AppStack = createStackNavigator(
   {
@@ -48,7 +50,9 @@ const AdminStack = createStackNavigator({
   CodigoEmpleado: CodigoEmpleado,
   VerReservaciones: VerReservaciones,
   VerUsuarios: VerUsuarios,
-  VerEmpleados: VerEmpleados
+  VerEmpleados: VerEmpleados,
+  NuevoServicio: NuevoServicio,
+  VerServicios: VerServicios
 });
 
 const AppContainer = createAppContainer(

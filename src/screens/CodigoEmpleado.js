@@ -6,7 +6,17 @@ import QRCode from "react-native-qrcode-svg";
 import Share from "react-native-share";
 
 class CodigoEmpleado extends Component {
+  constructor(props) {
+    super(props);
+
+    // Assign state itself, and a default value for items
+    this.state = {
+      qrData: ""
+    };
+  }
+
   svg;
+
   static navigationOptions = {
     title: "Generar Codigo QR",
     headerStyle: {
@@ -19,9 +29,10 @@ class CodigoEmpleado extends Component {
     }
   };
 
-  saveQrToDisk() {
+  saveQRCode() {
     const nombre = this.props.navigation.getParam("nombre");
     const apellido = this.props.navigation.getParam("apellido");
+    const empleadoID = this.props.navigation.getParam("empleadoID");
     this.svg.toDataURL(data => {
       const shareImageBase64 = {
         title: "QR",
@@ -32,15 +43,22 @@ class CodigoEmpleado extends Component {
         console.log("no se compartio");
       });
     });
-    this.getDataURL();
-    this.callback();
+    this.svg.toDataURL(data => {
+      app
+        .database()
+        .ref(`empleados/${empleadoID}/`)
+        .update({ qrData: `${data}` });
+    });
   }
-  getDataURL() {
-    this.svg.toDataURL(this.callback);
-  }
-  callback(dataURL) {
-    console.log(dataURL);
-  }
+
+  /*  getDataURL() {
+    const empleadoID = this.props.navigation.getParam("empleadoID");
+
+    app
+      .database()
+      .ref(`empleados/${empleadoID}/`)
+      .update({ qrData: this.state.qrData });
+  } */
 
   render() {
     const { container, btnStyle, textStyle } = styles;
@@ -55,12 +73,12 @@ class CodigoEmpleado extends Component {
             marginBottom: 20
           }}
         >
-          {console.log(empleadoID)}
           <QRCode
             value={`spazio72://empleados/${empleadoID}`}
             size={250}
             logoBackgroundColor="transparent"
             getRef={c => (this.svg = c)}
+            quietZone={10}
           />
         </View>
 
@@ -68,7 +86,7 @@ class CodigoEmpleado extends Component {
           rounded
           block
           style={btnStyle}
-          onPress={() => this.saveQrToDisk()}
+          onPress={() => this.saveQRCode()}
         >
           <Text style={textStyle}>Compartir</Text>
         </Button>

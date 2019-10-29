@@ -64,14 +64,23 @@ export default class Reservation extends Component {
           .set(
             {
               slot0: { slot: "8:00 AM", isAvailable: true },
-              slot1: { slot: "9:00 AM", isAvailable: true },
-              slot2: { slot: "10:00 AM", isAvailable: true },
-              slot3: { slot: "11:00 AM", isAvailable: true },
-              slot4: { slot: "12:00 PM", isAvailable: true },
-              slot5: { slot: "1:00 PM", isAvailable: true },
-              slot6: { slot: "2:00 PM", isAvailable: true },
-              slot7: { slot: "3:00 PM", isAvailable: true },
-              slot8: { slot: "4:00 PM", isAvailable: true }
+              slot1: { slot: "8:30 AM", isAvailable: true },
+              slot2: { slot: "9:00 AM", isAvailable: true },
+              slot3: { slot: "9:30 AM", isAvailable: true },
+              slot4: { slot: "10:00 AM", isAvailable: true },
+              slot5: { slot: "10:30 AM", isAvailable: true },
+              slot6: { slot: "11:00 AM", isAvailable: true },
+              slot7: { slot: "11:30 AM", isAvailable: true },
+              slot8: { slot: "12:00 PM", isAvailable: true },
+              slot9: { slot: "12:30 PM", isAvailable: true },
+              slot10: { slot: "1:00 PM", isAvailable: true },
+              slot11: { slot: "1:30 PM", isAvailable: true },
+              slot12: { slot: "2:00 PM", isAvailable: true },
+              slot13: { slot: "2:30 PM", isAvailable: true },
+              slot14: { slot: "3:00 PM", isAvailable: true },
+              slot15: { slot: "3:30 PM", isAvailable: true },
+              slot16: { slot: "4:00 PM", isAvailable: true },
+              slot17: { slot: "4:30 PM", isAvailable: true }
             },
             error => {
               error
