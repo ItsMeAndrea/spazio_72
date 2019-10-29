@@ -21,6 +21,7 @@ class NuevoEmpleado extends Component {
 
   onButtonPress() {
     const { nombre, apellido } = this.state;
+    /*  const { nombre, apellido } = this.state;
 
     const empleadoRef = app
       .database()
@@ -31,6 +32,10 @@ class NuevoEmpleado extends Component {
 
     this.props.navigation.navigate("CodigoEmpleado", {
       empleadoID,
+      nombre,
+      apellido
+    }); */
+    this.props.navigation.navigate("SeleccionarServicios", {
       nombre,
       apellido
     });
@@ -74,13 +79,21 @@ class NuevoEmpleado extends Component {
             />
           </Item>
         </Form>
-        <Button
+        {/*   <Button
           block
           rounded
           style={btnStyle}
           onPress={() => this.onButtonPress()}
         >
           <Text style={textStyle}>Generar Codigo QR</Text>
+        </Button> */}
+        <Button
+          block
+          rounded
+          style={btnStyle}
+          onPress={() => this.onButtonPress()}
+        >
+          <Text style={textStyle}>Seleccionar Servicios</Text>
         </Button>
       </View>
     );

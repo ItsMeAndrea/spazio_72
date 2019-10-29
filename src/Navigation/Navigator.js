@@ -23,6 +23,8 @@ import VerUsuarios from "../screens/VerUsuarios";
 import VerEmpleados from "../screens/VerEmpleados";
 import NuevoServicio from "../screens/NuevoServicio";
 import VerServicios from "../screens/VerServicios";
+import EditarEmpleado from "../screens/EditarEmpleado";
+import SeleccionarServicios from "../screens/SeleccionarServicios";
 
 const AppStack = createStackNavigator(
   {
@@ -52,7 +54,9 @@ const AdminStack = createStackNavigator({
   VerUsuarios: VerUsuarios,
   VerEmpleados: VerEmpleados,
   NuevoServicio: NuevoServicio,
-  VerServicios: VerServicios
+  VerServicios: VerServicios,
+  EditarEmpleado: EditarEmpleado,
+  SeleccionarServicios: SeleccionarServicios
 });
 
 const AppContainer = createAppContainer(

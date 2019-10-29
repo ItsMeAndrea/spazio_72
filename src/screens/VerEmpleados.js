@@ -29,19 +29,24 @@ class VerEmpleados extends Component {
       .database()
       .ref("empleados/")
       .on("value", snapshot => {
-        const empleados = _.map(snapshot.val(), val => {
-          return { ...val };
+        const empleados = _.map(snapshot.val(), (val, uid) => {
+          return { ...val, uid };
         });
         this.setState({ empleados: empleados });
+        console.log(empleados);
       });
   }
+
+  onEdit = item => {
+    this.props.navigation.navigate("EditarEmpleado", { item });
+  };
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: "#282828" }}>
         <FlatList
           data={this.state.empleados}
           renderItem={({ item }) => (
-            <EmpleadosItem nombre={item.nombre} apellido={item.apellido} />
+            <EmpleadosItem onEdit={this.onEdit} empleado={item} />
           )}
           keyExtractor={item => item.nombre}
         />

@@ -4,7 +4,14 @@ import { Text, Image, StyleSheet } from "react-native";
 import { Button } from "native-base";
 import Swipeable from "react-native-swipeable";
 
-const EmpleadosItem = ({ nombre, apellido }) => {
+const onDelete = empleado => {
+  app
+    .database()
+    .ref(`empleados/${empleado.uid}`)
+    .remove();
+};
+
+const EmpleadosItem = ({ empleado, onEdit }) => {
   const { swipeStyle, boldText, boldTextFist, textStyle } = styles;
   const rightButtons = [
     <Button
@@ -14,7 +21,7 @@ const EmpleadosItem = ({ nombre, apellido }) => {
         backgroundColor: "#279e29",
         padding: 20
       }}
-      onPress={() => onEdit(item)}
+      onPress={() => onEdit(empleado)}
     >
       <Image
         style={{ width: 20, height: 20 }}
@@ -28,7 +35,7 @@ const EmpleadosItem = ({ nombre, apellido }) => {
         backgroundColor: "#bc2121",
         padding: 20
       }}
-      onPress={() => onDelete(reservaID, empleadoID, item, slotID)}
+      onPress={() => onDelete(empleado)}
     >
       <Image
         style={{ width: 20, height: 20 }}
@@ -43,7 +50,9 @@ const EmpleadosItem = ({ nombre, apellido }) => {
       rightButtons={rightButtons}
       style={swipeStyle}
     >
-      <Text style={boldTextFist}>{`${nombre} ${apellido}`}</Text>
+      <Text
+        style={boldTextFist}
+      >{`${empleado.nombre} ${empleado.apellido}`}</Text>
     </Swipeable>
   );
 };
