@@ -99,6 +99,7 @@ class App extends Component {
               style={inputStyle}
               placeholder="Correo"
               placeholderTextColor="white"
+              autoCapitalize="none"
               value={this.state.email}
               onChangeText={email => this.setState({ email })}
             />
@@ -114,6 +115,7 @@ class App extends Component {
               style={inputStyle}
               placeholder="Contraseña"
               placeholderTextColor="white"
+              autoCapitalize="none"
               value={this.state.password}
               onChangeText={password => this.setState({ password })}
             />

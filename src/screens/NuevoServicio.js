@@ -59,24 +59,38 @@ class NuevoServicio extends Component {
     const servicioExiste = arrservicioExiste.every(elem => elem === false);
 
     servicioExiste
-      ? app
-          .database()
-          .ref(`servicios/`)
-          .push(
-            {
-              nombreServicio: capFirstLetter,
-              precioServicio: replaceComma,
-              numButton: selectDuracion,
-              duracion: duracion
-            },
-            error => {
-              error
-                ? console.log("error")
-                : (this.props.navigation.navigate("Home"),
-                  this.setState({ errorServicio: "" }));
-            }
-          )
+      ? this.registrarServicio(
+          capFirstLetter,
+          replaceComma,
+          selectDuracion,
+          duracion
+        )
       : this.setState({ errorServicio: "El servicio ya esta registrado" });
+  }
+
+  registrarServicio(capFirstLetter, replaceComma, selectDuracion, duracion) {
+    const servicioRef = app
+      .database()
+      .ref(`servicios/`)
+      .push(
+        {
+          nombreServicio: capFirstLetter,
+          precioServicio: replaceComma,
+          numButton: selectDuracion,
+          duracion: duracion
+        },
+        error => {
+          error
+            ? console.log("error")
+            : (this.props.navigation.navigate("Home"),
+              this.setState({ errorServicio: "" }));
+        }
+      );
+    const servicioID = servicioRef.key;
+    app
+      .database()
+      .ref(`servicios/${servicioID}`)
+      .update({ servicioID: servicioID });
   }
   render() {
     const {
@@ -107,7 +121,7 @@ class NuevoServicio extends Component {
               placeholderTextColor="white"
               value={this.state.precio}
               onChangeText={precio => this.setState({ precio })}
-              keyboardType={'number-pad'}
+              keyboardType={"number-pad"}
             />
           </Item>
 

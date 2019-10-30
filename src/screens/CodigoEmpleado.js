@@ -24,7 +24,6 @@ class CodigoEmpleado extends Component {
     },
     headerTitleStyle: {
       color: "white",
-      textAlign: "center",
       flex: 1
     }
   };
@@ -40,7 +39,7 @@ class CodigoEmpleado extends Component {
         url: `data:image/png;base64,${data}`
       };
       Share.open(shareImageBase64).catch(() => {
-        console.log("no se compartio");
+        this.props.navigation.navigate("Home");
       });
     });
     this.svg.toDataURL(data => {

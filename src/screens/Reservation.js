@@ -85,10 +85,16 @@ export default class Reservation extends Component {
             error => {
               error
                 ? console.log("error base de datos")
-                : this.props.navigation.navigate("Booking", { reservacion });
+                : this.props.navigation.navigate("UserSelectServicio", {
+                    reservacion,
+                    id
+                  });
             }
           )
-      : this.props.navigation.navigate("Booking", { reservacion });
+      : this.props.navigation.navigate("UserSelectServicio", {
+          reservacion,
+          id
+        });
   }
 
   static navigationOptions = {

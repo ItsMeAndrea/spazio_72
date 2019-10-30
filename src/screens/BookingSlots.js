@@ -11,6 +11,7 @@ class BookingSlots extends Component {
     this.state = {
       modalVisible: false,
       slots: [{ isAvailable: true, slot: "8:00 AM" }],
+      selectedSlots: [],
       userReservation: {
         slotID: "",
         slot: "",
