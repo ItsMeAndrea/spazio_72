@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ToastAndroid } from "react-native";
 import { Button } from "native-base";
 import app from "../firebase/firebaseConfig";
 import _ from "lodash";
@@ -10,7 +10,9 @@ class UserSelectServicio extends Component {
     super(props);
     this.state = {
       servicios: [],
-      selectedServicios: []
+      selectedServicios: [],
+      serviciosData: [],
+      showToast: false
     };
   }
 
@@ -35,6 +37,7 @@ class UserSelectServicio extends Component {
         });
         this.setState({ servicios: servicios });
       });
+    console.log(this.state.serviciosData);
   }
 
   onSelectionsChange = selectedServicios => {
@@ -43,11 +46,31 @@ class UserSelectServicio extends Component {
 
   continueReservation() {
     const reservacion = this.props.navigation.getParam("reservacion");
-    const selectedServicios = this.state;
-    this.props.navigation.navigate("Booking", {
-      reservacion,
-      selectedServicios
-    });
+    const selectedServicios = this.state.selectedServicios;
+    const serviciosID = selectedServicios.map(i => i.value);
+    const serviciosData = this.state.serviciosData;
+
+    serviciosID.map(servicioID =>
+      app
+        .database()
+        .ref(`servicios/${servicioID}`)
+        .on("value", snapshot => {
+          serviciosData.push(snapshot.val());
+        })
+    );
+
+    const durationSum = serviciosData
+      .map(i => i.numButton)
+      .reduce((a, b) => a + b, 0);
+
+    selectedServicios.length === 0
+      ? ToastAndroid.show("A pikachu appeared nearby !", ToastAndroid.SHORT)
+      : (this.props.navigation.navigate("Booking", {
+          reservacion,
+          selectedServicios,
+          durationSum
+        }),
+        this.setState({ serviciosData: [] }));
   }
 
   render() {
@@ -59,6 +82,7 @@ class UserSelectServicio extends Component {
           backgroundColor: "#282828"
         }}
       >
+        {console.log("userSelectServicios", this.state.selectedServicios)}
         <SelectMultiple
           items={this.state.servicios}
           selectedItems={this.state.selectedServicios}
@@ -67,6 +91,7 @@ class UserSelectServicio extends Component {
           labelStyle={{ color: "white" }}
           checkboxStyle={{ tintColor: "#D5C046" }}
         />
+
         <Button
           block
           rounded

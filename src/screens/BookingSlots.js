@@ -13,9 +13,7 @@ class BookingSlots extends Component {
       slots: [{ isAvailable: true, slot: "8:00 AM" }],
       selectedSlots: [],
       userReservation: {
-        slotID: "",
-        slot: "",
-        isAvailable: true,
+        slot: [{ slotID: "", slot: "", isAvailable: true }],
         dia: "",
         mes: "",
         año: "",
@@ -69,19 +67,36 @@ class BookingSlots extends Component {
   onScrollPress(items, index) {
     const usuarioID = app.auth().currentUser.uid;
     const reservacion = this.props.navigation.getParam("reservacion");
+    const durationSum = this.props.navigation.getParam("durationSum");
     const { dia, mes, año, nEmpleado, aEmpleado, id } = reservacion;
     const { nombre, apellido, email } = this.state.userInfo;
+    const slotID = `${index}`;
+    const endArr = index + durationSum;
     const available = () => {
       return items.isAvailable ? false : true;
     };
     items.isAvailable = available();
-    const slotID = `slot${index}`;
+
+    const selectedSlots = this.state.slots.slice(index, endArr);
+    this.setState({ selectedSlots });
+
+    const slotKey = items.slot;
+    const tmp = this.state.selectedSlots;
+    const slotArray = this.state.slots.slice(index, endArr).map(i => i.slot);
+
+    tmp.includes(slotKey)
+      ? this.setState({
+          selectedSlots: []
+        })
+      : this.setState({ selectedSlots: slotArray });
+
+    const slot = slotArray.map(i => {
+      return { slotID: slotID, slot: i, isAvailable: items.isAvailable };
+    });
 
     this.setState({
       userReservation: {
-        slotID: slotID,
-        slot: items.slot,
-        isAvailable: items.isAvailable,
+        slot: slot,
         dia: dia,
         mes: mes,
         año: año,
@@ -100,7 +115,7 @@ class BookingSlots extends Component {
     const reservacion = this.props.navigation.getParam("reservacion");
     const { id } = reservacion;
     const { userReservation } = this.state;
-    const { año, mes, dia, slotID, isAvailable } = userReservation;
+    const { año, mes, dia, slot } = userReservation;
     const { currentUser } = app.auth();
 
     const reservaRef = app
@@ -110,7 +125,7 @@ class BookingSlots extends Component {
 
     const reservaID = reservaRef.key;
 
-    app
+    /*  app
       .database()
       .ref(`/usuarios/${currentUser.uid}/reservas/${reservaID}`)
       .update({
@@ -128,7 +143,7 @@ class BookingSlots extends Component {
         `/empleados/${id}/reservaciones/${año}/${mes}/${dia}/slots/${slotID}`
       )
       .update({ isAvailable: isAvailable });
-    this.props.navigation.navigate("Home");
+    this.props.navigation.navigate("Home"); */
   }
 
   setModalVisible(visible) {
@@ -146,9 +161,15 @@ class BookingSlots extends Component {
       textStyle
     } = styles;
     const reservacion = this.props.navigation.getParam("reservacion");
+    const durationSum = this.props.navigation.getParam("durationSum");
     const { dia, mes } = reservacion;
     return (
       <View style={container}>
+        <Text style={{ color: "white", marginHorizontal: 20 }}>
+          La duracion de su cita es de: 2h 30m. Seleccione a que hora desea
+          comenzar su cita:
+        </Text>
+        {console.log(durationSum)}
         <ScrollView contentContainerStyle={scrollContainer}>
           <View>
             {this.state.slots.map((items, index) => {
@@ -157,7 +178,11 @@ class BookingSlots extends Component {
                   key={items.slot}
                   rounded
                   active={items.isAvailable}
-                  style={items.isAvailable ? scrollBtnStyle : scrollBtnDisable}
+                  style={
+                    this.state.selectedSlots.includes(items.slot)
+                      ? scrollBtnDisable
+                      : scrollBtnStyle
+                  }
                   onPress={() => this.onScrollPress(items, index)}
                 >
                   <Text style={scrollTextStyle}>{items.slot}</Text>
@@ -220,8 +245,8 @@ class BookingSlots extends Component {
                 }}
               >
                 {this.state.userReservation.nEmpleado}{" "}
-                {this.state.userReservation.aEmpleado} a las{" "}
-                {this.state.userReservation.slot}, el dia {dia}/{mes}.
+                {this.state.userReservation.aEmpleado} a las , el dia {dia}/
+                {mes}.
               </Text>
 
               <Text

@@ -3,13 +3,15 @@ import { View, StyleSheet, Text } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { LocaleConfig } from "react-native-calendars";
 import { Button } from "native-base";
+import Spinner from "../components/Spinner";
 
 import app from "../firebase/firebaseConfig";
 export default class Reservation extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      empleados: {}
+      empleados: {},
+      selected: ""
     };
     this.onDayPress = this.onDayPress.bind(this);
   }
@@ -63,24 +65,24 @@ export default class Reservation extends Component {
           .child("slots")
           .set(
             {
-              slot0: { slot: "8:00 AM", isAvailable: true },
-              slot1: { slot: "8:30 AM", isAvailable: true },
-              slot2: { slot: "9:00 AM", isAvailable: true },
-              slot3: { slot: "9:30 AM", isAvailable: true },
-              slot4: { slot: "10:00 AM", isAvailable: true },
-              slot5: { slot: "10:30 AM", isAvailable: true },
-              slot6: { slot: "11:00 AM", isAvailable: true },
-              slot7: { slot: "11:30 AM", isAvailable: true },
-              slot8: { slot: "12:00 PM", isAvailable: true },
-              slot9: { slot: "12:30 PM", isAvailable: true },
-              slot10: { slot: "1:00 PM", isAvailable: true },
-              slot11: { slot: "1:30 PM", isAvailable: true },
-              slot12: { slot: "2:00 PM", isAvailable: true },
-              slot13: { slot: "2:30 PM", isAvailable: true },
-              slot14: { slot: "3:00 PM", isAvailable: true },
-              slot15: { slot: "3:30 PM", isAvailable: true },
-              slot16: { slot: "4:00 PM", isAvailable: true },
-              slot17: { slot: "4:30 PM", isAvailable: true }
+              0: { slot: "8:00 - 8:30 AM", isAvailable: true },
+              1: { slot: "8:30 - 9:00 AM", isAvailable: true },
+              2: { slot: "9:00 - 9:30 AM", isAvailable: true },
+              3: { slot: "9:30 - 10:00 AM", isAvailable: true },
+              4: { slot: "10:00 - 10:30 AM", isAvailable: true },
+              5: { slot: "10:30 - 11:00 AM", isAvailable: true },
+              6: { slot: "11:00 - 11:30 AM", isAvailable: true },
+              7: { slot: "11:30 AM - 12:00 PM", isAvailable: true },
+              8: { slot: "12:00 - 12:30 PM", isAvailable: true },
+              9: { slot: "12:30 - 1:00 PM", isAvailable: true },
+              10: { slot: "1:00 - 1:30 PM", isAvailable: true },
+              11: { slot: "1:30 - 2:00 PM", isAvailable: true },
+              12: { slot: "2:00 - 2:30 PM", isAvailable: true },
+              13: { slot: "2:30 - 3:00 PM", isAvailable: true },
+              14: { slot: "3:00 - 3:30 PM", isAvailable: true },
+              15: { slot: "3:30 - 4:00 PM", isAvailable: true },
+              16: { slot: "4:00 - 4:30 PM", isAvailable: true },
+              17: { slot: "4:30 - 5:00 PM", isAvailable: true }
             },
             error => {
               error
@@ -111,7 +113,12 @@ export default class Reservation extends Component {
     const { id } = this.props.navigation.state.params;
     const { empleados } = this.state;
     const { textStyle, btnStyle, container } = styles;
-    if (!empleados[id]) return <Text>Sorry, no data exists for this user</Text>;
+    if (!empleados[id])
+      return (
+        <View style={container}>
+          <Spinner />
+        </View>
+      );
     return (
       <View style={container}>
         <View>
@@ -133,12 +140,13 @@ export default class Reservation extends Component {
               fontWeight: "bold"
             }}
           >
-            {`${empleados[id].nombre}` + ` ` + `${empleados[id].apellido}`}
+            {`${empleados[id].nombre} ${empleados[id].apellido}`}
           </Text>
           <Calendar
             monthFormat={"MMM d, yyyy"}
             minDate={Date()}
             onDayPress={this.onDayPress}
+            onDayLongPress={this.onDayPress}
             markedDates={{ [this.state.selected]: { selected: true } }}
             theme={{
               backgroundColor: "#282828",

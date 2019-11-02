@@ -4,7 +4,7 @@ import { Text, Image } from "react-native";
 import { Button } from "native-base";
 import Swipeable from "react-native-swipeable";
 
-const onDelete = (reservaID, empleadoID, item, slotID) => {
+/* const onDelete = (reservaID, empleadoID, item, slotID) => {
   const { currentUser } = app.auth();
   app
     .database()
@@ -18,10 +18,9 @@ const onDelete = (reservaID, empleadoID, item, slotID) => {
     )
     .child(`${slotID}`)
     .update({ isAvailable: true });
-};
+}; */
 
 const ListItem = ({
-  hora,
   dia,
   mes,
   nombreDia,
@@ -30,8 +29,7 @@ const ListItem = ({
   item,
   nombreEmpleado,
   apellidoEmpleado,
-  empleadoID,
-  slotID
+  empleadoID
 }) => {
   const rightButtons = [
     <Button
@@ -55,7 +53,7 @@ const ListItem = ({
         backgroundColor: "#bc2121",
         padding: 30
       }}
-      onPress={() => onDelete(reservaID, empleadoID, item, slotID)}
+      onPress={() => onDelete(reservaID, empleadoID, item)}
     >
       <Image
         style={{ width: 20, height: 20 }}
@@ -103,9 +101,7 @@ const ListItem = ({
 
           paddingBottom: 10
         }}
-      >
-        {hora}
-      </Text>
+      ></Text>
     </Swipeable>
   );
 };

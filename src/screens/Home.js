@@ -23,15 +23,17 @@ export default class Home extends Component {
         {
           uid: "",
           userReservation: {
-            slotID: "",
+            slot: [{ slotID: "", slot: "", isAvailable: true }],
             dia: "",
             mes: "",
             año: "",
-            isAvailable: true,
-            slot: "",
             nEmpleado: "",
             aEmpleado: "",
-            empleadoID: ""
+            empleadoID: "",
+            aUsuario: "",
+            nUsuario: "",
+            eUsuario: "",
+            usuarioID: ""
           }
         }
       ],
@@ -176,7 +178,6 @@ export default class Home extends Component {
               data={this.state.reservaciones}
               renderItem={({ item, index }) => (
                 <ListItem
-                  hora={item.userReservation.slot}
                   nombreDia={this.getDayofWeek(index)}
                   dia={item.userReservation.dia}
                   mes={this.getMonth(index)}
@@ -186,7 +187,6 @@ export default class Home extends Component {
                   nombreEmpleado={item.userReservation.nEmpleado}
                   apellidoEmpleado={item.userReservation.aEmpleado}
                   empleadoID={item.userReservation.empleadoID}
-                  slotID={item.userReservation.slotID}
                 />
               )}
               keyExtractor={item => item.uid}
