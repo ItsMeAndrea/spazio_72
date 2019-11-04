@@ -11,7 +11,9 @@ class BookingSlots extends Component {
     this.state = {
       modalVisible: false,
       slots: [{ isAvailable: true, slot: "8:00 AM" }],
-      selectedSlots: [],
+      selectedSlots: [{ slotID: "", slot: "", isAvailable: true }],
+      selectedSlotsArr: [],
+      duracion: "",
       userReservation: {
         slot: [{ slotID: "", slot: "", isAvailable: true }],
         dia: "",
@@ -34,6 +36,7 @@ class BookingSlots extends Component {
   componentWillMount() {
     const { currentUser } = app.auth();
     const reservacion = this.props.navigation.getParam("reservacion");
+
     const { dia, mes, año, id } = reservacion;
     app
       .database()
@@ -52,6 +55,12 @@ class BookingSlots extends Component {
         const userInfo = snapshot.val();
         this.setState({ userInfo: userInfo });
       });
+  }
+
+  componentDidMount() {
+    const durationSum = this.props.navigation.getParam("durationSum");
+    const duracion = duracionArr[durationSum];
+    this.setState({ duracion: duracion });
   }
 
   static navigationOptions = {
@@ -78,17 +87,19 @@ class BookingSlots extends Component {
     items.isAvailable = available();
 
     const selectedSlots = this.state.slots.slice(index, endArr);
-    this.setState({ selectedSlots });
 
     const slotKey = items.slot;
-    const tmp = this.state.selectedSlots;
+    const tmp = this.state.selectedSlots.map(i => i.slot);
     const slotArray = this.state.slots.slice(index, endArr).map(i => i.slot);
 
     tmp.includes(slotKey)
       ? this.setState({
           selectedSlots: []
         })
-      : this.setState({ selectedSlots: slotArray });
+      : this.setState({
+          selectedSlots: selectedSlots,
+          selectedSlotsArr: slotArray
+        });
 
     const slot = slotArray.map(i => {
       return { slotID: slotID, slot: i, isAvailable: items.isAvailable };
@@ -125,7 +136,7 @@ class BookingSlots extends Component {
 
     const reservaID = reservaRef.key;
 
-    /*  app
+    app
       .database()
       .ref(`/usuarios/${currentUser.uid}/reservas/${reservaID}`)
       .update({
@@ -135,15 +146,18 @@ class BookingSlots extends Component {
     app
       .database()
       .ref("reservas/")
-      .push({ userReservation: { ...userReservation, reservaID: reservaID } });
+      .child(`${reservaID}`)
+      .set({ userReservation: { ...userReservation, reservaID: reservaID } });
 
-    app
-      .database()
-      .ref(
-        `/empleados/${id}/reservaciones/${año}/${mes}/${dia}/slots/${slotID}`
-      )
-      .update({ isAvailable: isAvailable });
-    this.props.navigation.navigate("Home"); */
+    slot.map(i =>
+      app
+        .database()
+        .ref(
+          `/empleados/${id}/reservaciones/${año}/${mes}/${dia}/slots/${i.slotID}`
+        )
+        .update({ isAvailable: i.isAvailable })
+    );
+    this.props.navigation.navigate("Home");
   }
 
   setModalVisible(visible) {
@@ -161,15 +175,16 @@ class BookingSlots extends Component {
       textStyle
     } = styles;
     const reservacion = this.props.navigation.getParam("reservacion");
-    const durationSum = this.props.navigation.getParam("durationSum");
     const { dia, mes } = reservacion;
+    const { selectedSlots } = this.state;
+    const last = selectedSlots.length - 1;
     return (
       <View style={container}>
         <Text style={{ color: "white", marginHorizontal: 20 }}>
-          La duracion de su cita es de: 2h 30m. Seleccione a que hora desea
-          comenzar su cita:
+          La duracion de su cita es de: {this.state.duracion}. Seleccione a que
+          hora desea comenzar su cita:
         </Text>
-        {console.log(durationSum)}
+
         <ScrollView contentContainerStyle={scrollContainer}>
           <View>
             {this.state.slots.map((items, index) => {
@@ -179,7 +194,7 @@ class BookingSlots extends Component {
                   rounded
                   active={items.isAvailable}
                   style={
-                    this.state.selectedSlots.includes(items.slot)
+                    this.state.selectedSlotsArr.includes(items.slot)
                       ? scrollBtnDisable
                       : scrollBtnStyle
                   }
@@ -201,6 +216,7 @@ class BookingSlots extends Component {
         >
           <Text style={textStyle}>ACEPTAR</Text>
         </Button>
+
         {/* MODAL */}
         <Modal
           animationType="fade"
@@ -237,6 +253,7 @@ class BookingSlots extends Component {
               >
                 Su reservacion se hara con:
               </Text>
+              {console.log(this.state.selectedSlots, last)}
               <Text
                 style={{
                   color: "white",
@@ -245,8 +262,12 @@ class BookingSlots extends Component {
                 }}
               >
                 {this.state.userReservation.nEmpleado}{" "}
-                {this.state.userReservation.aEmpleado} a las , el dia {dia}/
-                {mes}.
+                {this.state.userReservation.aEmpleado} desde las:{" "}
+                {this.state.selectedSlots[0].start} hastas las:{" "}
+                {this.state.selectedSlots[last] === undefined
+                  ? ""
+                  : this.state.selectedSlots[last].end}
+                , el dia {dia}/{mes}.
               </Text>
 
               <Text
@@ -344,5 +365,19 @@ const styles = StyleSheet.create({
     color: "white"
   }
 });
+
+const duracionArr = [
+  "0h 00m",
+  "0h 30m",
+  "1h 00m",
+  "1h 30m",
+  "2h 00m",
+  "2h 30m",
+  "3h 00m",
+  "3h 30m",
+  "4h 00m",
+  "4h 30m",
+  "5h 00m"
+];
 
 export default BookingSlots;

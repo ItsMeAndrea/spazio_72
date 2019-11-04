@@ -37,7 +37,6 @@ class UserSelectServicio extends Component {
         });
         this.setState({ servicios: servicios });
       });
-    console.log(this.state.serviciosData);
   }
 
   onSelectionsChange = selectedServicios => {
@@ -64,7 +63,11 @@ class UserSelectServicio extends Component {
       .reduce((a, b) => a + b, 0);
 
     selectedServicios.length === 0
-      ? ToastAndroid.show("A pikachu appeared nearby !", ToastAndroid.SHORT)
+      ? ToastAndroid.showWithGravity(
+          "Debe seleccionar un servicio",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        )
       : (this.props.navigation.navigate("Booking", {
           reservacion,
           selectedServicios,
@@ -82,7 +85,6 @@ class UserSelectServicio extends Component {
           backgroundColor: "#282828"
         }}
       >
-        {console.log("userSelectServicios", this.state.selectedServicios)}
         <SelectMultiple
           items={this.state.servicios}
           selectedItems={this.state.selectedServicios}

@@ -50,15 +50,6 @@ class CodigoEmpleado extends Component {
     });
   }
 
-  /*  getDataURL() {
-    const empleadoID = this.props.navigation.getParam("empleadoID");
-
-    app
-      .database()
-      .ref(`empleados/${empleadoID}/`)
-      .update({ qrData: this.state.qrData });
-  } */
-
   render() {
     const { container, btnStyle, textStyle } = styles;
     const empleadoID = this.props.navigation.getParam("empleadoID");

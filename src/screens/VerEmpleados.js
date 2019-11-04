@@ -48,7 +48,7 @@ class VerEmpleados extends Component {
           renderItem={({ item }) => (
             <EmpleadosItem onEdit={this.onEdit} empleado={item} />
           )}
-          keyExtractor={item => item.nombre}
+          keyExtractor={item => item.correo}
         />
       </View>
     );

@@ -65,24 +65,114 @@ export default class Reservation extends Component {
           .child("slots")
           .set(
             {
-              0: { slot: "8:00 - 8:30 AM", isAvailable: true },
-              1: { slot: "8:30 - 9:00 AM", isAvailable: true },
-              2: { slot: "9:00 - 9:30 AM", isAvailable: true },
-              3: { slot: "9:30 - 10:00 AM", isAvailable: true },
-              4: { slot: "10:00 - 10:30 AM", isAvailable: true },
-              5: { slot: "10:30 - 11:00 AM", isAvailable: true },
-              6: { slot: "11:00 - 11:30 AM", isAvailable: true },
-              7: { slot: "11:30 AM - 12:00 PM", isAvailable: true },
-              8: { slot: "12:00 - 12:30 PM", isAvailable: true },
-              9: { slot: "12:30 - 1:00 PM", isAvailable: true },
-              10: { slot: "1:00 - 1:30 PM", isAvailable: true },
-              11: { slot: "1:30 - 2:00 PM", isAvailable: true },
-              12: { slot: "2:00 - 2:30 PM", isAvailable: true },
-              13: { slot: "2:30 - 3:00 PM", isAvailable: true },
-              14: { slot: "3:00 - 3:30 PM", isAvailable: true },
-              15: { slot: "3:30 - 4:00 PM", isAvailable: true },
-              16: { slot: "4:00 - 4:30 PM", isAvailable: true },
-              17: { slot: "4:30 - 5:00 PM", isAvailable: true }
+              0: {
+                slot: "8:00 - 8:30 AM",
+                isAvailable: true,
+                start: "8:00 AM",
+                end: "8:30 AM"
+              },
+              1: {
+                slot: "8:30 - 9:00 AM",
+                isAvailable: true,
+                start: "8:30 AM",
+                end: "9:00 AM"
+              },
+              2: {
+                slot: "9:00 - 9:30 AM",
+                isAvailable: true,
+                start: "9:00 AM",
+                end: "9:30 AM"
+              },
+              3: {
+                slot: "9:30 - 10:00 AM",
+                isAvailable: true,
+                start: "9:30 AM",
+                end: "10:00 AM"
+              },
+              4: {
+                slot: "10:00 - 10:30 AM",
+                isAvailable: true,
+                start: "10:00 AM",
+                end: "10:30 AM"
+              },
+              5: {
+                slot: "10:30 - 11:00 AM",
+                isAvailable: true,
+                start: "10:30 AM",
+                end: "11:00 AM"
+              },
+              6: {
+                slot: "11:00 - 11:30 AM",
+                isAvailable: true,
+                start: "11:00 AM",
+                end: "11:30 AM"
+              },
+              7: {
+                slot: "11:30 AM - 12:00 PM",
+                isAvailable: true,
+                start: "11:30 AM",
+                end: "12:00 PM"
+              },
+              8: {
+                slot: "12:00 - 12:30 PM",
+                isAvailable: true,
+                start: "12:00 PM",
+                end: "12:30 PM"
+              },
+              9: {
+                slot: "12:30 - 1:00 PM",
+                isAvailable: true,
+                start: "12:30 PM",
+                end: "1:00 PM"
+              },
+              10: {
+                slot: "1:00 - 1:30 PM",
+                isAvailable: true,
+                start: "1:00 PM",
+                end: "1:30 PM"
+              },
+              11: {
+                slot: "1:30 - 2:00 PM",
+                isAvailable: true,
+                start: "1:30 PM",
+                end: "2:00 PM"
+              },
+              12: {
+                slot: "2:00 - 2:30 PM",
+                isAvailable: true,
+                start: "2:30 PM",
+                end: "2:30 PM"
+              },
+              13: {
+                slot: "2:30 - 3:00 PM",
+                isAvailable: true,
+                start: "2:30 PM",
+                end: "3:00 PM"
+              },
+              14: {
+                slot: "3:00 - 3:30 PM",
+                isAvailable: true,
+                start: "3:00 PM",
+                end: "3:30 PM"
+              },
+              15: {
+                slot: "3:30 - 4:00 PM",
+                isAvailable: true,
+                start: "3:30 PM",
+                end: "4:00 PM"
+              },
+              16: {
+                slot: "4:00 - 4:30 PM",
+                isAvailable: true,
+                start: "4:00 PM",
+                end: "4:30 PM"
+              },
+              17: {
+                slot: "4:30 - 5:00 PM",
+                isAvailable: true,
+                start: "4:30 PM",
+                end: "5:00 PM"
+              }
             },
             error => {
               error

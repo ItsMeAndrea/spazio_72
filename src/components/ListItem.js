@@ -4,21 +4,28 @@ import { Text, Image } from "react-native";
 import { Button } from "native-base";
 import Swipeable from "react-native-swipeable";
 
-/* const onDelete = (reservaID, empleadoID, item, slotID) => {
+const onDelete = (reservaID, empleadoID, item, slotID) => {
   const { currentUser } = app.auth();
   app
     .database()
     .ref(`usuarios/${currentUser.uid}/reservas/${reservaID}`)
     .remove();
 
+  item.userReservation.slot.map(i =>
+    app
+      .database()
+      .ref(
+        `/empleados/${empleadoID}/reservaciones/${item.userReservation.año}/${item.userReservation.mes}/${item.userReservation.dia}/slots`
+      )
+      .child(`${i.slotID}`)
+      .update({ isAvailable: true })
+  );
+
   app
     .database()
-    .ref(
-      `/empleados/${empleadoID}/reservaciones/${item.userReservation.año}/${item.userReservation.mes}/${item.userReservation.dia}/slots`
-    )
-    .child(`${slotID}`)
-    .update({ isAvailable: true });
-}; */
+    .ref(`reservas/${reservaID}`)
+    .remove();
+};
 
 const ListItem = ({
   dia,

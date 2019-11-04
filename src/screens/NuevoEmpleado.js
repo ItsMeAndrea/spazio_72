@@ -70,6 +70,13 @@ class NuevoEmpleado extends Component {
 
     const empleadoID = empleadoRef.key;
 
+    app
+      .database()
+      .ref(`empleados/${empleadoID}`)
+      .update({
+        empleadoID: empleadoID
+      });
+
     this.props.navigation.navigate("CodigoEmpleado", {
       empleadoID,
       nombre,

@@ -1,4 +1,5 @@
 import React from "react";
+import _ from "lodash";
 import app from "../firebase/firebaseConfig";
 import { Text, Image, StyleSheet } from "react-native";
 import { Button } from "native-base";
@@ -53,6 +54,7 @@ const EmpleadosItem = ({ empleado, onEdit }) => {
       <Text
         style={boldTextFist}
       >{`${empleado.nombre} ${empleado.apellido}`}</Text>
+      <Text style={textStyle}>{`Correo: ${empleado.correo}`}</Text>
     </Swipeable>
   );
 };
