@@ -11,8 +11,7 @@ class UserSelectServicio extends Component {
     this.state = {
       servicios: [],
       selectedServicios: [],
-      serviciosData: [],
-      showToast: false
+      serviciosData: []
     };
   }
 
@@ -40,40 +39,41 @@ class UserSelectServicio extends Component {
   }
 
   onSelectionsChange = selectedServicios => {
+    const serviciosID = selectedServicios.map(i => i.value);
+    const serviciosDataArr = [];
+    serviciosID.forEach(servicioID =>
+      app
+        .database()
+        .ref(`servicios/${servicioID}`)
+        .on("value", snapshot => {
+          serviciosDataArr.push(snapshot.val());
+          this.setState({ serviciosData: serviciosDataArr });
+        })
+    );
+
     this.setState({ selectedServicios });
   };
 
   continueReservation() {
     const reservacion = this.props.navigation.getParam("reservacion");
-    const selectedServicios = this.state.selectedServicios;
-    const serviciosID = selectedServicios.map(i => i.value);
-    const serviciosData = this.state.serviciosData;
+    const { selectedServicios, serviciosData } = this.state;
 
-    serviciosID.map(servicioID =>
-      app
-        .database()
-        .ref(`servicios/${servicioID}`)
-        .on("value", snapshot => {
-          serviciosData.push(snapshot.val());
-        })
-    );
-
-    const durationSum = serviciosData
+    const durationSum = this.state.serviciosData
       .map(i => i.numButton)
       .reduce((a, b) => a + b, 0);
 
-    selectedServicios.length === 0
+    selectedServicios.length === 0 && serviciosData.length === 0
       ? ToastAndroid.showWithGravity(
           "Debe seleccionar un servicio",
           ToastAndroid.SHORT,
           ToastAndroid.CENTER
         )
-      : (this.props.navigation.navigate("Booking", {
+      : this.props.navigation.navigate("Booking", {
           reservacion,
           selectedServicios,
           durationSum
-        }),
-        this.setState({ serviciosData: [] }));
+        });
+    this.setState({ selectedServicios: [], serviciosData: [] });
   }
 
   render() {
@@ -85,6 +85,7 @@ class UserSelectServicio extends Component {
           backgroundColor: "#282828"
         }}
       >
+        {console.log("render", this.state.serviciosData)}
         <SelectMultiple
           items={this.state.servicios}
           selectedItems={this.state.selectedServicios}

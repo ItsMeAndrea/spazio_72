@@ -9,7 +9,7 @@ import Loading from "../screens/Loading";
 import Login from "../screens/Login";
 import SignUp from "../screens/SignUp";
 import ForgotPassword from "../screens/ForgotPassword";
-import Camara from "../screens/Camara";
+import ScanScreen from "../screens/Camara";
 import Reservation from "../screens/Reservation";
 import Home from "../screens/Home";
 import EditReservation from "../screens/EditReservation";
@@ -31,7 +31,7 @@ const AppStack = createStackNavigator(
     Home: { screen: Home },
     Reservation: { screen: Reservation },
     Booking: BookingSlots,
-    Camara: Camara,
+    Camara: ScanScreen,
     EditReservation: EditReservation,
     EditBooking: EditBookingSlots,
     UserSelectServicio: UserSelectServicio

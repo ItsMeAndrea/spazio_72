@@ -18,7 +18,7 @@ export default class Admin extends Component {
     },
     headerTitleStyle: {
       color: "white",
-      textAlign: "center",
+
       flex: 1
     },
     headerLeft: (

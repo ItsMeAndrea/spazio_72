@@ -172,7 +172,7 @@ export default class Home extends Component {
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: "#282828" }}>
-        {this.state.reservacion ? (
+        {this.state.reservaciones.length > 0 ? (
           <>
             <FlatList
               data={this.state.reservaciones}
@@ -202,7 +202,40 @@ export default class Home extends Component {
             </View>
           </>
         ) : (
-          <Text>No Hay reservaciones</Text>
+          <>
+            <View
+              style={{
+                width: 250,
+                height: 250,
+                borderRadius: 250 / 2,
+                backgroundColor: "#5e5e5e",
+                alignSelf: "center",
+                marginTop: 60,
+                opacity: 0.7
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  textAlign: "center",
+                  marginHorizontal: 20,
+                  marginTop: 90
+                }}
+              >
+                Oprime el boton de la camara para escanear el codigo QR del
+                empleado con el que deseas hacer tu cita.
+              </Text>
+            </View>
+
+            <View style={styles.backButtonPosition}>
+              <Button rounded style={styles.backButton} onPress={this._camara}>
+                <Image
+                  style={styles.backBtnStyle}
+                  source={require("../images/camera.png")}
+                />
+              </Button>
+            </View>
+          </>
         )}
       </View>
     );

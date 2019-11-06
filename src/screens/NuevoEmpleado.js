@@ -1,7 +1,15 @@
 import React, { Component } from "react";
 import _ from "lodash";
 import app from "../firebase/firebaseConfig";
-import { View, Text, StyleSheet, Image, Modal, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Modal,
+  Alert,
+  ToastAndroid
+} from "react-native";
 import { Form, Input, Item, Button } from "native-base";
 import SelectMultiple from "react-native-select-multiple";
 
@@ -48,9 +56,19 @@ class NuevoEmpleado extends Component {
     this.setState({ serviciosSelect });
   }
 
-  generarCodigoQR() {
+  onButtonPress() {
     const { nombre, apellido, correo, selectedServicios } = this.state;
 
+    selectedServicios.length > 0
+      ? this.generarCodigoQR(nombre, apellido, correo, selectedServicios)
+      : ToastAndroid.showWithGravity(
+          "Debe seleccionar almenos un servicio.",
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM
+        );
+  }
+
+  generarCodigoQR(nombre, apellido, correo, selectedServicios) {
     arrayToObject = (array, keyField) =>
       array.reduce((obj, item) => {
         obj[item[keyField]] = item;
@@ -142,6 +160,7 @@ class NuevoEmpleado extends Component {
               placeholderTextColor="white"
               value={this.state.correo}
               onChangeText={correo => this.setState({ correo })}
+              autoCapitalize="none"
             />
           </Item>
         </Form>
@@ -158,7 +177,7 @@ class NuevoEmpleado extends Component {
           block
           rounded
           style={btnStyle}
-          onPress={() => this.generarCodigoQR()}
+          onPress={() => this.onButtonPress()}
         >
           <Text style={textStyle}>Generar Codigo QR</Text>
         </Button>

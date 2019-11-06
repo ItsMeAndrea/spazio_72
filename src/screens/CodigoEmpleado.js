@@ -38,9 +38,13 @@ class CodigoEmpleado extends Component {
         message: `Codigo QR para ${nombre} ${apellido}`,
         url: `data:image/png;base64,${data}`
       };
-      Share.open(shareImageBase64).catch(() => {
-        this.props.navigation.navigate("Home");
-      });
+      Share.open(shareImageBase64)
+        .then(() => {
+          this.props.navigation.navigate("Home");
+        })
+        .catch(() => {
+          this.props.navigation.navigate("Home");
+        });
     });
     this.svg.toDataURL(data => {
       app

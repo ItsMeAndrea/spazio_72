@@ -36,6 +36,11 @@ class BookingSlots extends Component {
   componentWillMount() {
     const { currentUser } = app.auth();
     const reservacion = this.props.navigation.getParam("reservacion");
+    const durationSum = this.props.navigation.getParam("durationSum");
+    const duracion = duracionArr[durationSum];
+
+    this.setState({ duracion: duracion });
+    console.log("booking", duracion);
 
     const { dia, mes, año, id } = reservacion;
     app
@@ -55,12 +60,6 @@ class BookingSlots extends Component {
         const userInfo = snapshot.val();
         this.setState({ userInfo: userInfo });
       });
-  }
-
-  componentDidMount() {
-    const durationSum = this.props.navigation.getParam("durationSum");
-    const duracion = duracionArr[durationSum];
-    this.setState({ duracion: duracion });
   }
 
   static navigationOptions = {
@@ -253,7 +252,7 @@ class BookingSlots extends Component {
               >
                 Su reservacion se hara con:
               </Text>
-              {console.log(this.state.selectedSlots, last)}
+
               <Text
                 style={{
                   color: "white",
@@ -263,7 +262,7 @@ class BookingSlots extends Component {
               >
                 {this.state.userReservation.nEmpleado}{" "}
                 {this.state.userReservation.aEmpleado} desde las:{" "}
-                {this.state.selectedSlots[0].start} hastas las:{" "}
+                {this.state.selectedSlots[0].start} hasta las:{" "}
                 {this.state.selectedSlots[last] === undefined
                   ? ""
                   : this.state.selectedSlots[last].end}
