@@ -26,7 +26,11 @@ class UserSelectServicio extends Component {
   };
 
   componentDidMount() {
-    const userID = this.props.navigation.getParam("id");
+    const reservacion = this.props.navigation.getParam("reservacion");
+    const servicios = reservacion.servicios;
+    const userID = reservacion.id;
+    const serviciosDataArr = [];
+
     app
       .database()
       .ref(`empleados/${userID}/selectedServicios`)
@@ -36,6 +40,18 @@ class UserSelectServicio extends Component {
         });
         this.setState({ servicios: servicios });
       });
+
+    this.setState({ selectedServicios: servicios });
+
+    servicios.forEach(servicioID =>
+      app
+        .database()
+        .ref(`servicios/${servicioID.value}`)
+        .on("value", snapshot => {
+          serviciosDataArr.push(snapshot.val());
+          this.setState({ serviciosData: serviciosDataArr });
+        })
+    );
   }
 
   onSelectionsChange = selectedServicios => {
@@ -68,7 +84,7 @@ class UserSelectServicio extends Component {
           ToastAndroid.SHORT,
           ToastAndroid.CENTER
         )
-      : this.props.navigation.navigate("Booking", {
+      : this.props.navigation.navigate("EditBooking", {
           reservacion,
           selectedServicios,
           durationSum
@@ -78,6 +94,7 @@ class UserSelectServicio extends Component {
 
   render() {
     const { btnStyle, textStyle } = styles;
+
     return (
       <View
         style={{

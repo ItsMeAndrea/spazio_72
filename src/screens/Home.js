@@ -24,6 +24,7 @@ export default class Home extends Component {
           uid: "",
           userReservation: {
             slot: [{ slotID: "", slot: "", isAvailable: true }],
+            servicios: [],
             dia: "",
             mes: "",
             año: "",
@@ -117,7 +118,7 @@ export default class Home extends Component {
     const objeto = reservaciones[index];
     const fecha = new Date(
       objeto.userReservation.año,
-      objeto.userReservation.mes,
+      objeto.userReservation.mes - 1,
       objeto.userReservation.dia
     );
     const numeroDia = fecha.getDay();
@@ -162,7 +163,34 @@ export default class Home extends Component {
   }
 
   onEdit = item => {
+    const { currentUser } = app.auth();
+    const slots = item.userReservation.slot;
+    const userReservation = item.userReservation;
+    const { dia, mes, año, empleadoID } = userReservation;
     this.props.navigation.navigate("EditReservation", { item });
+    const reservaID = item.uid;
+    const slotID = slots.map(i => i.slotID);
+
+    slots.forEach((item, index) =>
+      app
+        .database()
+        .ref(
+          `usuarios/${currentUser.uid}/reservas/${reservaID}/userReservation/slot`
+        )
+        .child(`${index}`)
+        .update({
+          isDisable: false,
+          isAvailable: true
+        })
+    );
+
+    slotID.forEach((item, index) => {
+      app
+        .database()
+        .ref(`empleados/${empleadoID}/reservaciones/${año}/${mes}/${dia}/slots`)
+        .child(`${item}`)
+        .update({ isDisable: false, isAvailable: true });
+    });
   };
 
   _camara = () => {
@@ -179,14 +207,9 @@ export default class Home extends Component {
               renderItem={({ item, index }) => (
                 <ListItem
                   nombreDia={this.getDayofWeek(index)}
-                  dia={item.userReservation.dia}
                   mes={this.getMonth(index)}
-                  reservaID={item.uid}
                   onEdit={this.onEdit}
                   item={item}
-                  nombreEmpleado={item.userReservation.nEmpleado}
-                  apellidoEmpleado={item.userReservation.aEmpleado}
-                  empleadoID={item.userReservation.empleadoID}
                 />
               )}
               keyExtractor={item => item.uid}

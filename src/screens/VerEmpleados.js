@@ -33,7 +33,6 @@ class VerEmpleados extends Component {
           return { ...val, uid };
         });
         this.setState({ empleados: empleados });
-        console.log(empleados);
       });
   }
 

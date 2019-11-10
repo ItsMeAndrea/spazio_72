@@ -4,7 +4,7 @@ import { Text, Image } from "react-native";
 import { Button } from "native-base";
 import Swipeable from "react-native-swipeable";
 
-const onDelete = (reservaID, empleadoID, item, slotID) => {
+const onDelete = (reservaID, empleadoID, item) => {
   const { currentUser } = app.auth();
   app
     .database()
@@ -18,7 +18,7 @@ const onDelete = (reservaID, empleadoID, item, slotID) => {
         `/empleados/${empleadoID}/reservaciones/${item.userReservation.año}/${item.userReservation.mes}/${item.userReservation.dia}/slots`
       )
       .child(`${i.slotID}`)
-      .update({ isAvailable: true })
+      .update({ isAvailable: true, isDisable: false })
   );
 
   app
@@ -27,24 +27,23 @@ const onDelete = (reservaID, empleadoID, item, slotID) => {
     .remove();
 };
 
-const ListItem = ({
-  dia,
-  mes,
-  nombreDia,
-  reservaID,
-  onEdit,
-  item,
-  nombreEmpleado,
-  apellidoEmpleado,
-  empleadoID
-}) => {
+const ListItem = ({ mes, nombreDia, onEdit, item }) => {
+  const {
+    dia,
+    nEmpleado,
+    aEmpleado,
+    empleadoID,
+    slot,
+    servicios
+  } = item.userReservation;
+  const serviciosNombre = servicios.map(i => i.label);
   const rightButtons = [
     <Button
       style={{
         width: 400,
-        height: 80,
+        height: 100,
         backgroundColor: "#279e29",
-        padding: 30
+        padding: 40
       }}
       onPress={() => onEdit(item)}
     >
@@ -56,11 +55,11 @@ const ListItem = ({
     <Button
       style={{
         width: 400,
-        height: 80,
+        height: 100,
         backgroundColor: "#bc2121",
-        padding: 30
+        padding: 40
       }}
-      onPress={() => onDelete(reservaID, empleadoID, item)}
+      onPress={() => onDelete(item.uid, empleadoID, item)}
     >
       <Image
         style={{ width: 20, height: 20 }}
@@ -70,11 +69,11 @@ const ListItem = ({
   ];
   return (
     <Swipeable
-      leftButtonWidth={80}
-      rightButtonWidth={80}
+      leftButtonWidth={100}
+      rightButtonWidth={100}
       rightButtons={rightButtons}
       style={{
-        height: 80,
+        height: 100,
         backgroundColor: "gray",
         borderBottomWidth: 1,
         borderBottomColor: "black"
@@ -89,7 +88,7 @@ const ListItem = ({
           paddingTop: 10
         }}
       >
-        {nombreEmpleado} {apellidoEmpleado}
+        {nEmpleado} {aEmpleado}
       </Text>
       <Text
         style={{
@@ -104,11 +103,36 @@ const ListItem = ({
         style={{
           color: "white",
           fontSize: 12,
-          paddingLeft: 20,
-
-          paddingBottom: 10
+          paddingLeft: 20
         }}
-      ></Text>
+      >
+        {slot[0].start} - {slot[slot.length - 1].end}
+      </Text>
+
+      <Text
+        style={{
+          color: "white",
+          fontSize: 12,
+          paddingLeft: 20
+        }}
+      >
+        {serviciosNombre.join(", ")}
+      </Text>
+
+      {/*   {servicios.map(servicio => {
+        return (
+          <Text
+            style={{
+              color: "white",
+              fontSize: 12,
+              paddingLeft: 20
+            }}
+          >
+            {servicio.toString()}
+          </Text>
+        );
+      })} */}
+      {console.log(servicios, "servicios")}
     </Swipeable>
   );
 };

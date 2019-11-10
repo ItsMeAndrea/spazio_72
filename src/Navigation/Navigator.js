@@ -25,6 +25,7 @@ import NuevoServicio from "../screens/NuevoServicio";
 import VerServicios from "../screens/VerServicios";
 import EditarEmpleado from "../screens/EditarEmpleado";
 import UserSelectServicio from "../screens/UserSelectServicio";
+import EditServicios from "../screens/EditServicios";
 
 const AppStack = createStackNavigator(
   {
@@ -34,7 +35,8 @@ const AppStack = createStackNavigator(
     Camara: ScanScreen,
     EditReservation: EditReservation,
     EditBooking: EditBookingSlots,
-    UserSelectServicio: UserSelectServicio
+    UserSelectServicio: UserSelectServicio,
+    EditServicios: EditServicios
   },
   {
     initialRouteName: "Home"

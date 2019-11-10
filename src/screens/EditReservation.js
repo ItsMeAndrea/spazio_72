@@ -50,7 +50,8 @@ export default class Reservation extends Component {
     this.setState({
       selected: date.dateString,
       dia: date.day,
-      mes: date.month
+      mes: date.month,
+      año: date.year
     });
 
     app
@@ -67,12 +68,13 @@ export default class Reservation extends Component {
 
   onValueChange(value) {
     this.setState({
-      selectEmpleado: value,
-      reserva: {}
+      selectEmpleado: value
     });
   }
 
   continueReservation(selectEmpleado) {
+    const reserva = this.props.navigation.getParam("item");
+    const { servicios } = reserva.userReservation;
     const { dia, mes, año, empleados, slotsNull, reservaID } = this.state;
     const nombreEmpleado = empleados.find(value => value.uid === selectEmpleado)
       .nombre;
@@ -86,7 +88,8 @@ export default class Reservation extends Component {
       id: selectEmpleado,
       nEmpleado: nombreEmpleado,
       aEmpleado: apellidoEmpleado,
-      reservaID: reservaID
+      reservaID: reservaID,
+      servicios: servicios
     };
 
     slotsNull
@@ -98,34 +101,160 @@ export default class Reservation extends Component {
           .child("slots")
           .set(
             {
-              slot0: { slot: "8:00 AM", isAvailable: true },
-              slot1: { slot: "8:30 AM", isAvailable: true },
-              slot2: { slot: "9:00 AM", isAvailable: true },
-              slot3: { slot: "9:30 AM", isAvailable: true },
-              slot4: { slot: "10:00 AM", isAvailable: true },
-              slot5: { slot: "10:30 AM", isAvailable: true },
-              slot6: { slot: "11:00 AM", isAvailable: true },
-              slot7: { slot: "11:30 AM", isAvailable: true },
-              slot8: { slot: "12:00 PM", isAvailable: true },
-              slot9: { slot: "12:30 PM", isAvailable: true },
-              slot10: { slot: "1:00 PM", isAvailable: true },
-              slot11: { slot: "1:30 PM", isAvailable: true },
-              slot12: { slot: "2:00 PM", isAvailable: true },
-              slot13: { slot: "2:30 PM", isAvailable: true },
-              slot14: { slot: "3:00 PM", isAvailable: true },
-              slot15: { slot: "3:30 PM", isAvailable: true },
-              slot16: { slot: "4:00 PM", isAvailable: true },
-              slot17: { slot: "4:30 PM", isAvailable: true }
+              0: {
+                slot: "8:00 - 8:30 AM",
+                isAvailable: true,
+                start: "8:00 AM",
+                end: "8:30 AM",
+                isDisable: false,
+                slotID: 0
+              },
+              1: {
+                slot: "8:30 - 9:00 AM",
+                isAvailable: true,
+                start: "8:30 AM",
+                end: "9:00 AM",
+                isDisable: false,
+                slotID: 1
+              },
+              2: {
+                slot: "9:00 - 9:30 AM",
+                isAvailable: true,
+                start: "9:00 AM",
+                end: "9:30 AM",
+                isDisable: false,
+                slotID: 2
+              },
+              3: {
+                slot: "9:30 - 10:00 AM",
+                isAvailable: true,
+                start: "9:30 AM",
+                end: "10:00 AM",
+                isDisable: false,
+                slotID: 3
+              },
+              4: {
+                slot: "10:00 - 10:30 AM",
+                isAvailable: true,
+                start: "10:00 AM",
+                end: "10:30 AM",
+                isDisable: false,
+                slotID: 4
+              },
+              5: {
+                slot: "10:30 - 11:00 AM",
+                isAvailable: true,
+                start: "10:30 AM",
+                end: "11:00 AM",
+                isDisable: false,
+                slotID: 5
+              },
+              6: {
+                slot: "11:00 - 11:30 AM",
+                isAvailable: true,
+                start: "11:00 AM",
+                end: "11:30 AM",
+                isDisable: false,
+                slotID: 6
+              },
+              7: {
+                slot: "11:30 AM - 12:00 PM",
+                isAvailable: true,
+                start: "11:30 AM",
+                end: "12:00 PM",
+                isDisable: false,
+                slotID: 7
+              },
+              8: {
+                slot: "12:00 - 12:30 PM",
+                isAvailable: true,
+                start: "12:00 PM",
+                end: "12:30 PM",
+                isDisable: false,
+                slotID: 8
+              },
+              9: {
+                slot: "12:30 - 1:00 PM",
+                isAvailable: true,
+                start: "12:30 PM",
+                end: "1:00 PM",
+                isDisable: false,
+                slotID: 9
+              },
+              10: {
+                slot: "1:00 - 1:30 PM",
+                isAvailable: true,
+                start: "1:00 PM",
+                end: "1:30 PM",
+                isDisable: false,
+                slotID: 10
+              },
+              11: {
+                slot: "1:30 - 2:00 PM",
+                isAvailable: true,
+                start: "1:30 PM",
+                end: "2:00 PM",
+                isDisable: false,
+                slotID: 11
+              },
+              12: {
+                slot: "2:00 - 2:30 PM",
+                isAvailable: true,
+                start: "2:30 PM",
+                end: "2:30 PM",
+                isDisable: false,
+                slotID: 12
+              },
+              13: {
+                slot: "2:30 - 3:00 PM",
+                isAvailable: true,
+                start: "2:30 PM",
+                end: "3:00 PM",
+                isDisable: false,
+                slotID: 13
+              },
+              14: {
+                slot: "3:00 - 3:30 PM",
+                isAvailable: true,
+                start: "3:00 PM",
+                end: "3:30 PM",
+                isDisable: false,
+                slotID: 14
+              },
+              15: {
+                slot: "3:30 - 4:00 PM",
+                isAvailable: true,
+                start: "3:30 PM",
+                end: "4:00 PM",
+                isDisable: false,
+                slotID: 15
+              },
+              16: {
+                slot: "4:00 - 4:30 PM",
+                isAvailable: true,
+                start: "4:00 PM",
+                end: "4:30 PM",
+                isDisable: false,
+                slotID: 16
+              },
+              17: {
+                slot: "4:30 - 5:00 PM",
+                isAvailable: true,
+                start: "4:30 PM",
+                end: "5:00 PM",
+                isDisable: false,
+                slotID: 17
+              }
             },
             error => {
               error
                 ? console.log("error base de datos")
-                : this.props.navigation.navigate("EditBooking", {
+                : this.props.navigation.navigate("EditServicios", {
                     reservacion
                   });
             }
           )
-      : this.props.navigation.navigate("EditBooking", { reservacion });
+      : this.props.navigation.navigate("EditServicios", { reservacion });
   }
 
   static navigationOptions = {
@@ -158,7 +287,7 @@ export default class Reservation extends Component {
               paddingLeft: 10
             }}
             itemTextStyle={{ color: "#788ad2" }}
-            style={{ width: undefined }}
+            style={{ width: undefined, color: "white" }}
             selectedValue={this.state.selectEmpleado}
             onValueChange={this.onValueChange.bind(this)}
           >
@@ -178,6 +307,7 @@ export default class Reservation extends Component {
             monthFormat={"MMM d, yyyy"}
             minDate={Date()}
             onDayPress={this.onDayPress}
+            onDayLongPress={this.onDayPress}
             markedDates={{ [this.state.selected]: { selected: true } }}
             theme={{
               backgroundColor: "#282828",
@@ -191,7 +321,7 @@ export default class Reservation extends Component {
               dayTextColor: "white",
               textDisabledColor: "#2d4150"
             }}
-            style={{ marginBottom: 10 }}
+            style={{ marginBottom: 30 }}
           />
         </View>
 

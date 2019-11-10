@@ -1,16 +1,33 @@
 import React, { Component } from "react";
 import _ from "lodash";
 import app from "../firebase/firebaseConfig";
-import { View, StyleSheet, Text, Modal, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Modal,
+  Alert,
+  ToastAndroid
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Button } from "native-base";
 
 class BookingSlots extends Component {
+  static navigationOptions = {
+    title: "Seleccione la hora",
+    headerStyle: {
+      backgroundColor: "#282828"
+    },
+    headerTitleStyle: {
+      color: "white"
+    }
+  };
   constructor(props) {
     super(props);
     this.state = {
       modalVisible: false,
       slots: [{ isAvailable: true, slot: "8:00 AM" }],
+      finalSlots: [],
       selectedSlots: [{ slotID: "", slot: "", isAvailable: true }],
       selectedSlotsArr: [],
       duracion: "",
@@ -38,11 +55,10 @@ class BookingSlots extends Component {
     const reservacion = this.props.navigation.getParam("reservacion");
     const durationSum = this.props.navigation.getParam("durationSum");
     const duracion = duracionArr[durationSum];
+    const { dia, mes, año, id } = reservacion;
 
     this.setState({ duracion: duracion });
-    console.log("booking", duracion);
 
-    const { dia, mes, año, id } = reservacion;
     app
       .database()
       .ref(`/empleados/${id}/reservaciones/${año}/${mes}/${dia}/slots`)
@@ -60,52 +76,87 @@ class BookingSlots extends Component {
         const userInfo = snapshot.val();
         this.setState({ userInfo: userInfo });
       });
+
+    app
+      .database()
+      .ref(`usuarios/${currentUser.uid}/reservas`)
+      .on("value", snapshot => {
+        const slotsUsuario = _.map(snapshot.val(), val => {
+          return { ...val };
+        });
+        this.setState({ slotsUsuario });
+      });
   }
 
-  static navigationOptions = {
-    title: "Seleccione la hora",
-    headerStyle: {
-      backgroundColor: "#282828"
-    },
-    headerTitleStyle: {
-      color: "white"
-    }
-  };
+  componentDidMount() {
+    const { slots, slotsUsuario } = this.state;
+    const slotsUsuarioNoDiponibles = slotsUsuario
+      .map(i => {
+        return i.userReservation.slot;
+      })
+      .flat();
+
+    const result = slots
+      .filter(a => !slotsUsuarioNoDiponibles.some(s => s.slotID == a.slotID))
+      .concat(slotsUsuarioNoDiponibles);
+
+    result.sort((a, b) => {
+      return a.slotID - b.slotID;
+    });
+
+    this.setState({ finalSlots: result });
+  }
 
   onScrollPress(items, index) {
     const usuarioID = app.auth().currentUser.uid;
     const reservacion = this.props.navigation.getParam("reservacion");
     const durationSum = this.props.navigation.getParam("durationSum");
+    const selectedServicios = this.props.navigation.getParam(
+      "selectedServicios"
+    );
     const { dia, mes, año, nEmpleado, aEmpleado, id } = reservacion;
     const { nombre, apellido, email } = this.state.userInfo;
-    const slotID = `${index}`;
+    const slotID = index;
     const endArr = index + durationSum;
-    const available = () => {
-      return items.isAvailable ? false : true;
-    };
-    items.isAvailable = available();
 
-    const selectedSlots = this.state.slots.slice(index, endArr);
+    const selectedSlots = this.state.finalSlots.slice(index, endArr);
 
-    const slotKey = items.slot;
-    const tmp = this.state.selectedSlots.map(i => i.slot);
-    const slotArray = this.state.slots.slice(index, endArr).map(i => i.slot);
+    const slotKey = selectedSlots.map(i => i.slotID);
+    const tmp = this.state.selectedSlots.map(i => i.slotID);
+    const slotArray = this.state.finalSlots
+      .slice(index, endArr)
+      .map(i => i.slot);
 
-    tmp.includes(slotKey)
-      ? this.setState({
-          selectedSlots: []
-        })
-      : this.setState({
-          selectedSlots: selectedSlots,
-          selectedSlotsArr: slotArray
-        });
+    const isAvailableArr = selectedSlots.map(i => {
+      return i.isAvailable ? false : true;
+    });
+    const isAvailable = isAvailableArr.every(i => i === true);
 
-    const slot = slotArray.map(i => {
-      return { slotID: slotID, slot: i, isAvailable: items.isAvailable };
+    slotKey.map(i => {
+      tmp.includes(i)
+        ? this.setState({
+            selectedSlots: [],
+            selectedSlotsArr: []
+          })
+        : this.setState({
+            selectedSlots: selectedSlots,
+            selectedSlotsArr: slotArray
+          });
+    });
+
+    const slot = selectedSlots.map((i, index) => {
+      return {
+        slotID: index + slotID,
+        slot: i.slot,
+        isAvailable: isAvailable,
+        start: i.start,
+        end: i.end
+      };
     });
 
     this.setState({
       userReservation: {
+        servicios: selectedServicios,
         slot: slot,
         dia: dia,
         mes: mes,
@@ -138,8 +189,9 @@ class BookingSlots extends Component {
     app
       .database()
       .ref(`/usuarios/${currentUser.uid}/reservas/${reservaID}`)
+      .child("userReservation")
       .update({
-        userReservation: { ...userReservation, reservaID: reservaID }
+        reservaID: reservaID
       });
 
     app
@@ -148,19 +200,39 @@ class BookingSlots extends Component {
       .child(`${reservaID}`)
       .set({ userReservation: { ...userReservation, reservaID: reservaID } });
 
+    slot.map((i, index) => {
+      app
+        .database()
+        .ref(
+          `usuarios/${currentUser.uid}/reservas/${reservaID}/userReservation/slot`
+        )
+        .child(`${index}`)
+        .update({ isDisable: true });
+    });
+
     slot.map(i =>
       app
         .database()
         .ref(
           `/empleados/${id}/reservaciones/${año}/${mes}/${dia}/slots/${i.slotID}`
         )
-        .update({ isAvailable: i.isAvailable })
+        .update({ isAvailable: i.isAvailable, isDisable: true })
     );
+
     this.props.navigation.navigate("Home");
   }
 
   setModalVisible(visible) {
-    this.setState({ modalVisible: visible });
+    const { selectedSlots } = this.state;
+    selectedSlots.forEach(i =>
+      i.slotID === ""
+        ? ToastAndroid.showWithGravity(
+            "Seleccione la hora de su cita",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          )
+        : this.setState({ modalVisible: visible })
+    );
   }
 
   render() {
@@ -186,14 +258,16 @@ class BookingSlots extends Component {
 
         <ScrollView contentContainerStyle={scrollContainer}>
           <View>
-            {this.state.slots.map((items, index) => {
+            {this.state.finalSlots.map((items, index) => {
               return (
                 <Button
                   key={items.slot}
                   rounded
                   active={items.isAvailable}
+                  disabled={items.isDisable}
                   style={
-                    this.state.selectedSlotsArr.includes(items.slot)
+                    this.state.selectedSlotsArr.includes(items.slot) ||
+                    !items.isAvailable
                       ? scrollBtnDisable
                       : scrollBtnStyle
                   }
@@ -262,7 +336,10 @@ class BookingSlots extends Component {
               >
                 {this.state.userReservation.nEmpleado}{" "}
                 {this.state.userReservation.aEmpleado} desde las:{" "}
-                {this.state.selectedSlots[0].start} hasta las:{" "}
+                {this.state.selectedSlots[0] === undefined
+                  ? ""
+                  : this.state.selectedSlots[0].start}{" "}
+                hasta las:{" "}
                 {this.state.selectedSlots[last] === undefined
                   ? ""
                   : this.state.selectedSlots[last].end}
