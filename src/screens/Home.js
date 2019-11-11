@@ -167,7 +167,6 @@ export default class Home extends Component {
     const slots = item.userReservation.slot;
     const userReservation = item.userReservation;
     const { dia, mes, año, empleadoID } = userReservation;
-    this.props.navigation.navigate("EditReservation", { item });
     const reservaID = item.uid;
     const slotID = slots.map(i => i.slotID);
 
@@ -191,6 +190,7 @@ export default class Home extends Component {
         .child(`${item}`)
         .update({ isDisable: false, isAvailable: true });
     });
+    this.props.navigation.navigate("EditReservation", { item });
   };
 
   _camara = () => {

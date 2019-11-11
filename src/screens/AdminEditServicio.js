@@ -5,7 +5,7 @@ import app from "../firebase/firebaseConfig";
 import _ from "lodash";
 import SelectMultiple from "react-native-select-multiple";
 
-class UserSelectServicio extends Component {
+class AdminEditServicio extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -84,7 +84,7 @@ class UserSelectServicio extends Component {
           ToastAndroid.SHORT,
           ToastAndroid.CENTER
         )
-      : this.props.navigation.navigate("EditBooking", {
+      : this.props.navigation.navigate("EditarBooking", {
           reservacion,
           selectedServicios,
           durationSum
@@ -141,4 +141,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default UserSelectServicio;
+export default AdminEditServicio;

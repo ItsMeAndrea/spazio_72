@@ -4,42 +4,52 @@ import { Text, Image, StyleSheet } from "react-native";
 import { Button } from "native-base";
 import Swipeable from "react-native-swipeable";
 
-const onDelete = (reservaID, empleadoID, item, slotID) => {
-  const { currentUser } = app.auth();
+const onDelete = (reservaID, empleadoID, item, usuarioID) => {
   app
     .database()
-    .ref(`usuarios/${currentUser.uid}/reservas/${reservaID}`)
+    .ref(`usuarios/${usuarioID}/reservas/${reservaID}`)
     .remove();
 
+  item.userReservation.slot.map(i =>
+    app
+      .database()
+      .ref(
+        `/empleados/${empleadoID}/reservaciones/${item.userReservation.año}/${item.userReservation.mes}/${item.userReservation.dia}/slots`
+      )
+      .child(`${i.slotID}`)
+      .update({ isAvailable: true, isDisable: false })
+  );
+
   app
     .database()
-    .ref(
-      `/empleados/${empleadoID}/reservaciones/${item.userReservation.año}/${item.userReservation.mes}/${item.userReservation.dia}/slots`
-    )
-    .child(`${slotID}`)
-    .update({ isAvailable: true });
+    .ref(`reservas/${reservaID}`)
+    .remove();
 };
 
-const ReservacionesItem = ({ reserva, nombreDia, mes }) => {
+const ReservacionesItem = ({ reserva, nombreDia, mes, onEdit, item }) => {
   const {
     nEmpleado,
     aEmpleado,
-    nUsario,
+    nUsuario,
     aUsuario,
     eUsuario,
     dia,
     año,
-    slot
+    slot,
+    usuarioID,
+    reservaID,
+    empleadoID,
+    servicios
   } = reserva;
-
+  const serviciosNombre = servicios.map(i => i.label);
   const { swipeStyle, boldText, boldTextFist, textStyle } = styles;
   const rightButtons = [
     <Button
       style={{
         width: 400,
-        height: 120,
+        height: 130,
         backgroundColor: "#279e29",
-        padding: 50
+        padding: 60
       }}
       onPress={() => onEdit(item)}
     >
@@ -51,11 +61,11 @@ const ReservacionesItem = ({ reserva, nombreDia, mes }) => {
     <Button
       style={{
         width: 400,
-        height: 120,
+        height: 130,
         backgroundColor: "#bc2121",
-        padding: 50
+        padding: 60
       }}
-      onPress={() => onDelete(reservaID, empleadoID, item, slotID)}
+      onPress={() => onDelete(reservaID, empleadoID, item, usuarioID)}
     >
       <Image
         style={{ width: 20, height: 20 }}
@@ -65,23 +75,27 @@ const ReservacionesItem = ({ reserva, nombreDia, mes }) => {
   ];
   return (
     <Swipeable
-      leftButtonWidth={120}
-      rightButtonWidth={120}
+      leftButtonWidth={130}
+      rightButtonWidth={130}
       rightButtons={rightButtons}
       style={swipeStyle}
     >
-      <Text style={boldTextFist}>{`${nUsario} ${aUsuario}`} </Text>
+      {console.log(reserva)}
+      <Text style={boldTextFist}>{`${nUsuario} ${aUsuario}`} </Text>
       <Text style={textStyle}>{`${eUsuario}`}</Text>
       <Text style={boldText}>{`${nEmpleado} ${aEmpleado}`} </Text>
       <Text style={textStyle}>{`${nombreDia}, ${dia} de ${mes}, ${año}`}</Text>
-      <Text style={textStyle}>{`${slot}`}</Text>
+      <Text style={textStyle}>
+        {slot[0].start} - {slot[slot.length - 1].end}
+      </Text>
+      <Text style={textStyle}>{serviciosNombre.join(", ")}</Text>
     </Swipeable>
   );
 };
 
 const styles = StyleSheet.create({
   swipeStyle: {
-    height: 120,
+    height: 130,
     backgroundColor: "gray",
     borderBottomWidth: 1,
     borderBottomColor: "black"

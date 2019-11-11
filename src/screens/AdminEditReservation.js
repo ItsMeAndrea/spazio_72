@@ -4,11 +4,11 @@ import { View, StyleSheet, Text } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { LocaleConfig } from "react-native-calendars";
 import { Button, Picker, Icon } from "native-base";
-
 import app from "../firebase/firebaseConfig";
-export default class Reservation extends Component {
+
+export default class AdminEditReservation extends Component {
   static navigationOptions = {
-    title: "Edita  tu reservacion",
+    title: "Editar reservacion",
     headerStyle: {
       backgroundColor: "#282828"
     },
@@ -28,15 +28,15 @@ export default class Reservation extends Component {
 
   componentWillMount() {
     const reserva = this.props.navigation.getParam("item");
-    const { userReservation, uid } = reserva;
+    const { dia, mes, año, empleadoID, reservaID } = reserva.userReservation;
 
     return this.setState({
-      selected: `2019-${userReservation.mes}-${userReservation.dia}`,
-      dia: userReservation.dia,
-      mes: userReservation.mes,
-      año: userReservation.año,
-      selectEmpleado: userReservation.empleadoID,
-      reservaID: uid
+      selected: `2019-${mes}-${dia}`,
+      dia: dia,
+      mes: mes,
+      año: año,
+      selectEmpleado: empleadoID,
+      reservaID: reservaID
     });
   }
 
@@ -53,8 +53,6 @@ export default class Reservation extends Component {
   }
 
   onDayPress(date) {
-    /* const reserva = this.props.navigation.getParam("item");
-    const { empleadoID } = reserva.userReservation; */
     const { selectEmpleado } = this.state;
     this.setState({
       selected: date.dateString,
@@ -83,13 +81,14 @@ export default class Reservation extends Component {
 
   continueReservation(selectEmpleado) {
     const reserva = this.props.navigation.getParam("item");
-    const { servicios } = reserva.userReservation;
+    const { servicios, usuarioID } = reserva.userReservation;
     const { dia, mes, año, empleados, slotsNull, reservaID } = this.state;
     const nombreEmpleado = empleados.find(value => value.uid === selectEmpleado)
       .nombre;
     const apellidoEmpleado = empleados.find(
       value => value.uid === selectEmpleado
     ).apellido;
+
     const reservacion = {
       dia: dia,
       mes: mes,
@@ -98,7 +97,8 @@ export default class Reservation extends Component {
       nEmpleado: nombreEmpleado,
       aEmpleado: apellidoEmpleado,
       reservaID: reservaID,
-      servicios: servicios
+      servicios: servicios,
+      usuarioID: usuarioID
     };
 
     slotsNull
@@ -258,12 +258,12 @@ export default class Reservation extends Component {
             error => {
               error
                 ? console.log("error base de datos")
-                : this.props.navigation.navigate("EditServicios", {
+                : this.props.navigation.navigate("EditarServicio", {
                     reservacion
                   });
             }
           )
-      : this.props.navigation.navigate("EditServicios", { reservacion });
+      : this.props.navigation.navigate("EditarServicio", { reservacion });
   }
 
   render() {

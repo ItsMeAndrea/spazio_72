@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import app from "../firebase/firebaseConfig";
 import _ from "lodash";
 import { FlatList, View } from "react-native";
+import { NavigationActions } from "react-navigation";
 
 import ReservacionesItem from "../components/ReservacionesItem";
 
@@ -41,7 +42,7 @@ class VerReservacion extends Component {
     const objeto = reservas[index];
     const fecha = new Date(
       objeto.userReservation.año,
-      objeto.userReservation.mes,
+      objeto.userReservation.mes - 1,
       objeto.userReservation.dia
     );
     const numeroDia = fecha.getDay();
@@ -85,6 +86,40 @@ class VerReservacion extends Component {
     return nombreMeses[numeroMes];
   }
 
+  onEdit = item => {
+    const {
+      usuarioID,
+      slot,
+      dia,
+      mes,
+      año,
+      empleadoID,
+      reservaID
+    } = item.userReservation;
+    const slotID = slot.map(i => i.slotID);
+
+    slot.forEach((item, index) => {
+      app
+        .database()
+        .ref(`usuarios/${usuarioID}/reservas/${reservaID}/userReservation/slot`)
+        .child(`${index}`)
+        .update({
+          isDisable: false,
+          isAvailable: true
+        });
+    });
+
+    slotID.forEach(item => {
+      app
+        .database()
+        .ref(`empleados/${empleadoID}/reservaciones/${año}/${mes}/${dia}/slots`)
+        .child(`${item}`)
+        .update({ isDisable: false, isAvailable: true });
+    });
+
+    this.props.navigation.navigate("EditarReserva", { item });
+  };
+
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: "#282828" }}>
@@ -95,6 +130,8 @@ class VerReservacion extends Component {
               reserva={item.userReservation}
               nombreDia={this.getDayofWeek(index)}
               mes={this.getMonth(index)}
+              onEdit={this.onEdit}
+              item={item}
             />
           )}
           keyExtractor={item => item.userReservation.reservaID}

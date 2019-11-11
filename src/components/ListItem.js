@@ -118,21 +118,6 @@ const ListItem = ({ mes, nombreDia, onEdit, item }) => {
       >
         {serviciosNombre.join(", ")}
       </Text>
-
-      {/*   {servicios.map(servicio => {
-        return (
-          <Text
-            style={{
-              color: "white",
-              fontSize: 12,
-              paddingLeft: 20
-            }}
-          >
-            {servicio.toString()}
-          </Text>
-        );
-      })} */}
-      {console.log(servicios, "servicios")}
     </Swipeable>
   );
 };

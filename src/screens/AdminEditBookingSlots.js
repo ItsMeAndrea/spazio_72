@@ -12,7 +12,7 @@ import {
 import { ScrollView } from "react-native-gesture-handler";
 import { Button } from "native-base";
 
-class EditBookingSlots extends Component {
+class AdminEditBookingSlots extends Component {
   static navigationOptions = {
     title: "Edita tu reservación",
     headerStyle: {
@@ -49,9 +49,8 @@ class EditBookingSlots extends Component {
   }
 
   componentWillMount() {
-    const { currentUser } = app.auth();
     const reservacion = this.props.navigation.getParam("reservacion");
-    const { dia, mes, año, id, reservaID } = reservacion;
+    const { dia, mes, año, id, usuarioID } = reservacion;
     const durationSum = this.props.navigation.getParam("durationSum");
     const duracion = duracionArr[durationSum];
     this.setState({ duracion: duracion });
@@ -63,28 +62,33 @@ class EditBookingSlots extends Component {
         const slots = _.map(snapshot.val(), val => {
           return { ...val };
         });
+
         this.setState({ slots: slots });
       });
+    console.log(usuarioID, "snap");
     app
       .database()
-      .ref(`usuarios/${currentUser.uid}/datos`)
+      .ref(`/usuarios/${usuarioID}/datos`)
       .on("value", snapshot => {
         const userInfo = snapshot.val();
         this.setState({ userInfo: userInfo });
       });
+
     app
       .database()
-      .ref(`usuarios/${currentUser.uid}/reservas`)
+      .ref(`usuarios/${usuarioID}/reservas`)
       .on("value", snapshot => {
         const slotsUsuario = _.map(snapshot.val(), val => {
           return { ...val };
         });
+        console.log(snapshot.val(), "slotUs");
         this.setState({ slotsUsuario });
       });
   }
 
   componentDidMount() {
     const { slots, slotsUsuario } = this.state;
+
     const slotsUsuarioNoDiponibles = slotsUsuario
       .map(i => {
         return i.userReservation.slot;
@@ -98,13 +102,14 @@ class EditBookingSlots extends Component {
     result.sort((a, b) => {
       return a.slotID - b.slotID;
     });
+    console.log(result, "result");
 
     this.setState({ finalSlots: result });
   }
 
   onScrollPress(items, index) {
-    const usuarioID = app.auth().currentUser.uid;
     const reservacion = this.props.navigation.getParam("reservacion");
+    const { usuarioID } = reservacion;
     const durationSum = this.props.navigation.getParam("durationSum");
     const selectedServicios = this.props.navigation.getParam(
       "selectedServicios"
@@ -125,7 +130,6 @@ class EditBookingSlots extends Component {
       return i.isAvailable ? false : true;
     });
     const isAvailable = isAvailableArr.every(i => i === true);
-    console.log("isAisAvailable", isAvailable);
 
     slotKey.map(i => {
       tmp.includes(i)
@@ -423,4 +427,4 @@ const duracionArr = [
   "5h 00m"
 ];
 
-export default EditBookingSlots;
+export default AdminEditBookingSlots;
