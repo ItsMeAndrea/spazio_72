@@ -4,9 +4,9 @@ import { Text, Image, StyleSheet } from "react-native";
 import { Button } from "native-base";
 import Swipeable from "react-native-swipeable";
 
-const UsuarioItem = ({ usuario }) => {
+const UsuarioItem = ({ usuario, onEdit }) => {
   const { nombre, apellido, email } = usuario;
-  const { swipeStyle, boldText, boldTextFist, textStyle } = styles;
+  const { swipeStyle, boldTextFist, textStyle } = styles;
   const rightButtons = [
     <Button
       style={{
@@ -15,7 +15,7 @@ const UsuarioItem = ({ usuario }) => {
         backgroundColor: "#279e29",
         padding: 20
       }}
-      onPress={() => onEdit(item)}
+      onPress={() => onEdit(usuario)}
     >
       <Image
         style={{ width: 20, height: 20 }}

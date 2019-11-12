@@ -1,7 +1,7 @@
 import _ from "lodash";
 import React, { Component } from "react";
 import app from "../firebase/firebaseConfig";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
 import { Button } from "native-base";
 
 export default class Admin extends Component {
@@ -56,6 +56,10 @@ export default class Admin extends Component {
     this.props.navigation.navigate("VerServicios");
   }
 
+  valorDolar() {
+    this.props.navigation.navigate("ValorDolar");
+  }
+
   render() {
     return (
       <View
@@ -65,54 +69,71 @@ export default class Admin extends Component {
           justifyContent: "center"
         }}
       >
-        <Button
-          rounded
-          style={styles.btnStyle}
-          onPress={() => {
-            this.verReservaciones();
-          }}
-        >
-          <Text style={styles.textStyle}>Ver Reservaciones</Text>
-        </Button>
-        <Button
-          rounded
-          style={styles.btnStyle}
-          onPress={() => {
-            this.verUsuarios();
-          }}
-        >
-          <Text style={styles.textStyle}>Ver Usuarios</Text>
-        </Button>
-        <Button
-          rounded
-          style={styles.btnStyle}
-          onPress={() => {
-            this.verEmpleados();
-          }}
-        >
-          <Text style={styles.textStyle}>Ver Empleados</Text>
-        </Button>
-        <Button
-          rounded
-          style={styles.btnStyle}
-          onPress={() => this.agregarEmpleado()}
-        >
-          <Text style={styles.textStyle}>Nuevo Empleado</Text>
-        </Button>
-        <Button
-          rounded
-          style={styles.btnStyle}
-          onPress={() => this.verServicios()}
-        >
-          <Text style={styles.textStyle}>Ver Servicios</Text>
-        </Button>
-        <Button
-          rounded
-          style={styles.btnStyle}
-          onPress={() => this.agregarServicio()}
-        >
-          <Text style={styles.textStyle}>Nuevo Servicio</Text>
-        </Button>
+        <ScrollView>
+          <Button
+            rounded
+            style={styles.btnStyle}
+            onPress={() => this.valorDolar()}
+          >
+            <Text style={styles.textStyle}>Cambio del Dia</Text>
+          </Button>
+          <Button
+            rounded
+            style={styles.btnStyle}
+            onPress={() => {
+              this.verReservaciones();
+            }}
+          >
+            <Text style={styles.textStyle}>Ver Reservaciones</Text>
+          </Button>
+          <Button
+            rounded
+            style={styles.btnStyle}
+            onPress={() => {
+              this.verUsuarios();
+            }}
+          >
+            <Text style={styles.textStyle}>Ver Usuarios</Text>
+          </Button>
+          <Button
+            rounded
+            style={styles.btnStyle}
+            onPress={() => {
+              this.verEmpleados();
+            }}
+          >
+            <Text style={styles.textStyle}>Ver Empleados</Text>
+          </Button>
+          <Button
+            rounded
+            style={styles.btnStyle}
+            onPress={() => this.agregarEmpleado()}
+          >
+            <Text style={styles.textStyle}>Nuevo Empleado</Text>
+          </Button>
+          <Button
+            rounded
+            style={styles.btnStyle}
+            onPress={() => this.verServicios()}
+          >
+            <Text style={styles.textStyle}>Ver Servicios</Text>
+          </Button>
+          <Button
+            rounded
+            style={{
+              backgroundColor: "#D5C046",
+              height: 40,
+              width: 200,
+              marginTop: 30,
+              justifyContent: "center",
+              alignSelf: "center",
+              marginBottom: 30
+            }}
+            onPress={() => this.agregarServicio()}
+          >
+            <Text style={styles.textStyle}>Nuevo Servicio</Text>
+          </Button>
+        </ScrollView>
       </View>
     );
   }
@@ -123,7 +144,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#D5C046",
     height: 40,
     width: 200,
-    marginBottom: 30,
+    marginTop: 30,
     justifyContent: "center",
     alignSelf: "center"
   },

@@ -19,8 +19,8 @@ class NuevoEmpleado extends Component {
     this.state = {
       nombre: "",
       apellido: "",
-      corre: "",
-      modalVisible: "",
+      correo: "",
+      modalVisible: false,
       servicios: [],
       selectedServicios: [],
       serviciosSelect: []
@@ -60,7 +60,13 @@ class NuevoEmpleado extends Component {
     const { nombre, apellido, correo, selectedServicios } = this.state;
 
     selectedServicios.length > 0
-      ? this.generarCodigoQR(nombre, apellido, correo, selectedServicios)
+      ? nombre === "" || apellido === "" || correo === ""
+        ? ToastAndroid.showWithGravity(
+            "Debe completar todos los campos",
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM
+          )
+        : this.generarCodigoQR(nombre, apellido, correo, selectedServicios)
       : ToastAndroid.showWithGravity(
           "Debe seleccionar almenos un servicio.",
           ToastAndroid.LONG,
@@ -188,7 +194,7 @@ class NuevoEmpleado extends Component {
           transparent={true}
           visible={this.state.modalVisible}
           onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
+            this.modalVisible(!this.state.modalVisible);
           }}
         >
           <View

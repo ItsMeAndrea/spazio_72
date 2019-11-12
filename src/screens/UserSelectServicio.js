@@ -4,6 +4,7 @@ import { Button } from "native-base";
 import app from "../firebase/firebaseConfig";
 import _ from "lodash";
 import SelectMultiple from "react-native-select-multiple";
+import { createNavigationContainer } from "react-navigation";
 
 class UserSelectServicio extends Component {
   constructor(props) {
@@ -11,7 +12,8 @@ class UserSelectServicio extends Component {
     this.state = {
       servicios: [],
       selectedServicios: [],
-      serviciosData: []
+      serviciosData: [],
+      totalServiciosData: []
     };
   }
 
@@ -25,7 +27,7 @@ class UserSelectServicio extends Component {
     }
   };
 
-  componentDidMount() {
+  componentWillMount() {
     const userID = this.props.navigation.getParam("id");
     app
       .database()
@@ -36,6 +38,22 @@ class UserSelectServicio extends Component {
         });
         this.setState({ servicios: servicios });
       });
+  }
+
+  componentDidMount() {
+    const { servicios } = this.state;
+    const serviciosID = servicios.map(i => i.value);
+    const totalServiciosDataArr = [];
+
+    serviciosID.forEach(servicioID =>
+      app
+        .database()
+        .ref(`servicios/${servicioID}`)
+        .on("value", snapshot => {
+          totalServiciosDataArr.push(snapshot.val());
+          this.setState({ totalServiciosData: totalServiciosDataArr });
+        })
+    );
   }
 
   onSelectionsChange = selectedServicios => {
@@ -76,6 +94,39 @@ class UserSelectServicio extends Component {
     this.setState({ selectedServicios: [], serviciosData: [] });
   }
 
+  renderLabel = (label, style) => {
+    const { totalServiciosData } = this.state;
+
+    const servicioObj = totalServiciosData.find(obj => {
+      return obj.nombreServicio === label;
+    });
+
+    const precioFormat =
+      servicioObj === undefined
+        ? ""
+        : servicioObj.precioBs
+            .toString()
+            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+
+    const precioDolarCheck =
+      servicioObj === undefined ? "" : servicioObj.precioServicio;
+    const duracionCheck = servicioObj === undefined ? "" : servicioObj.duracion;
+
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ marginLeft: 10 }}>
+          <Text style={style}>{label} </Text>
+          <Text style={{ color: "white", fontSize: 10 }}>
+            Precio: BsS. {precioFormat} - $ {precioDolarCheck}
+          </Text>
+          <Text style={{ color: "white", fontSize: 10 }}>
+            Duracion: {duracionCheck}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
   render() {
     const { btnStyle, textStyle } = styles;
     return (
@@ -92,6 +143,7 @@ class UserSelectServicio extends Component {
           rowStyle={{ backgroundColor: "#282828" }}
           labelStyle={{ color: "white" }}
           checkboxStyle={{ tintColor: "#D5C046" }}
+          renderLabel={this.renderLabel}
         />
 
         <Button

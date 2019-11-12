@@ -19,6 +19,7 @@ export default class Home extends Component {
 
     // Assign state itself, and a default value for items
     this.state = {
+      empleados: [],
       reservaciones: [
         {
           uid: "",
@@ -74,7 +75,7 @@ export default class Home extends Component {
         .then(url => {
           url ? this.navigate(url) : this.props.navigation.navigate("Home");
         })
-        .catch(console.log("url === null"));
+        .catch(this.props.navigation.navigate("Home"));
     } else {
       Linking.addEventListener("url", this.handleOpenURL);
     }
@@ -92,6 +93,16 @@ export default class Home extends Component {
         this.setState({ reservaciones: reservas });
       });
 
+    app
+      .database()
+      .ref("empleados/")
+      .on("value", snapshot => {
+        const empleados = _.map(snapshot.val(), val => {
+          return { ...val };
+        });
+        this.setState({ empleados });
+      });
+
     Linking.removeEventListener("url", this.handleOpenURL);
   }
 
@@ -102,15 +113,19 @@ export default class Home extends Component {
   };
 
   navigate = url => {
-    // E
+    const { empleados } = this.state;
+    const empleadosID = empleados.map(i => i.empleadoID);
     const { navigate } = this.props.navigation;
     const route = url.replace(/.*?:\/\//g, "");
     const id = route.match(/\/([^\/]+)\/?$/)[1];
     const routeName = route.split("/")[0];
+    const actionAlert = "El codigo no es valido";
 
-    if (routeName === "empleados") {
-      navigate("Reservation", { id });
-    }
+    const isEmpleadoRegister = empleadosID.includes(id);
+
+    isEmpleadoRegister
+      ? routeName === "empleados" && navigate("Reservation", { id })
+      : navigate("Home");
   };
 
   getDayofWeek(index) {

@@ -2,9 +2,24 @@ import React from "react";
 import { Text, StyleSheet, Image } from "react-native";
 import { Button } from "native-base";
 import Swipeable from "react-native-swipeable";
+import app from "../firebase/firebaseConfig";
 
-const ServiciosItem = ({ servicios }) => {
-  const { swipeStyle, boldText, boldTextFist, textStyle } = styles;
+const onDelete = servicios => {
+  app
+    .database()
+    .ref(`servicios/${servicios.servicioID}`)
+    .remove();
+};
+
+const transformNum = servicios => {
+  const precioBs = servicios.precioBs.toString();
+  const precioFormat = precioBs.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+
+  return precioFormat;
+};
+
+const ServiciosItem = ({ servicios, onEdit }) => {
+  const { swipeStyle, textStyle } = styles;
 
   const rightButtons = [
     <Button
@@ -14,7 +29,7 @@ const ServiciosItem = ({ servicios }) => {
         backgroundColor: "#279e29",
         padding: 35
       }}
-      onPress={() => onEdit(item)}
+      onPress={() => onEdit(servicios)}
     >
       <Image
         style={{ width: 20, height: 20 }}
@@ -28,7 +43,7 @@ const ServiciosItem = ({ servicios }) => {
         backgroundColor: "#bc2121",
         padding: 35
       }}
-      onPress={() => onDelete(reservaID, empleadoID, item, slotID)}
+      onPress={() => onDelete(servicios)}
     >
       <Image
         style={{ width: 20, height: 20 }}
@@ -46,7 +61,10 @@ const ServiciosItem = ({ servicios }) => {
     >
       <Text style={textStyle}> {servicios.nombreServicio}</Text>
       <Text style={textStyle}> Duración: {servicios.duracion}</Text>
-      <Text style={textStyle}> Precio: {servicios.precioServicio} $</Text>
+      <Text style={textStyle}>
+        {" "}
+        Precio: $ {servicios.precioServicio} - BsS. {transformNum(servicios)}
+      </Text>
     </Swipeable>
   );
 };

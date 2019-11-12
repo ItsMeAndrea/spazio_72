@@ -32,6 +32,7 @@ class CodigoEmpleado extends Component {
     const nombre = this.props.navigation.getParam("nombre");
     const apellido = this.props.navigation.getParam("apellido");
     const empleadoID = this.props.navigation.getParam("empleadoID");
+    const actionAlert = "El empleado fue registrado correctamente";
     this.svg.toDataURL(data => {
       const shareImageBase64 = {
         title: "QR",
@@ -40,10 +41,10 @@ class CodigoEmpleado extends Component {
       };
       Share.open(shareImageBase64)
         .then(() => {
-          this.props.navigation.navigate("Home");
+          this.props.navigation.navigate("VerEmpleados", { actionAlert });
         })
         .catch(() => {
-          this.props.navigation.navigate("Home");
+          this.props.navigation.navigate("VerEmpleados", { actionAlert });
         });
     });
     this.svg.toDataURL(data => {
@@ -52,6 +53,18 @@ class CodigoEmpleado extends Component {
         .ref(`empleados/${empleadoID}/`)
         .update({ qrData: `${data}` });
     });
+  }
+
+  guardarQR() {
+    const empleadoID = this.props.navigation.getParam("empleadoID");
+    const actionAlert = "El empleado fue registrado correctamente";
+    this.svg.toDataURL(data => {
+      app
+        .database()
+        .ref(`empleados/${empleadoID}/`)
+        .update({ qrData: `${data}` });
+    });
+    this.props.navigation.navigate("VerEmpleados", { actionAlert });
   }
 
   render() {
@@ -82,7 +95,16 @@ class CodigoEmpleado extends Component {
           style={btnStyle}
           onPress={() => this.saveQRCode()}
         >
-          <Text style={textStyle}>Compartir</Text>
+          <Text style={textStyle}>Descargar</Text>
+        </Button>
+        <Button
+          transparent
+          style={{ alignSelf: "center", marginTop: 20 }}
+          onPress={() => this.guardarQR()}
+        >
+          <Text style={{ color: "white", fontSize: 10 }}>
+            Descargar despues
+          </Text>
         </Button>
       </View>
     );

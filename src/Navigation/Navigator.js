@@ -29,6 +29,9 @@ import EditServicios from "../screens/EditServicios";
 import AdminEditReservation from "../screens/AdminEditReservation";
 import AdminEditServicio from "../screens/AdminEditServicio";
 import AdminEditBookingSlots from "../screens/AdminEditBookingSlots";
+import AdminEditUser from "../screens/AdminEditUser";
+import ValorDolar from "../screens/ValorDolar";
+import EditAdminServ from "../screens/EditAdminServ";
 
 const AppStack = createStackNavigator(
   {
@@ -64,7 +67,10 @@ const AdminStack = createStackNavigator({
   EditarEmpleado: EditarEmpleado,
   EditarReserva: AdminEditReservation,
   EditarServicio: AdminEditServicio,
-  EditarBooking: AdminEditBookingSlots
+  EditarBooking: AdminEditBookingSlots,
+  EditarUsuario: AdminEditUser,
+  ValorDolar: ValorDolar,
+  EditAdminServ: EditAdminServ
 });
 
 const AppContainer = createAppContainer(

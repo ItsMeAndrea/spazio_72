@@ -1,33 +1,45 @@
 import React, { Component } from "react";
 import _ from "lodash";
-import app from "../firebase/firebaseConfig";
 import { View, Text, StyleSheet, ToastAndroid } from "react-native";
 import { Form, Input, Item, Button, Picker, Icon, Label } from "native-base";
+import app from "../firebase/firebaseConfig";
 
-class NuevoServicio extends Component {
+class EditAdminServ extends Component {
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: "Editar Servicio",
+      headerStyle: {
+        backgroundColor: "#282828"
+      },
+      headerTitleStyle: {
+        color: "white"
+      }
+    };
+  };
+
   constructor(props) {
     super(props);
     this.state = {
       selectDuracion: 0,
       nombre: "",
       precio: "",
-      servicios: [],
       errorServicio: "",
       tasa: ""
     };
   }
 
-  static navigationOptions = {
-    title: "Nuevo Servicio",
-    headerStyle: {
-      backgroundColor: "#282828"
-    },
-    headerTitleStyle: {
-      color: "white"
-    }
-  };
+  componentWillMount() {
+    const servicio = this.props.navigation.getParam("item");
+    const { nombreServicio, precioServicio, numButton } = servicio;
 
-  componentDidMount() {
+    const precioString = precioServicio.toString();
+    console.log(servicio);
+    this.setState({
+      nombre: nombreServicio,
+      precio: precioString,
+      selectDuracion: numButton
+    });
+
     app
       .database()
       .ref(`servicios/`)
@@ -54,7 +66,7 @@ class NuevoServicio extends Component {
   }
 
   onButtonPress() {
-    const { nombre, precio, selectDuracion, servicios, tasa } = this.state;
+    const { nombre, precio, selectDuracion, tasa } = this.state;
     const duracion = arrDuracion[selectDuracion];
     const capFirstLetter = nombre
       .toLowerCase()
@@ -62,70 +74,55 @@ class NuevoServicio extends Component {
       .map(s => s.charAt(0).toUpperCase() + s.substring(1))
       .join(" ");
 
-    const arrservicioExiste = servicios.map(servicio => {
-      return servicio.nombreServicio === capFirstLetter ? true : false;
-    });
-    const servicioExiste = arrservicioExiste.every(elem => elem === false);
-
     const tasaformat = tasa.split(",").join("");
     const precioNum = Number(precio);
     const tasaNum = Number(tasaformat);
     const precioBs = precioNum * tasaNum;
 
-    servicioExiste
-      ? nombre !== "" && precio !== ""
-        ? this.registrarServicio(
-            capFirstLetter,
-            precioNum,
-            selectDuracion,
-            duracion,
-            precioBs
-          )
-        : ToastAndroid.showWithGravity(
-            "Todos los campos deben ser completados",
-            ToastAndroid.SHORT,
-            ToastAndroid.BOTTOM
-          )
+    nombre !== "" && precio !== ""
+      ? this.actualizarServicio(
+          capFirstLetter,
+          precioNum,
+          selectDuracion,
+          duracion,
+          precioBs
+        )
       : ToastAndroid.showWithGravity(
-          "El servicio ya se encuentra Registrado",
+          "Todos los campos deben ser completados",
           ToastAndroid.SHORT,
           ToastAndroid.BOTTOM
         );
   }
 
-  registrarServicio(
+  actualizarServicio(
     capFirstLetter,
     precio,
     selectDuracion,
     duracion,
     precioBs
   ) {
-    const actionAlert = "El servicio fue registrado con exito";
-    const servicioRef = app
+    const servicio = this.props.navigation.getParam("item");
+    const { servicioID } = servicio;
+    app
       .database()
       .ref(`servicios/`)
-      .push(
+      .child(`${servicioID}`)
+      .update(
         {
+          duracion: duracion,
+          precioBs: precioBs,
           nombreServicio: capFirstLetter,
           precioServicio: precio,
-          numButton: selectDuracion,
-          duracion: duracion,
-          precioBs: precioBs
+          numButton: selectDuracion
         },
         error => {
           error
             ? console.log("error")
-            : (this.props.navigation.navigate("VerServicios", { actionAlert }),
+            : (this.props.navigation.navigate("Home"),
               this.setState({ errorServicio: "" }));
         }
       );
-    const servicioID = servicioRef.key;
-    app
-      .database()
-      .ref(`servicios/${servicioID}`)
-      .update({ servicioID: servicioID });
   }
-
   render() {
     const {
       container,
@@ -147,7 +144,6 @@ class NuevoServicio extends Component {
               onChangeText={nombre => this.setState({ nombre })}
             />
           </Item>
-
           <Item rounded style={itemStyle}>
             <Input
               style={inputStyle}
@@ -158,7 +154,6 @@ class NuevoServicio extends Component {
               keyboardType={"number-pad"}
             />
           </Item>
-
           <Item
             picker
             style={{
@@ -191,14 +186,12 @@ class NuevoServicio extends Component {
           style={btnStyle}
           onPress={() => this.onButtonPress()}
         >
-          <Text style={textStyle}>Registrar Servicio</Text>
+          <Text style={textStyle}>Guardar Cambios</Text>
         </Button>
-        <Text style={errorText}>{this.state.errorServicio}</Text>
       </View>
     );
   }
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -250,4 +243,5 @@ const arrDuracion = [
   "4h 30m",
   "5h 0m"
 ];
-export default NuevoServicio;
+
+export default EditAdminServ;

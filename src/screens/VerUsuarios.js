@@ -6,14 +6,6 @@ import { FlatList, View } from "react-native";
 import UsuariosItem from "../components/UsuariosItem";
 
 class VerUsuarios extends Component {
-  constructor(props) {
-    super(props);
-
-    // Assign state itself, and a default value for items
-    this.state = {
-      usuarios: []
-    };
-  }
   static navigationOptions = {
     title: "Usuarios",
     headerStyle: {
@@ -23,6 +15,14 @@ class VerUsuarios extends Component {
       color: "white"
     }
   };
+  constructor(props) {
+    super(props);
+
+    // Assign state itself, and a default value for items
+    this.state = {
+      usuarios: []
+    };
+  }
 
   componentWillMount() {
     app
@@ -35,12 +35,18 @@ class VerUsuarios extends Component {
         this.setState({ usuarios: usuarios });
       });
   }
+
+  onEdit = item => {
+    this.props.navigation.navigate("EditarUsuario", { item });
+  };
   render() {
     return (
       <View style={{ flex: 1, backgroundColor: "#282828" }}>
         <FlatList
           data={this.state.usuarios}
-          renderItem={({ item }) => <UsuariosItem usuario={item.datos} />}
+          renderItem={({ item }) => (
+            <UsuariosItem onEdit={this.onEdit} usuario={item.datos} />
+          )}
           keyExtractor={item => item.datos.email}
         />
       </View>
