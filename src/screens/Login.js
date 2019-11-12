@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import app from "../firebase/firebaseConfig";
-import { View, Image, Text, StyleSheet } from "react-native";
+import { View, Image, Text, StyleSheet, ToastAndroid } from "react-native";
 import { Form, Item, Input, Button } from "native-base";
 import Spinner from "../components/Spinner";
 
@@ -82,8 +82,15 @@ class App extends Component {
       inputStyle,
       signupStyle
     } = styles;
+    const actionAlert = this.props.navigation.getParam("actionAlert");
     return (
       <View style={container}>
+        {actionAlert !== undefined &&
+          ToastAndroid.showWithGravity(
+            `${actionAlert}`,
+            ToastAndroid.LONG,
+            ToastAndroid.CENTER
+          )}
         <View style={{ alignItems: "center" }}>
           <Image style={logoStyle} source={require("../images/logo.png")} />
         </View>

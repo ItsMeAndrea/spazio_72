@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import app from "../firebase/firebaseConfig";
 import _ from "lodash";
 import { FlatList, View } from "react-native";
-import { NavigationActions } from "react-navigation";
 
 import ReservacionesItem from "../components/ReservacionesItem";
 

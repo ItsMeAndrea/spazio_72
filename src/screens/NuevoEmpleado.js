@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Image,
   Modal,
-  Alert,
   ToastAndroid
 } from "react-native";
 import { Form, Input, Item, Button } from "native-base";
@@ -68,7 +67,7 @@ class NuevoEmpleado extends Component {
           )
         : this.generarCodigoQR(nombre, apellido, correo, selectedServicios)
       : ToastAndroid.showWithGravity(
-          "Debe seleccionar almenos un servicio.",
+          "Debe seleccionar al menos un servicio.",
           ToastAndroid.LONG,
           ToastAndroid.BOTTOM
         );

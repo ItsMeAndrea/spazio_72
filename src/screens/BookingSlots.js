@@ -1,14 +1,7 @@
 import React, { Component } from "react";
 import _ from "lodash";
 import app from "../firebase/firebaseConfig";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Modal,
-  Alert,
-  ToastAndroid
-} from "react-native";
+import { View, StyleSheet, Text, Modal, ToastAndroid } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Button } from "native-base";
 
@@ -56,6 +49,8 @@ class BookingSlots extends Component {
     const durationSum = this.props.navigation.getParam("durationSum");
     const duracion = duracionArr[durationSum];
     const { dia, mes, año, id } = reservacion;
+
+    console.log(duracion);
 
     this.setState({ duracion: duracion });
 
@@ -118,8 +113,26 @@ class BookingSlots extends Component {
     const { nombre, apellido, email } = this.state.userInfo;
     const slotID = index;
     const endArr = index + durationSum;
+    let selectedSlots = this.state.finalSlots.slice(index, endArr);
 
-    const selectedSlots = this.state.finalSlots.slice(index, endArr);
+    endArr > this.state.finalSlots.length &&
+      (ToastAndroid.showWithGravity(
+        "No es posible hacer la cita en las horas seleccionadas",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      ),
+      (selectedSlots = []));
+
+    selectedSlots.forEach(
+      i =>
+        i.isDisable &&
+        (ToastAndroid.showWithGravity(
+          "No es posible hacer la cita en las horas seleccionadas",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        ),
+        (selectedSlots = []))
+    );
 
     const slotKey = selectedSlots.map(i => i.slotID);
     const tmp = this.state.selectedSlots.map(i => i.slotID);
@@ -224,15 +237,14 @@ class BookingSlots extends Component {
 
   setModalVisible(visible) {
     const { selectedSlots } = this.state;
-    selectedSlots.forEach(i =>
-      i.slotID === ""
-        ? ToastAndroid.showWithGravity(
-            "Seleccione la hora de su cita",
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER
-          )
-        : this.setState({ modalVisible: visible })
-    );
+    console.log(selectedSlots);
+    selectedSlots.length > 0
+      ? this.setState({ modalVisible: visible })
+      : ToastAndroid.showWithGravity(
+          "Seleccione la hora de su cita",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
   }
 
   render() {
@@ -296,7 +308,7 @@ class BookingSlots extends Component {
           transparent={true}
           visible={this.state.modalVisible}
           onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
+            this.setModalVisible(!this.state.modalVisible);
           }}
         >
           <View
@@ -310,11 +322,11 @@ class BookingSlots extends Component {
           >
             <View
               style={{
-                width: 350,
-                height: 220,
+                width: 300,
+                height: 250,
                 backgroundColor: "#282828",
-                padding: 30,
-                borderRadius: 20
+                padding: 20,
+                borderRadius: 40
               }}
             >
               <Text
@@ -355,6 +367,7 @@ class BookingSlots extends Component {
               >
                 ¿Desea continuar?
               </Text>
+
               <View
                 style={{
                   flexDirection: "row",
@@ -368,7 +381,7 @@ class BookingSlots extends Component {
                     backgroundColor: "#D5C046",
                     color: "white",
                     padding: 20,
-                    width: 120,
+                    width: 110,
                     justifyContent: "center"
                   }}
                   onPress={() => this.hacerReservacion()}
@@ -382,7 +395,7 @@ class BookingSlots extends Component {
                     backgroundColor: "#D5C046",
                     color: "white",
                     padding: 20,
-                    width: 120,
+                    width: 110,
                     justifyContent: "center"
                   }}
                   onPress={() => {
@@ -392,6 +405,18 @@ class BookingSlots extends Component {
                   <Text style={textStyle}>Cancelar</Text>
                 </Button>
               </View>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 8,
+                  textAlign: "center",
+                  marginTop: 30,
+                  marginHorizontal: 30
+                }}
+              >
+                Advertencia: Los precios mostrados en BsS. estan sujetos a
+                cambios.
+              </Text>
             </View>
           </View>
         </Modal>

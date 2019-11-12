@@ -4,11 +4,20 @@ import { Button } from "native-base";
 import Swipeable from "react-native-swipeable";
 import app from "../firebase/firebaseConfig";
 
-const onDelete = servicios => {
+const onDelete = (servicios, empleados) => {
   app
     .database()
     .ref(`servicios/${servicios.servicioID}`)
     .remove();
+
+  empleados.forEach(i => {
+    app
+      .database()
+      .ref(
+        `empleados/${i.empleadoID}/selectedServicios/${servicios.servicioID}`
+      )
+      .remove();
+  });
 };
 
 const transformNum = servicios => {
@@ -18,7 +27,7 @@ const transformNum = servicios => {
   return precioFormat;
 };
 
-const ServiciosItem = ({ servicios, onEdit }) => {
+const ServiciosItem = ({ servicios, onEdit, empleados }) => {
   const { swipeStyle, textStyle } = styles;
 
   const rightButtons = [
@@ -43,7 +52,7 @@ const ServiciosItem = ({ servicios, onEdit }) => {
         backgroundColor: "#bc2121",
         padding: 35
       }}
-      onPress={() => onDelete(servicios)}
+      onPress={() => onDelete(servicios, empleados)}
     >
       <Image
         style={{ width: 20, height: 20 }}

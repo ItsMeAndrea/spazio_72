@@ -117,7 +117,7 @@ class UserSelectServicio extends Component {
         <View style={{ marginLeft: 10 }}>
           <Text style={style}>{label} </Text>
           <Text style={{ color: "white", fontSize: 10 }}>
-            Precio: BsS. {precioFormat} - $ {precioDolarCheck}
+            Precio: $ {precioDolarCheck} ~ BsS. {precioFormat}
           </Text>
           <Text style={{ color: "white", fontSize: 10 }}>
             Duracion: {duracionCheck}

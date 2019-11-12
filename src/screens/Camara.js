@@ -2,13 +2,7 @@
 
 import React, { Component } from "react";
 
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Linking,
-  Button
-} from "react-native";
+import { StyleSheet, Text, Linking } from "react-native";
 
 import QRCodeScanner from "react-native-qrcode-scanner";
 

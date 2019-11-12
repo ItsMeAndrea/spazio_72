@@ -1,8 +1,5 @@
-import * as admin from 'firebase-admin';
+import * as admin from "firebase-admin";
 
-const admin = admin.initializeApp({
-  credential: admin.credential.applicationDefault(),
-  databaseURL: 'https://spazio72-90148.firebaseio.com'
-});
+const adminFirebase = admin.initializeApp();
 
-export default admin;
+export default adminFirebase;

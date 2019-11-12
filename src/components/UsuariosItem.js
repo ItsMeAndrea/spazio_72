@@ -1,7 +1,7 @@
 import React from "react";
 import app from "../firebase/firebaseConfig";
 import { Text, Image, StyleSheet } from "react-native";
-import { Button } from "native-base";
+import { Button, View } from "native-base";
 import Swipeable from "react-native-swipeable";
 
 const UsuarioItem = ({ usuario, onEdit }) => {
@@ -38,25 +38,14 @@ const UsuarioItem = ({ usuario, onEdit }) => {
     </Button>
   ];
   return (
-    <Swipeable
-      leftButtonWidth={60}
-      rightButtonWidth={60}
-      rightButtons={rightButtons}
-      style={swipeStyle}
-    >
+    <View style={{ borderBottomColor: "white", borderBottomWidth: 1 }}>
       <Text style={boldTextFist}>{`${nombre} ${apellido}`}</Text>
       <Text style={textStyle}>{`${email}`}</Text>
-    </Swipeable>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  swipeStyle: {
-    height: 60,
-    backgroundColor: "gray",
-    borderBottomWidth: 1,
-    borderBottomColor: "black"
-  },
   boldTextFist: {
     color: "white",
     fontWeight: "bold",
@@ -73,7 +62,8 @@ const styles = StyleSheet.create({
   textStyle: {
     fontSize: 10,
     color: "white",
-    paddingLeft: 20
+    paddingLeft: 20,
+    paddingBottom: 10
   }
 });
 

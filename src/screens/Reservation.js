@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, ToastAndroid } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { LocaleConfig } from "react-native-calendars";
 import { Button } from "native-base";
@@ -48,7 +48,7 @@ export default class Reservation extends Component {
   }
 
   continueReservation(id) {
-    const { dia, mes, año, empleados, slotsNull } = this.state;
+    const { dia, mes, año, empleados, slotsNull, selected } = this.state;
     const reservacion = {
       dia: dia,
       mes: mes,
@@ -58,7 +58,13 @@ export default class Reservation extends Component {
       aEmpleado: empleados[id].apellido
     };
 
-    slotsNull
+    selected === ""
+      ? ToastAndroid.showWithGravity(
+          "Debe seleccionar un dia para hacer su cita",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        )
+      : slotsNull
       ? app
           .database()
           .ref(`/empleados/${id}/reservaciones/${año}/${mes}/${dia}`)

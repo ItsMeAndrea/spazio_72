@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import app from "../firebase/firebaseConfig";
 import _ from "lodash";
-import { FlatList, View, ToastAndroid } from "react-native";
+import { FlatList, View, ToastAndroid, Image } from "react-native";
 import { HeaderBackButton } from "react-navigation";
+import { Fab } from "native-base";
 
 import EmpleadosItem from "../components/EmpleadosItem";
 
@@ -64,6 +65,23 @@ class VerEmpleados extends Component {
           )}
           keyExtractor={item => item.correo}
         />
+        <Fab
+          direction="up"
+          containerStyle={{}}
+          style={{ backgroundColor: "#D5C046" }}
+          position="bottomRight"
+          onPress={() => this.props.navigation.navigate("NuevoEmpleado")}
+        >
+          <Image
+            style={{
+              height: 25,
+              width: 25,
+              marginLeft: 10,
+              marginRight: 10
+            }}
+            source={require("../images/add.png")}
+          />
+        </Fab>
       </View>
     );
   }

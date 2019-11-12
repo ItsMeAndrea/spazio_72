@@ -102,6 +102,7 @@ class EditAdminServ extends Component {
     precioBs
   ) {
     const servicio = this.props.navigation.getParam("item");
+    const actionAlert = "El servicio fue editado con exito";
     const { servicioID } = servicio;
     app
       .database()
@@ -118,8 +119,7 @@ class EditAdminServ extends Component {
         error => {
           error
             ? console.log("error")
-            : (this.props.navigation.navigate("Home"),
-              this.setState({ errorServicio: "" }));
+            : this.props.navigation.navigate("VerServicios", { actionAlert });
         }
       );
   }

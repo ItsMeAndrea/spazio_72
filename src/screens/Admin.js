@@ -32,10 +32,6 @@ export default class Admin extends Component {
     )
   };
 
-  agregarEmpleado() {
-    this.props.navigation.navigate("NuevoEmpleado");
-  }
-
   verReservaciones() {
     this.props.navigation.navigate("VerReservaciones");
   }
@@ -46,10 +42,6 @@ export default class Admin extends Component {
 
   verEmpleados() {
     this.props.navigation.navigate("VerEmpleados");
-  }
-
-  agregarServicio() {
-    this.props.navigation.navigate("NuevoServicio");
   }
 
   verServicios() {
@@ -84,7 +76,7 @@ export default class Admin extends Component {
               this.verReservaciones();
             }}
           >
-            <Text style={styles.textStyle}>Ver Reservaciones</Text>
+            <Text style={styles.textStyle}>Reservaciones</Text>
           </Button>
           <Button
             rounded
@@ -93,7 +85,7 @@ export default class Admin extends Component {
               this.verUsuarios();
             }}
           >
-            <Text style={styles.textStyle}>Ver Usuarios</Text>
+            <Text style={styles.textStyle}>Usuarios</Text>
           </Button>
           <Button
             rounded
@@ -102,36 +94,15 @@ export default class Admin extends Component {
               this.verEmpleados();
             }}
           >
-            <Text style={styles.textStyle}>Ver Empleados</Text>
+            <Text style={styles.textStyle}>Empleados</Text>
           </Button>
-          <Button
-            rounded
-            style={styles.btnStyle}
-            onPress={() => this.agregarEmpleado()}
-          >
-            <Text style={styles.textStyle}>Nuevo Empleado</Text>
-          </Button>
+
           <Button
             rounded
             style={styles.btnStyle}
             onPress={() => this.verServicios()}
           >
-            <Text style={styles.textStyle}>Ver Servicios</Text>
-          </Button>
-          <Button
-            rounded
-            style={{
-              backgroundColor: "#D5C046",
-              height: 40,
-              width: 200,
-              marginTop: 30,
-              justifyContent: "center",
-              alignSelf: "center",
-              marginBottom: 30
-            }}
-            onPress={() => this.agregarServicio()}
-          >
-            <Text style={styles.textStyle}>Nuevo Servicio</Text>
+            <Text style={styles.textStyle}>Servicios</Text>
           </Button>
         </ScrollView>
       </View>

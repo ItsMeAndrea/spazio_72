@@ -65,6 +65,11 @@ class SignUp extends Component {
             })
           : this.sendEmail();
       });
+
+    currentUser.updateProfile({
+      displayName: nombre
+    });
+
     this.setState({
       email: "",
       password: "",
@@ -171,6 +176,7 @@ class SignUp extends Component {
                 placeholderTextColor="white"
                 value={this.state.email}
                 onChangeText={email => this.setState({ email })}
+                autoCapitalize="none"
               />
             </Item>
 

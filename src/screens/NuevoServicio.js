@@ -108,7 +108,7 @@ class NuevoServicio extends Component {
         {
           nombreServicio: capFirstLetter,
           precioServicio: precio,
-          numButton: selectDuracion,
+          numButton: selectDuracion + 1,
           duracion: duracion,
           precioBs: precioBs
         },

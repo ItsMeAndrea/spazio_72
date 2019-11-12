@@ -1,11 +1,34 @@
-import React, { Component } from 'react';
-import { View, Image, Text, StyleSheet } from 'react-native';
-import { Form, Item, Input, Button } from 'native-base';
+import React, { Component } from "react";
+import { View, Image, Text, StyleSheet } from "react-native";
+import { Form, Item, Input, Button } from "native-base";
+import app from "../firebase/firebaseConfig";
 
 export default class App extends Component {
   static navigationOptions = {
-    header: null
+    title: "Recuperar Contraseña",
+    headerStyle: {
+      backgroundColor: "#282828"
+    },
+    headerTitleStyle: {
+      color: "white"
+    }
   };
+
+  state = {
+    email: ""
+  };
+
+  onButtonPress() {
+    const { email } = this.state;
+    const actionAlert = "Hemos enviado el correo exitosamente.";
+
+    app
+      .auth()
+      .sendPasswordResetEmail(email)
+      .then(() => {
+        this.props.navigation.navigate("Login", { actionAlert });
+      });
+  }
   render() {
     const {
       container,
@@ -15,9 +38,7 @@ export default class App extends Component {
       btnStyle,
       textStyle,
       paragraphStyle,
-      backButtonPosition,
-      backButton,
-      backBtnStyle,
+
       formPosition
     } = styles;
     return (
@@ -25,67 +46,67 @@ export default class App extends Component {
         <View style={formPosition}>
           <View style={paragraphStyle}>
             <Text style={textStyle}>
-              Ingrese su Correo Electronico y le enviaremos los pasos a seguir
-              para recuperar su Contraseña.
+              Ingrese su Correo Electronico para poder restablecer su contraseña
             </Text>
           </View>
           <Form>
             <Item rounded style={itemStyle}>
               <Image
                 style={imageStyle}
-                source={require('../images/username.png')}
+                source={require("../images/username.png")}
               />
+              {console.log(this.state.email)}
               <Input
                 autoCorrect={false}
                 style={inputStyle}
-                placeholder="Ingrese Correo Electronico"
+                placeholder="Correo "
                 placeholderTextColor="white"
+                value={this.state.email}
+                onChangeText={email => this.setState({ email })}
+                autoCapitalize="none"
               />
             </Item>
           </Form>
           <View>
-            <Button block rounded style={btnStyle}>
-              <Text style={textStyle}>ENVIAR</Text>
+            <Button
+              block
+              rounded
+              style={btnStyle}
+              onPress={() => this.onButtonPress()}
+            >
+              <Text style={textStyle}>Enviar</Text>
             </Button>
           </View>
-        </View>
-        <View style={backButtonPosition}>
-          <Button rounded style={backButton} onPress={this._Login}>
-            <Image
-              style={backBtnStyle}
-              source={require('../images/left-arrow.png')}
-            />
-          </Button>
         </View>
       </View>
     );
   }
 
   _Login = () => {
-    this.props.navigation.navigate('Login');
+    this.props.navigation.navigate("Login");
   };
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#282828',
+    backgroundColor: "#282828",
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center'
+    flexDirection: "column",
+    justifyContent: "center"
   },
   paragraphStyle: {
-    alignItems: 'center',
+    alignItems: "center",
     marginLeft: 30,
     marginRight: 30,
     marginBottom: 30
   },
   itemStyle: {
-    backgroundColor: 'gray',
+    backgroundColor: "gray",
     opacity: 0.8,
     marginLeft: 30,
     marginRight: 30,
     marginBottom: 10,
-    color: 'white'
+    color: "white"
   },
   imageStyle: {
     height: 30,
@@ -93,21 +114,22 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
   inputStyle: {
-    color: 'white'
+    color: "white",
+    fontSize: 10
   },
   btnStyle: {
-    backgroundColor: '#D5C046',
-    color: 'white',
+    backgroundColor: "#D5C046",
+    color: "white",
     marginTop: 10,
     marginLeft: 30,
     marginRight: 30
   },
   textStyle: {
-    fontSize: 20,
-    color: 'white'
+    fontSize: 15,
+    color: "white"
   },
   backButtonPosition: {
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
     flex: 1,
     marginLeft: 30,
     marginBottom: 30
@@ -115,15 +137,15 @@ const styles = StyleSheet.create({
   backButton: {
     width: 60,
     height: 60,
-    justifyContent: 'center',
-    backgroundColor: '#D5C046'
+    justifyContent: "center",
+    backgroundColor: "#D5C046"
   },
   backBtnStyle: {
     height: 20,
     width: 20
   },
   formPosition: {
-    justifyContent: 'center',
+    justifyContent: "center",
     flex: 8
   }
 });

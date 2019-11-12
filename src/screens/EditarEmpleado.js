@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Image,
   Modal,
-  Alert,
   ToastAndroid
 } from "react-native";
 import { Button, Form, Input, Item } from "native-base";
