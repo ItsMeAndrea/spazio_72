@@ -46,8 +46,10 @@ class App extends Component {
   }
 
   onLoginFail(error) {
+    const { email } = this.state;
+
     this.setState({
-      error: `${error.message}`,
+      error: `${email}`,
       loading: false
     });
   }
@@ -216,7 +218,7 @@ const styles = StyleSheet.create({
     marginRight: 40
   },
   errorText: {
-    fontSize: 8,
+    fontSize: 12,
     alignSelf: "center",
     color: "red"
   }
