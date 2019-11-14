@@ -14,8 +14,17 @@ class App extends Component {
     password: "",
     error: "",
     loading: false,
-    showPasword: true
+    showPasword: true,
+    actionAlert: ""
   };
+
+  componentWillMount() {
+    const actionAlert = this.props.navigation.getParam("actionAlert");
+    actionAlert !== undefined &&
+      this.setState({
+        actionAlert
+      });
+  }
 
   onButtonPress() {
     const { email, password } = this.state;
@@ -82,12 +91,12 @@ class App extends Component {
       inputStyle,
       signupStyle
     } = styles;
-    const actionAlert = this.props.navigation.getParam("actionAlert");
+
     return (
       <View style={container}>
-        {actionAlert !== undefined &&
+        {this.state.actionAlert !== "" &&
           ToastAndroid.showWithGravity(
-            `${actionAlert}`,
+            `${this.state.actionAlert}`,
             ToastAndroid.LONG,
             ToastAndroid.CENTER
           )}

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Image, Text, StyleSheet } from "react-native";
+import { View, Image, Text, StyleSheet, ToastAndroid } from "react-native";
 import { Form, Item, Input, Button } from "native-base";
 import app from "../firebase/firebaseConfig";
 
@@ -20,13 +20,33 @@ export default class App extends Component {
 
   onButtonPress() {
     const { email } = this.state;
-    const actionAlert = "Hemos enviado el correo exitosamente.";
 
     app
       .auth()
       .sendPasswordResetEmail(email)
       .then(() => {
-        this.props.navigation.navigate("Login", { actionAlert });
+        this.props.navigation.navigate("Login");
+        ToastAndroid.showWithGravity(
+          "Hemos enviado el correo con exito.",
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM
+        );
+      })
+      .catch(error => {
+        error.code === "auth/invalid-email" &&
+          ToastAndroid.showWithGravity(
+            "Ingrese un correo valido",
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM
+          );
+
+        error.code === "auth/user-not-found" &&
+          ToastAndroid.showWithGravity(
+            "El correo no se encuentra registrado",
+            ToastAndroid.LONG,
+            ToastAndroid.BOTTOM
+          );
+        console.log(error);
       });
   }
   render() {
@@ -55,7 +75,7 @@ export default class App extends Component {
                 style={imageStyle}
                 source={require("../images/username.png")}
               />
-              {console.log(this.state.email)}
+
               <Input
                 autoCorrect={false}
                 style={inputStyle}

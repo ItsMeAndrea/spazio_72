@@ -1,6 +1,13 @@
 import React, { Component } from "react";
 import app from "../firebase/firebaseConfig";
-import { View, Image, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ToastAndroid
+} from "react-native";
 import { Form, Input, Item, Button } from "native-base";
 import Spinner from "../components/Spinner";
 
@@ -20,7 +27,6 @@ class SignUp extends Component {
     apellido: "",
     email: "",
     password: "",
-    error: "",
     loading: false,
     isAdmin: false,
     confirmarPassword: "",
@@ -38,54 +44,99 @@ class SignUp extends Component {
     this.verificarContraseña(password, confirmarPassword);
 
     this.setState({ error: "", loading: true });
-    validarContraseña
+
+    email === "" && password === ""
+      ? (ToastAndroid.showWithGravity(
+          "Todos los campos deben ser completados",
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM
+        ),
+        this.setState({ loading: false }))
+      : validarContraseña
       ? app
           .auth()
           .createUserWithEmailAndPassword(email, password)
           .then(this.onSignUpSuccess.bind(this))
-          .catch(this.onSignUpFail.bind(this))
-      : this.setState({
-          error: "Las contraseñas deben ser iguales",
-          loading: false
-        });
+          .catch(error => this.onSignUpFail(error))
+      : (ToastAndroid.showWithGravity(
+          "Las contraseña no son iguales",
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM
+        ),
+        this.setState({ loading: false }));
   }
 
   onSignUpSuccess() {
-    const { nombre, apellido, email, isAdmin } = this.state;
+    const { nombre, apellido, email, isAdmin, confirmarPassword } = this.state;
     const { currentUser } = app.auth();
 
-    app
-      .database()
-      .ref(`/usuarios/${currentUser.uid}`)
-      .set({ datos: { nombre, apellido, email, isAdmin } }, error => {
-        error
-          ? this.setState({
-              error:
-                "Hubo un error al registrar el usuario. Vuelva a intentarlo."
-            })
-          : this.sendEmail();
-      });
-
-    currentUser.updateProfile({
-      displayName: nombre
-    });
+    nombre === "" && apellido === ""
+      ? ToastAndroid.showWithGravity(
+          "Todos los campos deben ser completados",
+          ToastAndroid.SHORT,
+          ToastAndroid.BOTTOM
+        )
+      : (app
+          .database()
+          .ref(`/usuarios/${currentUser.uid}`)
+          .set({ datos: { nombre, apellido, email, isAdmin } }, error => {
+            error ? console.log(error) : this.sendEmail();
+          }),
+        currentUser.updateProfile({
+          displayName: nombre
+        }));
 
     this.setState({
       email: "",
       password: "",
       loading: false,
-      error: ""
+      confirmarPassword: ""
     });
   }
 
   sendEmail() {
     const user = app.auth().currentUser;
-    user.sendEmailVerification().catch(console.log("error"));
+    user
+      .sendEmailVerification()
+      .then(
+        this.props.navigation.navigate("Login"),
+        ToastAndroid.showWithGravity(
+          "Hemos enviado el correo de verificacion con exito",
+          ToastAndroid.LONG,
+          ToastAndroid.BOTTOM
+        )
+      )
+      .catch(error =>
+        error
+          ? console.log(error)
+          : this.props.navigation.navigate("Login", { actionAlert })
+      );
   }
 
-  onSignUpFail() {
+  onSignUpFail(error) {
+    error.code === "auth/invalid-email" &&
+      ToastAndroid.showWithGravity(
+        "El correo ingresado no es valido",
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM
+      );
+    console.log(error);
+
+    error.code === "auth/weak-password" &&
+      ToastAndroid.showWithGravity(
+        "La contraseña debe tener mas de 6 caracteres.",
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM
+      );
+
+    error.code === "auth/email-already-in-use" &&
+      ToastAndroid.showWithGravity(
+        "El correo ingresado ya esta registrado",
+        ToastAndroid.SHORT,
+        ToastAndroid.BOTTOM
+      );
+
     this.setState({
-      error: "Autenticacion fallida",
       loading: false
     });
   }
@@ -216,7 +267,6 @@ class SignUp extends Component {
           </Form>
 
           <View style={{ marginTop: 20 }}>{this.renderButton()}</View>
-          <Text style={styles.errorText}>{this.state.error}</Text>
         </View>
       </ScrollView>
     );
