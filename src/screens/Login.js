@@ -33,7 +33,7 @@ class App extends Component {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(this.onLoginSuccess.bind(this))
-      .catch(this.onLoginFail.bind(this));
+      .catch(error => this.onLoginFail(error));
   }
 
   onLoginSuccess() {
@@ -45,9 +45,9 @@ class App extends Component {
     });
   }
 
-  onLoginFail() {
+  onLoginFail(error) {
     this.setState({
-      error: "Autenticacion Fallida",
+      error: `${error.message}`,
       loading: false
     });
   }
