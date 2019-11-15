@@ -114,7 +114,11 @@ class NuevoServicio extends Component {
         },
         error => {
           error
-            ? console.log("error")
+            ? ToastAndroid.showWithGravity(
+                "Las contraseña no son iguales",
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER
+              )
             : (this.props.navigation.navigate("VerServicios", { actionAlert }),
               this.setState({ errorServicio: "" }));
         }

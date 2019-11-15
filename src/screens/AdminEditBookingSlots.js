@@ -65,7 +65,7 @@ class AdminEditBookingSlots extends Component {
 
         this.setState({ slots: slots });
       });
-    console.log(usuarioID, "snap");
+
     app
       .database()
       .ref(`/usuarios/${usuarioID}/datos`)
@@ -81,7 +81,7 @@ class AdminEditBookingSlots extends Component {
         const slotsUsuario = _.map(snapshot.val(), val => {
           return { ...val };
         });
-        console.log(snapshot.val(), "slotUs");
+
         this.setState({ slotsUsuario });
       });
   }
@@ -102,7 +102,6 @@ class AdminEditBookingSlots extends Component {
     result.sort((a, b) => {
       return a.slotID - b.slotID;
     });
-    console.log(result, "result");
 
     this.setState({ finalSlots: result });
   }

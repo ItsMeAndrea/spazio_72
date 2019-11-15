@@ -125,7 +125,6 @@ class EditBookingSlots extends Component {
       return i.isAvailable ? false : true;
     });
     const isAvailable = isAvailableArr.every(i => i === true);
-    console.log("isAisAvailable", isAvailable);
 
     slotKey.map(i => {
       tmp.includes(i)

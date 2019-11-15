@@ -218,7 +218,11 @@ export default class Reservation extends Component {
             },
             error => {
               error
-                ? console.log("error base de datos")
+                ? ToastAndroid.showWithGravity(
+                    `${error.message}`,
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER
+                  )
                 : this.props.navigation.navigate("UserSelectServicio", {
                     reservacion,
                     id

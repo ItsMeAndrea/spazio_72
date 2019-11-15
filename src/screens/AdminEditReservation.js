@@ -1,6 +1,6 @@
 import _ from "lodash";
 import React, { Component } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet, Text, ToastAndroid } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { LocaleConfig } from "react-native-calendars";
 import { Button, Picker, Icon } from "native-base";
@@ -257,7 +257,11 @@ export default class AdminEditReservation extends Component {
             },
             error => {
               error
-                ? console.log("error base de datos")
+                ? ToastAndroid.showWithGravity(
+                    `${error.message}`,
+                    ToastAndroid.SHORT,
+                    ToastAndroid.CENTER
+                  )
                 : this.props.navigation.navigate("EditarServicio", {
                     reservacion
                   });

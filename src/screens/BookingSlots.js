@@ -50,8 +50,6 @@ class BookingSlots extends Component {
     const duracion = duracionArr[durationSum];
     const { dia, mes, año, id } = reservacion;
 
-    console.log(duracion);
-
     this.setState({ duracion: duracion });
 
     app
@@ -237,7 +235,7 @@ class BookingSlots extends Component {
 
   setModalVisible(visible) {
     const { selectedSlots } = this.state;
-    console.log(selectedSlots);
+
     selectedSlots.length > 0
       ? this.setState({ modalVisible: visible })
       : ToastAndroid.showWithGravity(

@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { View, Image, Text, StyleSheet, ToastAndroid } from "react-native";
+import {
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  ToastAndroid,
+  Keyboard
+} from "react-native";
 import { Form, Item, Input, Button } from "native-base";
 import app from "../firebase/firebaseConfig";
 
@@ -21,6 +28,8 @@ export default class App extends Component {
   onButtonPress() {
     const { email } = this.state;
 
+    Keyboard.dismiss();
+
     app
       .auth()
       .sendPasswordResetEmail(email)
@@ -33,6 +42,7 @@ export default class App extends Component {
         );
       })
       .catch(error => {
+        console.log(error);
         error.code === "auth/invalid-email" &&
           ToastAndroid.showWithGravity(
             "Ingrese un correo valido",
@@ -46,7 +56,13 @@ export default class App extends Component {
             ToastAndroid.LONG,
             ToastAndroid.BOTTOM
           );
-        console.log(error);
+
+        error.code === "auth/network-request-failed" &&
+          ToastAndroid.showWithGravity(
+            "Verifique la conexion a Internet",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          );
       });
   }
   render() {

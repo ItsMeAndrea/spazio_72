@@ -110,7 +110,6 @@ export default class Home extends Component {
   handleOpenURL = event => {
     // D
     this.navigate(event.url);
-    console.log(event.url);
   };
 
   navigate = url => {

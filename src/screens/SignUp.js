@@ -6,7 +6,8 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  ToastAndroid
+  ToastAndroid,
+  Keyboard
 } from "react-native";
 import { Form, Input, Item, Button } from "native-base";
 import Spinner from "../components/Spinner";
@@ -40,6 +41,7 @@ class SignUp extends Component {
       confirmarPassword,
       validarContraseña
     } = this.state;
+    Keyboard.dismiss();
 
     this.verificarContraseña(password, confirmarPassword);
 
@@ -49,7 +51,7 @@ class SignUp extends Component {
       ? (ToastAndroid.showWithGravity(
           "Todos los campos deben ser completados",
           ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM
+          ToastAndroid.CENTER
         ),
         this.setState({ loading: false }))
       : validarContraseña
@@ -61,7 +63,7 @@ class SignUp extends Component {
       : (ToastAndroid.showWithGravity(
           "Las contraseña no son iguales",
           ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM
+          ToastAndroid.CENTER
         ),
         this.setState({ loading: false }));
   }
@@ -74,13 +76,19 @@ class SignUp extends Component {
       ? ToastAndroid.showWithGravity(
           "Todos los campos deben ser completados",
           ToastAndroid.SHORT,
-          ToastAndroid.BOTTOM
+          ToastAndroid.CENTER
         )
       : (app
           .database()
           .ref(`/usuarios/${currentUser.uid}`)
           .set({ datos: { nombre, apellido, email, isAdmin } }, error => {
-            error ? console.log(error) : this.sendEmail();
+            error
+              ? ToastAndroid.showWithGravity(
+                  `${error.message}`,
+                  ToastAndroid.SHORT,
+                  ToastAndroid.CENTER
+                )
+              : this.sendEmail();
           }),
         currentUser.updateProfile({
           displayName: nombre
@@ -103,12 +111,16 @@ class SignUp extends Component {
         ToastAndroid.showWithGravity(
           "Hemos enviado el correo de verificacion con exito",
           ToastAndroid.LONG,
-          ToastAndroid.BOTTOM
+          ToastAndroid.CENTER
         )
       )
       .catch(error =>
         error
-          ? console.log(error)
+          ? ToastAndroid.showWithGravity(
+              `${error.message}`,
+              ToastAndroid.SHORT,
+              ToastAndroid.CENTER
+            )
           : this.props.navigation.navigate("Login", { actionAlert })
       );
   }
@@ -118,22 +130,28 @@ class SignUp extends Component {
       ToastAndroid.showWithGravity(
         "El correo ingresado no es valido",
         ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM
+        ToastAndroid.CENTER
       );
-    console.log(error);
 
     error.code === "auth/weak-password" &&
       ToastAndroid.showWithGravity(
         "La contraseña debe tener mas de 6 caracteres.",
         ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM
+        ToastAndroid.CENTER
       );
 
     error.code === "auth/email-already-in-use" &&
       ToastAndroid.showWithGravity(
         "El correo ingresado ya esta registrado",
         ToastAndroid.SHORT,
-        ToastAndroid.BOTTOM
+        ToastAndroid.CENTER
+      );
+
+    error.code === "auth/network-request-failed" &&
+      ToastAndroid.showWithGravity(
+        "Verifique la conexion a Internet",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
       );
 
     this.setState({
@@ -218,7 +236,7 @@ class SignUp extends Component {
             <Item rounded style={itemStyle}>
               <Image
                 style={imageStyle}
-                source={require("../images/username.png")}
+                source={require("../images/at-sign.png")}
               />
               <Input
                 autoCorrect={false}
