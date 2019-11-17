@@ -32,6 +32,8 @@ import AdminEditBookingSlots from "../screens/AdminEditBookingSlots";
 import AdminEditUser from "../screens/AdminEditUser";
 import ValorDolar from "../screens/ValorDolar";
 import EditAdminServ from "../screens/EditAdminServ";
+import UserUpdate from "../screens/UserUpdate";
+import Gallery from "../screens/Gallery";
 
 const AppStack = createStackNavigator(
   {
@@ -42,7 +44,9 @@ const AppStack = createStackNavigator(
     EditReservation: EditReservation,
     EditBooking: EditBookingSlots,
     UserSelectServicio: UserSelectServicio,
-    EditServicios: EditServicios
+    EditServicios: EditServicios,
+    UserUpdate: UserUpdate,
+    Gallery: Gallery
   },
   {
     initialRouteName: "Home"

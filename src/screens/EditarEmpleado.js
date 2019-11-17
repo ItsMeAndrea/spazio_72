@@ -91,7 +91,11 @@ class EditarEmpleado extends Component {
         this.props.navigation.navigate("VerEmpleados");
       })
       .catch(() => {
-        console.log("no se compartio");
+        ToastAndroid.showWithGravity(
+          "No se pudo descargar el codigo QR",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
       });
   }
 
@@ -231,7 +235,6 @@ class EditarEmpleado extends Component {
                 borderRadius: 20
               }}
             >
-              {console.log(this.state.servicios)}
               <SelectMultiple
                 items={this.state.serviciosSelect}
                 selectedItems={this.state.selectedServicios}

@@ -125,7 +125,6 @@ class EditBookingSlots extends Component {
       return i.isAvailable ? false : true;
     });
     const isAvailable = isAvailableArr.every(i => i === true);
-    console.log("isAisAvailable", isAvailable);
 
     slotKey.map(i => {
       tmp.includes(i)
@@ -272,7 +271,7 @@ class EditBookingSlots extends Component {
           transparent={true}
           visible={this.state.modalVisible}
           onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
+            this.setModalVisible(!this.state.modalVisible);
           }}
         >
           <View
@@ -286,13 +285,23 @@ class EditBookingSlots extends Component {
           >
             <View
               style={{
-                width: 350,
-                height: 220,
+                width: 300,
+                height: 250,
                 backgroundColor: "#282828",
-                padding: 30,
-                borderRadius: 20
+                padding: 20,
+                borderRadius: 40
               }}
             >
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 15,
+                  textAlign: "center"
+                }}
+              >
+                Su reservacion se hara con:
+              </Text>
+
               <Text
                 style={{
                   color: "white",
@@ -326,7 +335,7 @@ class EditBookingSlots extends Component {
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-around",
-                  marginTop: 40
+                  marginTop: 20
                 }}
               >
                 <Button
@@ -335,7 +344,7 @@ class EditBookingSlots extends Component {
                     backgroundColor: "#D5C046",
                     color: "white",
                     padding: 20,
-                    width: 120,
+                    width: 110,
                     justifyContent: "center"
                   }}
                   onPress={() => this.hacerReservacion()}
@@ -349,7 +358,7 @@ class EditBookingSlots extends Component {
                     backgroundColor: "#D5C046",
                     color: "white",
                     padding: 20,
-                    width: 120,
+                    width: 110,
                     justifyContent: "center"
                   }}
                   onPress={() => {
@@ -359,6 +368,18 @@ class EditBookingSlots extends Component {
                   <Text style={textStyle}>Cancelar</Text>
                 </Button>
               </View>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 8,
+                  textAlign: "center",
+                  marginTop: 30,
+                  marginHorizontal: 30
+                }}
+              >
+                Advertencia: Los precios mostrados en BsS. estan sujetos a
+                cambios.
+              </Text>
             </View>
           </View>
         </Modal>

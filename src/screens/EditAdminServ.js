@@ -33,7 +33,7 @@ class EditAdminServ extends Component {
     const { nombreServicio, precioServicio, numButton } = servicio;
 
     const precioString = precioServicio.toString();
-    console.log(servicio);
+
     this.setState({
       nombre: nombreServicio,
       precio: precioString,
@@ -118,7 +118,11 @@ class EditAdminServ extends Component {
         },
         error => {
           error
-            ? console.log("error")
+            ? ToastAndroid.showWithGravity(
+                `${error.message}`,
+                ToastAndroid.SHORT,
+                ToastAndroid.CENTER
+              )
             : this.props.navigation.navigate("VerServicios", { actionAlert });
         }
       );

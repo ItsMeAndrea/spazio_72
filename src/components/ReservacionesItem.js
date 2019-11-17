@@ -80,7 +80,6 @@ const ReservacionesItem = ({ reserva, nombreDia, mes, onEdit, item }) => {
       rightButtons={rightButtons}
       style={swipeStyle}
     >
-      {console.log(reserva)}
       <Text style={boldTextFist}>{`${nUsuario} ${aUsuario}`} </Text>
       <Text style={textStyle}>{`${eUsuario}`}</Text>
       <Text style={boldText}>{`${nEmpleado} ${aEmpleado}`} </Text>

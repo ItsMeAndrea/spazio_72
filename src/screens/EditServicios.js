@@ -5,16 +5,7 @@ import app from "../firebase/firebaseConfig";
 import _ from "lodash";
 import SelectMultiple from "react-native-select-multiple";
 
-class UserSelectServicio extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      servicios: [],
-      selectedServicios: [],
-      serviciosData: []
-    };
-  }
-
+class EditServicios extends Component {
   static navigationOptions = {
     title: "Servicios Disponibles",
     headerStyle: {
@@ -25,23 +16,48 @@ class UserSelectServicio extends Component {
     }
   };
 
-  componentDidMount() {
-    const reservacion = this.props.navigation.getParam("reservacion");
-    const servicios = reservacion.servicios;
-    const empleadoID = reservacion.id;
-    const serviciosDataArr = [];
+  constructor(props) {
+    super(props);
+    this.state = {
+      servicios: [],
+      selectedServicios: [],
+      serviciosData: [],
+      totalServiciosData: []
+    };
+  }
 
+  componentWillMount() {
+    const reservacion = this.props.navigation.getParam("reservacion");
     app
       .database()
-      .ref(`empleados/${empleadoID}/selectedServicios`)
+      .ref(`empleados/${reservacion.id}/selectedServicios`)
       .on("value", snapshot => {
         const servicios = _.map(snapshot.val(), val => {
           return { ...val };
         });
         this.setState({ servicios: servicios });
       });
+  }
 
-    this.setState({ selectedServicios: servicios });
+  componentDidMount() {
+    const reservacion = this.props.navigation.getParam("reservacion");
+    const selectedServicios = reservacion.servicios;
+    const { servicios } = this.state;
+    const serviciosID = servicios.map(i => i.value);
+    const serviciosDataArr = [];
+    const totalServiciosDataArr = [];
+
+    serviciosID.forEach(servicioID =>
+      app
+        .database()
+        .ref(`servicios/${servicioID}`)
+        .on("value", snapshot => {
+          totalServiciosDataArr.push(snapshot.val());
+          this.setState({ totalServiciosData: totalServiciosDataArr });
+        })
+    );
+
+    this.setState({ selectedServicios: selectedServicios });
 
     servicios.forEach(servicioID =>
       app
@@ -92,6 +108,39 @@ class UserSelectServicio extends Component {
     this.setState({ selectedServicios: [], serviciosData: [] });
   }
 
+  renderLabel = (label, style) => {
+    const { totalServiciosData } = this.state;
+
+    const servicioObj = totalServiciosData.find(obj => {
+      return obj.nombreServicio === label;
+    });
+
+    const precioFormat =
+      servicioObj === undefined
+        ? ""
+        : servicioObj.precioBs
+            .toString()
+            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+
+    const precioDolarCheck =
+      servicioObj === undefined ? "" : servicioObj.precioServicio;
+    const duracionCheck = servicioObj === undefined ? "" : servicioObj.duracion;
+
+    return (
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ marginLeft: 10 }}>
+          <Text style={style}>{label} </Text>
+          <Text style={{ color: "white", fontSize: 10 }}>
+            Precio: $ {precioDolarCheck} ~ BsS. {precioFormat}
+          </Text>
+          <Text style={{ color: "white", fontSize: 10 }}>
+            Duracion: {duracionCheck}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+
   render() {
     const { btnStyle, textStyle } = styles;
 
@@ -109,6 +158,7 @@ class UserSelectServicio extends Component {
           rowStyle={{ backgroundColor: "#282828" }}
           labelStyle={{ color: "white" }}
           checkboxStyle={{ tintColor: "#D5C046" }}
+          renderLabel={this.renderLabel}
         />
 
         <Button
@@ -141,4 +191,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default UserSelectServicio;
+export default EditServicios;

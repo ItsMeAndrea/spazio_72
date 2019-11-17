@@ -1,6 +1,13 @@
 import React, { Component } from "react";
 import app from "../firebase/firebaseConfig";
-import { View, Image, Text, StyleSheet, ToastAndroid } from "react-native";
+import {
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  ToastAndroid,
+  Keyboard
+} from "react-native";
 import { Form, Item, Input, Button } from "native-base";
 import Spinner from "../components/Spinner";
 
@@ -29,6 +36,7 @@ class App extends Component {
   onButtonPress() {
     const { email, password } = this.state;
     this.setState({ error: "", loading: true });
+    Keyboard.dismiss();
     app
       .auth()
       .signInWithEmailAndPassword(email, password)
@@ -46,10 +54,36 @@ class App extends Component {
   }
 
   onLoginFail(error) {
-    const { email } = this.state;
+    console.log(error);
+    error.code === "auth/invalid-email" &&
+      ToastAndroid.showWithGravity(
+        "El correo electronico no es valido",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+
+    error.code === "auth/wrong-password" &&
+      ToastAndroid.showWithGravity(
+        "Verifique la contraseña",
+        ToastAndroid.LONG,
+        ToastAndroid.CENTER
+      );
+
+    error.code === "auth/user-not-found" &&
+      ToastAndroid.showWithGravity(
+        "El correo no se encuentra registrado",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+
+    error.code === "auth/network-request-failed" &&
+      ToastAndroid.showWithGravity(
+        "Verifique la conexion a Internet",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
 
     this.setState({
-      error: `${email}`,
       loading: false
     });
   }
@@ -165,8 +199,6 @@ class App extends Component {
         <View style={{ marginTop: 20 }}>{this.renderButton()}</View>
 
         <View />
-
-        <Text style={styles.errorText}>{this.state.error}</Text>
       </View>
     );
   }

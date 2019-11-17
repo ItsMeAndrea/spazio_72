@@ -2,7 +2,7 @@
 
 import React, { Component } from "react";
 
-import { StyleSheet, Text, Linking } from "react-native";
+import { StyleSheet, Text, Linking, ToastAndroid } from "react-native";
 
 import QRCodeScanner from "react-native-qrcode-scanner";
 
@@ -22,7 +22,11 @@ export default class ScanScreen extends Component {
   };
   onSuccess(e) {
     Linking.openURL(e.data).catch(err =>
-      console.error("An error occured", err)
+      ToastAndroid.showWithGravity(
+        "Hubo un problema al escanear el codigo",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      )
     );
   }
 

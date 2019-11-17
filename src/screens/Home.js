@@ -44,30 +44,42 @@ export default class Home extends Component {
     };
   }
 
-  static navigationOptions = {
-    title: "Tus Reservaciones",
-    headerStyle: {
-      backgroundColor: "#282828"
-    },
-    headerTitleStyle: {
-      color: "white",
-      textAlign: "center",
-      flex: 1
-    },
-    headerLeft: (
-      <Button
-        style={{ marginLeft: 10, marginTop: 5 }}
-        transparent
-        onPress={() => app.auth().signOut()}
-      >
-        <Image source={require("../images/logout.png")} />
-      </Button>
-    ),
-    headerRight: (
-      <Button style={{ marginRight: 10, marginTop: 5 }} transparent>
-        <Image source={require("../images/more.png")} />
-      </Button>
-    )
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title: "Tus Reservaciones",
+      headerStyle: {
+        backgroundColor: "#282828"
+      },
+      headerTitleStyle: {
+        color: "white",
+        textAlign: "center",
+        flex: 1
+      },
+      headerLeft: (
+        <Button
+          style={{ marginLeft: 10, marginTop: 5 }}
+          transparent
+          onPress={() => navigation.navigate("UserUpdate")}
+        >
+          <Image
+            style={{ width: 30, height: 30 }}
+            source={require("../images/username.png")}
+          />
+        </Button>
+      ),
+      headerRight: (
+        <Button
+          style={{ marginRight: 10, marginTop: 5 }}
+          transparent
+          onPress={() => navigation.navigate("Gallery")}
+        >
+          <Image
+            style={{ width: 30, height: 30 }}
+            source={require("../images/gallery.png")}
+          />
+        </Button>
+      )
+    };
   };
 
   componentDidMount() {
@@ -110,7 +122,6 @@ export default class Home extends Component {
   handleOpenURL = event => {
     // D
     this.navigate(event.url);
-    console.log(event.url);
   };
 
   navigate = url => {
