@@ -7,16 +7,6 @@ import SelectMultiple from "react-native-select-multiple";
 import { createNavigationContainer } from "react-navigation";
 
 class UserSelectServicio extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      servicios: [],
-      selectedServicios: [],
-      serviciosData: [],
-      totalServiciosData: []
-    };
-  }
-
   static navigationOptions = {
     title: "Servicios Disponibles",
     headerStyle: {
@@ -27,11 +17,22 @@ class UserSelectServicio extends Component {
     }
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      servicios: [],
+      selectedServicios: [],
+      serviciosData: [],
+      totalServiciosData: []
+    };
+  }
+
   componentWillMount() {
-    const userID = this.props.navigation.getParam("id");
+    const empleadoID = this.props.navigation.getParam("id");
+    //Se busca en la base de datos los servicios que realiza el empleado seleccionado
     app
       .database()
-      .ref(`empleados/${userID}/selectedServicios`)
+      .ref(`empleados/${empleadoID}/selectedServicios`)
       .on("value", snapshot => {
         const servicios = _.map(snapshot.val(), val => {
           return { ...val };
@@ -42,9 +43,12 @@ class UserSelectServicio extends Component {
 
   componentDidMount() {
     const { servicios } = this.state;
+    //Array que contiene los ID de los servicios del empleado
     const serviciosID = servicios.map(i => i.value);
+    //Array que sera llenado con la informacion de los servicios
     const totalServiciosDataArr = [];
 
+    //Se llena totalServiciosDataArr
     serviciosID.forEach(servicioID =>
       app
         .database()
@@ -128,14 +132,9 @@ class UserSelectServicio extends Component {
   };
 
   render() {
-    const { btnStyle, textStyle } = styles;
+    const { btnStyle, textStyle, container } = styles;
     return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: "#282828"
-        }}
-      >
+      <View style={container}>
         <SelectMultiple
           items={this.state.servicios}
           selectedItems={this.state.selectedServicios}

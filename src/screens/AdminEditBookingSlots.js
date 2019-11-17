@@ -13,6 +13,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { Button } from "native-base";
 
 class AdminEditBookingSlots extends Component {
+  //Configuracion para el Encabezado de la vista
   static navigationOptions = {
     title: "Edita tu reservación",
     headerStyle: {
@@ -22,6 +23,8 @@ class AdminEditBookingSlots extends Component {
       color: "white"
     }
   };
+
+  //Metodo para inicializar los estados de la vista
   constructor(props) {
     super(props);
     this.state = {
@@ -43,18 +46,22 @@ class AdminEditBookingSlots extends Component {
         empleadoID: ""
       }
     };
-
     this.onScrollPress = this.onScrollPress.bind(this);
     this.hacerReservacion = this.hacerReservacion.bind(this);
   }
 
+  //Metodo que se activa de renderizar la vista
   componentWillMount() {
+    //Declaracion de variables
     const reservacion = this.props.navigation.getParam("reservacion");
     const { dia, mes, año, id, usuarioID } = reservacion;
     const durationSum = this.props.navigation.getParam("durationSum");
     const duracion = duracionArr[durationSum];
+
+    //Estableciendo el estado inicial de duracion
     this.setState({ duracion: duracion });
 
+    //Busqueda a la base de datos. Se establece el estado inicial de slots
     app
       .database()
       .ref(`/empleados/${id}/reservaciones/${año}/${mes}/${dia}/slots`)
@@ -66,6 +73,7 @@ class AdminEditBookingSlots extends Component {
         this.setState({ slots: slots });
       });
 
+    //Busqueda a la base de datos. Se establece el estado inicial de userInfo
     app
       .database()
       .ref(`/usuarios/${usuarioID}/datos`)
@@ -74,6 +82,7 @@ class AdminEditBookingSlots extends Component {
         this.setState({ userInfo: userInfo });
       });
 
+    //Busqueda a la base de datos. Se establece el estado inicial de slotsUsuario
     app
       .database()
       .ref(`usuarios/${usuarioID}/reservas`)
@@ -81,20 +90,23 @@ class AdminEditBookingSlots extends Component {
         const slotsUsuario = _.map(snapshot.val(), val => {
           return { ...val };
         });
-
         this.setState({ slotsUsuario });
       });
   }
 
+  //Metodo que se activa inmediatamente que la vista se monta
   componentDidMount() {
+    //Se trae el valor del estado
     const { slots, slotsUsuario } = this.state;
 
+    //Se establece un array de objectos que contiene las reservaciones realizadas por el usuario
     const slotsUsuarioNoDiponibles = slotsUsuario
       .map(i => {
         return i.userReservation.slot;
       })
       .flat();
 
+    //Se une el array de slots con slotsUsuarioNoDisponibles para tener la lista definitiva de horas disponibles
     const result = slots
       .filter(a => !slotsUsuarioNoDiponibles.some(s => s.slotID == a.slotID))
       .concat(slotsUsuarioNoDiponibles);
@@ -103,10 +115,13 @@ class AdminEditBookingSlots extends Component {
       return a.slotID - b.slotID;
     });
 
+    //Se establece el estado de slotsUsuario
     this.setState({ finalSlots: result });
   }
 
-  onScrollPress(items, index) {
+  //Operaciones que ocurren cuando se oprime un boton. Se espera que al oprimir un boton se seleccionen inmediatamente la duracion total de la reserva. No se permite que se seleccionen horas ya reservadas, tanto por el empleado como por el usuario.
+  onScrollPress(index) {
+    //Declaracion de variables
     const reservacion = this.props.navigation.getParam("reservacion");
     const { usuarioID } = reservacion;
     const durationSum = this.props.navigation.getParam("durationSum");
@@ -118,18 +133,25 @@ class AdminEditBookingSlots extends Component {
     const slotID = index;
     const endArr = index + durationSum;
 
+    //Array de horas seleccionadas
     const selectedSlots = this.state.finalSlots.slice(index, endArr);
+    //Array con los ID  de las horas seleccionadas
     const slotKey = selectedSlots.map(i => i.slotID);
+    //Array temporal del estado anterior de las horas seleccionadas
     const tmp = this.state.selectedSlots.map(i => i.slotID);
     const slotArray = this.state.finalSlots
       .slice(index, endArr)
       .map(i => i.slot);
 
+    //Cambia el estado de los botones oprimidos a No disponible y visceversa. Devuelve un array.
     const isAvailableArr = selectedSlots.map(i => {
       return i.isAvailable ? false : true;
     });
+
+    //Retorna un booleano. Si todos los componentes del array isAvailableArr son verdaderos, retorna true.
     const isAvailable = isAvailableArr.every(i => i === true);
 
+    //Se recorre el Array slotKey y se evalua si la hora esta incluida en el array tmp. Si esta incluida se limpia los estados selectedSlots y selectedslotsArr, de no estarlo se agregan las horas a los estados.
     slotKey.map(i => {
       tmp.includes(i)
         ? this.setState({
@@ -142,6 +164,7 @@ class AdminEditBookingSlots extends Component {
           });
     });
 
+    //Declaracion de objeto slot
     const slot = selectedSlots.map((i, index) => {
       return {
         slotID: index + slotID,
@@ -152,6 +175,7 @@ class AdminEditBookingSlots extends Component {
       };
     });
 
+    //Se define el estado final de la reservacion
     this.setState({
       userReservation: {
         servicios: selectedServicios,
@@ -170,18 +194,22 @@ class AdminEditBookingSlots extends Component {
     });
   }
 
+  //Operaciones necesarias para realizar la reservacion
   hacerReservacion() {
+    //Declaracion de variables
     const reservacion = this.props.navigation.getParam("reservacion");
     const { reservaID } = reservacion;
     const { userReservation } = this.state;
     const { año, mes, dia, slot, empleadoID } = userReservation;
     const { currentUser } = app.auth();
 
+    //Actualizar reservacion para el usuario
     app
       .database()
       .ref(`/usuarios/${currentUser.uid}/reservas/${reservaID}`)
       .update({ userReservation });
 
+    //Actualizar reservacion
     app
       .database()
       .ref("reservas/")
@@ -190,6 +218,7 @@ class AdminEditBookingSlots extends Component {
         userReservation: { ...userReservation, reservaID: reservaID }
       });
 
+    //actualizar las horas disponibles de los empleados
     slot.map(i => {
       app
         .database()
@@ -199,12 +228,15 @@ class AdminEditBookingSlots extends Component {
         .update({ isAvailable: i.isAvailable, isDisable: true });
     });
 
-    this.props.navigation.navigate("Home");
+    //Volver a la pantanlla de Ver Reservaciones
+    this.props.navigation.navigate("VerReservaciones");
   }
 
+  //Metodo que permite abrir y cerrar el modal
   setModalVisible(visible) {
     const { selectedSlots } = this.state;
 
+    //Se verifica que el usuario haya seleccionado una hora
     selectedSlots.forEach(i =>
       i.slotID === ""
         ? ToastAndroid.showWithGravity(
@@ -224,7 +256,12 @@ class AdminEditBookingSlots extends Component {
       scrollTextStyle,
       scrollBtnDisable,
       btnStyle,
-      textStyle
+      textStyle,
+      modalView,
+      modalTextView,
+      textStyleCenter,
+      modalButtonsView,
+      modalButton
     } = styles;
     const reservacion = this.props.navigation.getParam("reservacion");
     const { dia, mes } = reservacion;
@@ -232,7 +269,7 @@ class AdminEditBookingSlots extends Component {
     const last = selectedSlots.length - 1;
     return (
       <View style={container}>
-        <Text style={{ color: "white", marginHorizontal: 20 }}>
+        <Text style={textStyle}>
           La duracion de su cita es de: {this.state.duracion}. Seleccione a que
           hora desea comenzar su cita:
         </Text>
@@ -251,7 +288,7 @@ class AdminEditBookingSlots extends Component {
                       ? scrollBtnDisable
                       : scrollBtnStyle
                   }
-                  onPress={() => this.onScrollPress(items, index)}
+                  onPress={() => this.onScrollPress(index)}
                 >
                   <Text style={scrollTextStyle}>{items.slot}</Text>
                 </Button>
@@ -275,34 +312,12 @@ class AdminEditBookingSlots extends Component {
           transparent={true}
           visible={this.state.modalVisible}
           onRequestClose={() => {
-            Alert.alert("Modal has been closed.");
+            this.setModalVisible(!this.state.modalVisible);
           }}
         >
-          <View
-            style={{
-              backgroundColor: "#00000070",
-              flex: 1,
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            <View
-              style={{
-                width: 350,
-                height: 220,
-                backgroundColor: "#282828",
-                padding: 30,
-                borderRadius: 20
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 15,
-                  textAlign: "center"
-                }}
-              >
+          <View style={modalView}>
+            <View style={modalTextView}>
+              <Text style={textStyleCenter}>
                 {this.state.userReservation.nEmpleado}{" "}
                 {this.state.userReservation.aEmpleado} desde las:{" "}
                 {this.state.selectedSlots[0] === undefined
@@ -315,32 +330,12 @@ class AdminEditBookingSlots extends Component {
                 , el dia {dia}/{mes}.
               </Text>
 
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: 15,
-                  textAlign: "center"
-                }}
-              >
-                ¿Desea continuar?
-              </Text>
+              <Text style={textStyleCenter}>¿Desea continuar?</Text>
 
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-around",
-                  marginTop: 40
-                }}
-              >
+              <View style={modalButtonsView}>
                 <Button
                   rounded
-                  style={{
-                    backgroundColor: "#D5C046",
-                    color: "white",
-                    padding: 20,
-                    width: 120,
-                    justifyContent: "center"
-                  }}
+                  style={modalButton}
                   onPress={() => this.hacerReservacion()}
                 >
                   <Text style={textStyle}>Aceptar</Text>
@@ -348,13 +343,7 @@ class AdminEditBookingSlots extends Component {
 
                 <Button
                   rounded
-                  style={{
-                    backgroundColor: "#D5C046",
-                    color: "white",
-                    padding: 20,
-                    width: 120,
-                    justifyContent: "center"
-                  }}
+                  style={modalButton}
                   onPress={() => {
                     this.setModalVisible(!this.state.modalVisible);
                   }}
@@ -409,6 +398,37 @@ const styles = StyleSheet.create({
   textStyle: {
     fontSize: 15,
     color: "white"
+  },
+  modalView: {
+    backgroundColor: "#00000070",
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  modalTextView: {
+    width: 350,
+    height: 220,
+    backgroundColor: "#282828",
+    padding: 30,
+    borderRadius: 20
+  },
+  textStyleCenter: {
+    color: "white",
+    fontSize: 15,
+    textAlign: "center"
+  },
+  modalButtonsView: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 40
+  },
+  modalButton: {
+    backgroundColor: "#D5C046",
+    color: "white",
+    padding: 20,
+    width: 120,
+    justifyContent: "center"
   }
 });
 

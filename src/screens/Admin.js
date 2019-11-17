@@ -5,12 +5,7 @@ import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
 import { Button } from "native-base";
 
 export default class Admin extends Component {
-  constructor(props) {
-    super(props);
-
-    // Assign state itself, and a default value for items
-    this.state = {};
-  }
+  //Configuracion para el Encabezado de la vista
   static navigationOptions = {
     title: "Administrador",
     headerStyle: {
@@ -32,6 +27,7 @@ export default class Admin extends Component {
     )
   };
 
+  //Funciones para redireccionar a las vistas correspondientes
   verReservaciones() {
     this.props.navigation.navigate("VerReservaciones");
   }
@@ -53,6 +49,10 @@ export default class Admin extends Component {
   }
 
   render() {
+    // Destruturacion de sytles.
+    const { btnStyle, textStyle } = styles;
+
+    //Estructura de la vista
     return (
       <View
         style={{
@@ -62,47 +62,39 @@ export default class Admin extends Component {
         }}
       >
         <ScrollView>
-          <Button
-            rounded
-            style={styles.btnStyle}
-            onPress={() => this.valorDolar()}
-          >
-            <Text style={styles.textStyle}>Cambio del Dia</Text>
+          <Button rounded style={btnStyle} onPress={() => this.valorDolar()}>
+            <Text style={textStyle}>Cambio del Dia</Text>
           </Button>
           <Button
             rounded
-            style={styles.btnStyle}
+            style={btnStyle}
             onPress={() => {
               this.verReservaciones();
             }}
           >
-            <Text style={styles.textStyle}>Reservaciones</Text>
+            <Text style={textStyle}>Reservaciones</Text>
           </Button>
           <Button
             rounded
-            style={styles.btnStyle}
+            style={btnStyle}
             onPress={() => {
               this.verUsuarios();
             }}
           >
-            <Text style={styles.textStyle}>Usuarios</Text>
+            <Text style={textStyle}>Usuarios</Text>
           </Button>
           <Button
             rounded
-            style={styles.btnStyle}
+            style={btnStyle}
             onPress={() => {
               this.verEmpleados();
             }}
           >
-            <Text style={styles.textStyle}>Empleados</Text>
+            <Text style={textStyle}>Empleados</Text>
           </Button>
 
-          <Button
-            rounded
-            style={styles.btnStyle}
-            onPress={() => this.verServicios()}
-          >
-            <Text style={styles.textStyle}>Servicios</Text>
+          <Button rounded style={btnStyle} onPress={() => this.verServicios()}>
+            <Text style={textStyle}>Servicios</Text>
           </Button>
         </ScrollView>
       </View>
