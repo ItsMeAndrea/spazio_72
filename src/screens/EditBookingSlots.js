@@ -51,7 +51,7 @@ class EditBookingSlots extends Component {
   componentWillMount() {
     const { currentUser } = app.auth();
     const reservacion = this.props.navigation.getParam("reservacion");
-    const { dia, mes, año, id, reservaID } = reservacion;
+    const { dia, mes, año, id } = reservacion;
     const durationSum = this.props.navigation.getParam("durationSum");
     const duracion = duracionArr[durationSum];
     this.setState({ duracion: duracion });
@@ -114,7 +114,26 @@ class EditBookingSlots extends Component {
     const slotID = index;
     const endArr = index + durationSum;
 
-    const selectedSlots = this.state.finalSlots.slice(index, endArr);
+    let selectedSlots = this.state.finalSlots.slice(index, endArr);
+
+    endArr > this.state.finalSlots.length &&
+      (ToastAndroid.showWithGravity(
+        "No es posible hacer la cita en las horas seleccionadas",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      ),
+      (selectedSlots = []));
+    selectedSlots.forEach(
+      i =>
+        i.isDisable &&
+        (ToastAndroid.showWithGravity(
+          "No es posible hacer la cita en las horas seleccionadas",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        ),
+        (selectedSlots = []))
+    );
+
     const slotKey = selectedSlots.map(i => i.slotID);
     const tmp = this.state.selectedSlots.map(i => i.slotID);
     const slotArray = this.state.finalSlots
@@ -201,15 +220,13 @@ class EditBookingSlots extends Component {
   setModalVisible(visible) {
     const { selectedSlots } = this.state;
 
-    selectedSlots.forEach(i =>
-      i.slotID === ""
-        ? ToastAndroid.showWithGravity(
-            "Seleccione la hora de su cita",
-            ToastAndroid.SHORT,
-            ToastAndroid.CENTER
-          )
-        : this.setState({ modalVisible: visible })
-    );
+    selectedSlots.length > 0
+      ? this.setState({ modalVisible: visible })
+      : ToastAndroid.showWithGravity(
+          "Seleccione la hora de su cita",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
   }
 
   render() {
@@ -241,6 +258,7 @@ class EditBookingSlots extends Component {
                   key={items.slot}
                   rounded
                   active={items.isAvailable}
+                  disabled={items.isDisable}
                   style={
                     this.state.selectedSlotsArr.includes(items.slot) ||
                     !items.isAvailable

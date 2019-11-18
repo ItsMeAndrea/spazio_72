@@ -54,7 +54,6 @@ class App extends Component {
   }
 
   onLoginFail(error) {
-    console.log(error);
     error.code === "auth/invalid-email" &&
       ToastAndroid.showWithGravity(
         "El correo electronico no es valido",

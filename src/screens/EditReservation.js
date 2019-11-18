@@ -28,6 +28,7 @@ export default class Reservation extends Component {
 
   componentWillMount() {
     const reserva = this.props.navigation.getParam("item");
+
     const { userReservation, uid } = reserva;
 
     return this.setState({
@@ -53,8 +54,6 @@ export default class Reservation extends Component {
   }
 
   onDayPress(date) {
-    /* const reserva = this.props.navigation.getParam("item");
-    const { empleadoID } = reserva.userReservation; */
     const { selectEmpleado } = this.state;
     this.setState({
       selected: date.dateString,
