@@ -5,6 +5,16 @@ import { View, Text, StyleSheet, ToastAndroid } from "react-native";
 import { Form, Input, Item, Button, Picker, Icon, Label } from "native-base";
 
 class NuevoServicio extends Component {
+  static navigationOptions = {
+    title: "Nuevo Servicio",
+    headerStyle: {
+      backgroundColor: "#282828"
+    },
+    headerTitleStyle: {
+      color: "white"
+    }
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -16,16 +26,6 @@ class NuevoServicio extends Component {
       tasa: ""
     };
   }
-
-  static navigationOptions = {
-    title: "Nuevo Servicio",
-    headerStyle: {
-      backgroundColor: "#282828"
-    },
-    headerTitleStyle: {
-      color: "white"
-    }
-  };
 
   componentDidMount() {
     app

@@ -37,7 +37,7 @@ class EditAdminServ extends Component {
     this.setState({
       nombre: nombreServicio,
       precio: precioString,
-      selectDuracion: numButton
+      selectDuracion: numButton - 1
     });
 
     app
@@ -114,7 +114,7 @@ class EditAdminServ extends Component {
           precioBs: precioBs,
           nombreServicio: capFirstLetter,
           precioServicio: precio,
-          numButton: selectDuracion
+          numButton: selectDuracion + 1
         },
         error => {
           error
